@@ -1,43 +1,54 @@
 # Imagination 3D — Cursor Rules
+# Atualizado: Fase 2 concluída | Fase 3 em andamento
 
 ## Stack
-- Next.js 15 App Router (TypeScript)
-- Tailwind CSS para estilizacao
-- Supabase para banco de dados e autenticacao
-- Zustand para estado global
-- React Hook Form + Zod para formularios
-- Jest + Testing Library para testes
+- Next.js 16 (App Router) + TypeScript estrito
+- Tailwind CSS v4
+- Supabase (banco + auth + storage) — projeto: oflozudwutxgvwyvygll
+- Zustand para estado global do carrinho
+- React Hook Form + Zod para formulários
+- Jest + Testing Library para TDD
 
-## Convencoes
-- Sempre usar TypeScript estrito
-- Componentes em PascalCase
-- Hooks sempre com prefixo `use`
-- Server Components por padrao, Client Component apenas quando necessario (`'use client'`)
+## Regras de Componentes
+- Server Components por padrão
+- `'use client'` apenas para: interatividade, useState/useEffect, hooks do browser
 - Nunca usar `any` no TypeScript
+- Componentes em PascalCase, hooks com prefixo `use`
+- Um componente por arquivo
 
-## TDD Obrigatorio
-Antes de implementar qualquer feature:
-1. RED: Escrever o teste que falha
-2. GREEN: Implementar o minimo
-3. BLUE: Refatorar
+## TDD — Obrigatório por Fase
+1. RED: escrever o teste que falha primeiro
+2. GREEN: implementar o mínimo para passar
+3. BLUE: refatorar + `npm run build` sem erros
 
 ## Supabase
-- Usar `createBrowserClient` para componentes client-side
-- Usar `createServerClient` para Server Components e Route Handlers
-- Nunca expor a SUPABASE_SERVICE_ROLE_KEY no cliente
+- Client Components → `createClient()` de `@/lib/supabase/browser`
+- Server Components / Route Handlers → `createClient()` de `@/lib/supabase/server`
+- NUNCA expor `SUPABASE_SERVICE_ROLE_KEY` no cliente
+
+## Arquivos já existentes (não recriar)
+- `src/types/index.ts` — todos os tipos globais
+- `src/lib/utils/formatters.ts` — formatBRL, formatPhone, slugify
+- `src/lib/utils/whatsapp.ts` — buildWhatsAppMessage, buildWhatsAppUrl
+- `src/lib/supabase/browser.ts` + `server.ts` + `queries.ts`
+- `src/components/layout/Header.tsx` + `Footer.tsx`
+- `src/components/catalog/ProductCard.tsx` + `ProductGrid.tsx` + `CategoryFilter.tsx`
+- `src/app/page.tsx` + `catalog/page.tsx` + `product/[slug]/page.tsx`
+
+## Fase 3 — O que construir agora
+- `src/lib/store/cartStore.ts` — Zustand + persist (localStorage)
+- `src/components/cart/CartItem.tsx`
+- `src/components/cart/CartSummary.tsx`
+- `src/components/cart/CheckoutForm.tsx` — Nome, Telefone, Bairro, Cidade
+- `src/app/cart/page.tsx`
+- Botão "Adicionar ao carrinho" em `product/[slug]/page.tsx`
+- Contador de itens no Header
 
 ## WhatsApp
-- Numero: 5511989525014
-- Funcao geradora em: src/lib/utils/whatsapp.ts
+- Número: 5511989525014
+- Gerador pronto: `src/lib/utils/whatsapp.ts`
 
 ## Commits
-Formato: `tipo: descricao curta`
-Tipos: feat, fix, test, refactor, docs, chore
-
-## Branches por Fase
-- phase/1-foundation
-- phase/2-catalog
-- phase/3-cart
-- phase/4-custom-order
-- phase/5-admin
-- phase/6-deploy
+- Formato: `tipo: descricao curta`
+- Tipos: feat, fix, test, refactor, docs, chore
+- Branches: phase/1-foundation (done), phase/2-catalog (done), phase/3-cart (atual)

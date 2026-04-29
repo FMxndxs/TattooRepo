@@ -4,11 +4,57 @@
 Plataforma de catálogo e vendas para startup de impressão 3D com Bambu Lab A1.
 Integração com WhatsApp para finalização de pedidos.
 
-**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS · Supabase · Zustand · React Hook Form · Zod · Jest + Testing Library
+**Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Supabase · Zustand · React Hook Form · Zod · Jest + Testing Library
 
-**WhatsApp de pedidos:** (11) 98952-5014  
-**GitHub:** https://github.com/FMxndxs  
+**WhatsApp de pedidos:** (11) 98952-5014 → `5511989525014`
+**GitHub:** https://github.com/FMxndxs
 **Conta Git:** FMxndxs / felipemendescampos40@gmail.com
+**Supabase project:** oflozudwutxgvwyvygll
+
+---
+
+## Status das Fases
+
+| Fase | Status | Branch | Testes |
+|------|--------|--------|--------|
+| 1 — Foundation | Concluída | `phase/1-foundation` | 19 verdes |
+| 2 — Catálogo | Concluída | `phase/2-catalog` | 34 verdes |
+| 3 — Carrinho & WhatsApp | **Em andamento** | `phase/3-cart` | — |
+| 4 — Pedido Personalizado | Aguardando | `phase/4-custom-order` | — |
+| 5 — Dashboard Admin | Aguardando | `phase/5-admin` | — |
+| 6 — Deploy | Aguardando | `phase/6-deploy` | — |
+
+---
+
+## O que já existe (não recriar)
+
+### Tipos — `src/types/index.ts`
+`Product`, `Category`, `Color`, `ProductSize`, `ProductImage`, `CartItem`, `CustomerInfo`, `CustomOrder`, `WhatsAppOrderPayload`
+
+### Utilitários — `src/lib/utils/`
+- `formatters.ts` → `formatBRL(value)`, `formatPhone(phone)`, `slugify(text)`
+- `whatsapp.ts` → `buildWhatsAppMessage(payload)`, `buildWhatsAppUrl(payload)`
+
+### Supabase — `src/lib/supabase/`
+- `browser.ts` → `createClient()` para Client Components
+- `server.ts` → `createClient()` para Server Components / Route Handlers
+- `queries.ts` → `getCategories()`, `getProducts(slug?)`, `getFeaturedProducts()`, `getProductBySlug(slug)`
+
+### Componentes criados
+- `src/components/layout/Header.tsx` — logo, nav, link carrinho
+- `src/components/layout/Footer.tsx` — links, WhatsApp, Instagram
+- `src/components/catalog/ProductCard.tsx` — card com imagem, preço, badge, cores
+- `src/components/catalog/ProductGrid.tsx` — grid 2-4 colunas, empty state
+- `src/components/catalog/CategoryFilter.tsx` — filtro por categoria (Client Component)
+
+### Páginas criadas
+- `src/app/page.tsx` — Home: hero, features, produtos em destaque
+- `src/app/catalog/page.tsx` — Listagem com filtro client-side
+- `src/app/product/[slug]/page.tsx` — Detalhe: imagem, specs, cores, CTA WhatsApp
+
+### Banco de Dados (Supabase — já executado)
+Tabelas: `categories`, `products`, `product_images`, `colors`, `product_colors`, `product_sizes`, `custom_orders`
+Schema completo: `docs/database/schema.sql`
 
 ---
 
@@ -16,153 +62,110 @@ Integração com WhatsApp para finalização de pedidos.
 
 ```
 src/
-├── app/                        # Next.js App Router
-│   ├── page.tsx                # Home / catálogo em destaque
-│   ├── catalog/                # Listagem completa + filtros
-│   ├── product/[slug]/         # Página de produto
-│   ├── cart/                   # Carrinho + checkout WhatsApp
-│   ├── custom-order/           # Formulário de pedido personalizado
-│   └── admin/                  # Dashboard administrativo
-│       ├── (auth)/login/       # Login Supabase Auth
-│       └── (dashboard)/        # CRUD de produtos
+├── app/
+│   ├── page.tsx                    # Home (Server Component)
+│   ├── catalog/page.tsx            # Catálogo (Client Component)
+│   ├── product/[slug]/page.tsx     # Produto (Server Component)
+│   ├── cart/                       # FASE 3 — a criar
+│   ├── custom-order/               # FASE 4 — a criar
+│   └── admin/                      # FASE 5 — a criar
 ├── components/
-│   ├── ui/                     # Primitivos: Button, Input, Card, Badge
-│   ├── catalog/                # ProductCard, CategoryFilter, ProductGrid
-│   ├── cart/                   # CartItem, CartSummary, WhatsAppCheckout
-│   ├── admin/                  # ProductForm, ProductTable, StockToggle
-│   └── layout/                 # Header, Footer, AdminSidebar
+│   ├── ui/                         # Primitivos (a criar conforme necessário)
+│   ├── catalog/                    # ProductCard, ProductGrid, CategoryFilter
+│   ├── cart/                       # FASE 3 — CartItem, CartSummary, CheckoutForm
+│   ├── admin/                      # FASE 5 — a criar
+│   └── layout/                     # Header, Footer
 ├── lib/
-│   ├── supabase/               # cliente browser + server (SSR)
-│   ├── store/                  # Zustand: cartStore, adminStore
-│   ├── utils/                  # formatters, whatsapp.ts
-│   └── validations/            # Zod schemas
-├── hooks/                      # useCart, useProducts, useAdmin
-├── types/                      # Product, Order, Category, CartItem
+│   ├── supabase/                   # browser.ts, server.ts, queries.ts
+│   ├── store/                      # FASE 3 — cartStore.ts (Zustand)
+│   ├── utils/                      # formatters.ts, whatsapp.ts
+│   └── validations/                # FASE 3/4 — Zod schemas
+├── hooks/                          # useCart (FASE 3), useProducts, useAdmin
+├── types/index.ts                  # Todos os tipos globais
 └── __tests__/
-    ├── unit/                   # funções puras, hooks
-    ├── integration/            # componentes com mocks Supabase
-    └── e2e/                    # fluxos completos (Playwright)
+    ├── unit/                       # formatters, whatsapp, ProductCard, CategoryFilter, Header
+    ├── integration/                # a criar
+    └── e2e/                        # FASE 6 — Playwright
 ```
 
 ---
 
 ## Metodologia TDD — Red → Green → Blue
 
-Cada fase segue obrigatoriamente 3 etapas:
+Obrigatório em cada fase:
 
-| Etapa | Cor | Ação |
-|-------|-----|------|
-| **Red** | Vermelho | Escrever testes que falham (definir contrato) |
-| **Green** | Verde | Implementar o mínimo para os testes passarem |
-| **Blue** | Azul | Refatorar mantendo todos os testes verdes |
-
----
-
-## Plano de Fases
-
-### Fase 1 — Foundation & Setup *(atual)*
-- Configuração Jest + Testing Library
-- Schema do banco Supabase (SQL)
-- Tipos TypeScript globais
-- Cliente Supabase (browser + SSR)
-- Layout base (Header, Footer)
-- Variáveis de ambiente (.env.local)
-
-### Fase 2 — Catálogo de Produtos
-- Tabelas: `products`, `categories`, `product_images`, `colors`
-- ProductCard, ProductGrid, CategoryFilter
-- Página de produto com galeria e seleção de cor/tamanho
-- Server Components com cache
-
-### Fase 3 — Carrinho & WhatsApp
-- Zustand store persistente (localStorage)
-- CartItem, CartSummary
-- Gerador de link `wa.me` com mensagem formatada
-- Formulário de dados do cliente (Nome, Bairro)
-
-### Fase 4 — Pedido Personalizado
-- Formulário de projeto sob encomenda
-- Upload de referência (Supabase Storage)
-- Validação Zod + React Hook Form
-- Notificação WhatsApp automática
-
-### Fase 5 — Dashboard Administrativo
-- Supabase Auth (login protegido)
-- CRUD de produtos + imagens
-- Toggle disponibilidade de cores
-- Calculadora de preço (filamento g x tempo)
-
-### Fase 6 — Polimento & Deploy
-- SEO (metadata, sitemap, OG tags)
-- Otimização de imagens (next/image)
-- Testes E2E com Playwright
-- Deploy Vercel + domínio
+| Etapa | Ação |
+|-------|------|
+| **Red** | Escrever testes que falham (definir contrato da feature) |
+| **Green** | Implementar o mínimo para os testes passarem |
+| **Blue** | Refatorar mantendo todos os testes verdes + `npm run build` sem erros |
 
 ---
 
-## Banco de Dados (Supabase)
+## Fase 3 — Carrinho & WhatsApp (próxima)
 
-### Variáveis de ambiente necessárias
+### O que construir
+- `src/lib/store/cartStore.ts` — Zustand com persistência localStorage
+- `src/components/cart/CartItem.tsx` — item do carrinho (produto, cor, qtd, preço)
+- `src/components/cart/CartSummary.tsx` — resumo com total
+- `src/components/cart/CheckoutForm.tsx` — form: Nome, Telefone, Bairro, Cidade
+- `src/app/cart/page.tsx` — página do carrinho
+- Botão "Adicionar ao carrinho" na página de produto
+- Contador de itens no Header
+
+### Contrato do cartStore
+```ts
+interface CartStore {
+  items: CartItem[]
+  addItem(product, color, size, quantity): void
+  removeItem(productId): void
+  updateQuantity(productId, quantity): void
+  clearCart(): void
+  total: number
+  itemCount: number
+}
 ```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_WHATSAPP_NUMBER=5511989525014
-```
-
-### Schema principal
-Ver: `docs/database/schema.sql`
-
----
-
-## Convenções de Código
-
-- **Componentes:** PascalCase, um arquivo por componente
-- **Funções/hooks:** camelCase
-- **Testes:** `ComponentName.test.tsx` junto ao componente OU em `__tests__/`
-- **Commits:** `feat:`, `fix:`, `test:`, `refactor:`, `docs:`
-- **Branches:** `phase/1-foundation`, `phase/2-catalog`, etc.
 
 ---
 
 ## Integração WhatsApp
 
-Numero: `5511989525014` (formato internacional sem +)  
-Gerador: `src/lib/utils/whatsapp.ts`
+Número: `5511989525014`
+Gerador pronto: `src/lib/utils/whatsapp.ts` → `buildWhatsAppUrl(payload)`
 
-Formato da mensagem gerada:
+Formato da mensagem:
 ```
 Novo Pedido — Imagination 3D
 
 Cliente: Joao Silva
+Telefone: (11) 98765-4321
 Bairro: Vila Madalena / SP
 
 Itens:
-- Suporte de Fone (Preto, P) x 2 — R$ 30,00
-- Porta-Treco Modular (Branco) x 1 — R$ 45,00
+- Suporte de Fone (Preto) x2 — R$ 59,80
 
-Total: R$ 75,00
+Total: R$ 59,80
 
-Pedido gerado pelo site imagination3d.com.br
+Pedido gerado pelo site Imagination 3D
 ```
 
 ---
 
-## Compartilhamento com Cursor
+## Convenções de Código
 
-Este arquivo CLAUDE.md e lido automaticamente pelo Claude Code e pelo Cursor.
-Regras adicionais para o Cursor em: `.cursorrules`
-Documentacao detalhada em: `docs/`
+- Componentes: PascalCase, um arquivo por componente
+- Hooks: prefixo `use`
+- Server Components por padrão; `'use client'` apenas quando necessário (interatividade, hooks)
+- Nunca usar `any` no TypeScript
+- Commits: `feat:`, `fix:`, `test:`, `refactor:`, `docs:`
 
 ---
 
-## Status das Fases
+## Banco de Dados — Variáveis de Ambiente
 
-| Fase | Status | Branch |
-|------|--------|--------|
-| 1 — Foundation | Em andamento | `phase/1-foundation` |
-| 2 — Catalogo | Aguardando | `phase/2-catalog` |
-| 3 — Carrinho & WhatsApp | Aguardando | `phase/3-cart` |
-| 4 — Pedido Personalizado | Aguardando | `phase/4-custom-order` |
-| 5 — Dashboard Admin | Aguardando | `phase/5-admin` |
-| 6 — Deploy | Aguardando | `phase/6-deploy` |
+```
+NEXT_PUBLIC_SUPABASE_URL=https://oflozudwutxgvwyvygll.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[em .env.local]
+SUPABASE_SERVICE_ROLE_KEY=[em .env.local — nunca expor no cliente]
+NEXT_PUBLIC_WHATSAPP_NUMBER=5511989525014
+```
