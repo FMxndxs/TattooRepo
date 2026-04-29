@@ -36,3 +36,33 @@ export function buildWhatsAppUrl(payload: WhatsAppOrderPayload): string {
   const encoded = encodeURIComponent(message)
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`
 }
+
+export interface CustomOrderPayload {
+  name: string
+  phone: string
+  description: string
+  color_name: string
+  reference_url: string | null
+  image_url: string | null
+}
+
+export function buildCustomOrderMessage(payload: CustomOrderPayload): string {
+  const lines = [
+    'Novo Pedido Personalizado — Imagination 3D',
+    '',
+    `Cliente: ${payload.name}`,
+    `Telefone: ${payload.phone}`,
+    '',
+    `Descricao: ${payload.description}`,
+    `Cor desejada: ${payload.color_name}`,
+  ]
+  if (payload.reference_url) lines.push(`Referencia: ${payload.reference_url}`)
+  if (payload.image_url) lines.push(`Imagem: ${payload.image_url}`)
+  lines.push('', 'Aguardo seu orcamento!')
+  return lines.join('\n')
+}
+
+export function buildCustomOrderUrl(payload: CustomOrderPayload): string {
+  const message = buildCustomOrderMessage(payload)
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+}
