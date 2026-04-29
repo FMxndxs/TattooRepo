@@ -22,7 +22,7 @@ Integração com WhatsApp para finalização de pedidos.
 | 3 — Carrinho & WhatsApp | Concluída | `phase/3-cart` | 51 verdes |
 | 4 — Pedido Personalizado | Concluída | `phase/4-custom-order` | 64 verdes |
 | 5 — Dashboard Admin | Concluída | `phase/5-admin` | 83 verdes |
-| 6 — Deploy | **Próxima** | `phase/6-deploy` | — |
+| 6 — Deploy & SEO | **Próxima** | `phase/6-deploy` | — |
 
 ---
 
