@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { ShoppingCart, Sparkles, Package } from 'lucide-react'
+import { Sparkles, Package } from 'lucide-react'
+import { CartIcon } from './CartIcon'
 
 export function Header() {
   return (
@@ -36,13 +37,7 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/cart"
-              aria-label="carrinho"
-              className="relative p-2 text-zinc-400 hover:text-white transition-colors"
-            >
-              <ShoppingCart className="w-5 h-5" />
-            </Link>
+            <CartIcon />
             <Link
               href="/custom-order"
               className="hidden md:flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold px-4 py-2 rounded-full transition-colors"
