@@ -1,0 +1,43 @@
+# Imagination 3D — Cursor Rules
+
+## Stack
+- Next.js 15 App Router (TypeScript)
+- Tailwind CSS para estilizacao
+- Supabase para banco de dados e autenticacao
+- Zustand para estado global
+- React Hook Form + Zod para formularios
+- Jest + Testing Library para testes
+
+## Convencoes
+- Sempre usar TypeScript estrito
+- Componentes em PascalCase
+- Hooks sempre com prefixo `use`
+- Server Components por padrao, Client Component apenas quando necessario (`'use client'`)
+- Nunca usar `any` no TypeScript
+
+## TDD Obrigatorio
+Antes de implementar qualquer feature:
+1. RED: Escrever o teste que falha
+2. GREEN: Implementar o minimo
+3. BLUE: Refatorar
+
+## Supabase
+- Usar `createBrowserClient` para componentes client-side
+- Usar `createServerClient` para Server Components e Route Handlers
+- Nunca expor a SUPABASE_SERVICE_ROLE_KEY no cliente
+
+## WhatsApp
+- Numero: 5511989525014
+- Funcao geradora em: src/lib/utils/whatsapp.ts
+
+## Commits
+Formato: `tipo: descricao curta`
+Tipos: feat, fix, test, refactor, docs, chore
+
+## Branches por Fase
+- phase/1-foundation
+- phase/2-catalog
+- phase/3-cart
+- phase/4-custom-order
+- phase/5-admin
+- phase/6-deploy
