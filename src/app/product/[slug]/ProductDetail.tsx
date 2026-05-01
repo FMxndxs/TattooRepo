@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Clock, Weight } from 'lucide-react'
 import { AddToCartButton } from '@/components/catalog/AddToCartButton'
+import { PrintLineHover } from '@/components/ui/MotionPrimitives'
 import { formatBRL } from '@/lib/utils/formatters'
 import type { Product, Color } from '@/types'
 
@@ -21,9 +22,15 @@ export function ProductDetail({ product }: { product: Product }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Imagem */}
-        <div className="aspect-square relative bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800">
+        <PrintLineHover className="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 shadow-[0_20px_50px_-28px_rgba(67,19,112,0.35)]">
           {primaryImage ? (
-            <Image src={primaryImage.url} alt={primaryImage.alt ?? product.name} fill className="object-cover" />
+            <Image
+              src={primaryImage.url}
+              alt={primaryImage.alt ?? product.name}
+              fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
+              className="object-cover transition-transform duration-500 ease-out hover:scale-[1.02]"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-zinc-600">
               <svg className="w-24 h-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,12 +38,12 @@ export function ProductDetail({ product }: { product: Product }) {
               </svg>
             </div>
           )}
-        </div>
+        </PrintLineHover>
 
         {/* Info */}
         <div className="flex flex-col">
           {product.category && (
-            <span className="text-orange-400 text-sm font-semibold uppercase tracking-wider mb-2">
+            <span className="text-brand-300 text-sm font-semibold uppercase tracking-wider mb-2">
               {product.category.name}
             </span>
           )}
@@ -50,13 +57,13 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="flex flex-wrap gap-3 mb-6">
             {product.print_time_minutes && (
               <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2">
-                <Clock className="w-4 h-4 text-orange-400" />
+                <Clock className="w-4 h-4 text-brand-300" />
                 <span className="text-zinc-300 text-sm">{Math.round(product.print_time_minutes / 60)}h de impressão</span>
               </div>
             )}
             {product.filament_grams && (
               <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2">
-                <Weight className="w-4 h-4 text-orange-400" />
+                <Weight className="w-4 h-4 text-brand-300" />
                 <span className="text-zinc-300 text-sm">{product.filament_grams}g de filamento</span>
               </div>
             )}
@@ -66,7 +73,7 @@ export function ProductDetail({ product }: { product: Product }) {
           {product.colors && product.colors.length > 0 && (
             <div className="mb-6">
               <p className="text-white font-semibold text-sm mb-3">
-                Cor: <span className="text-orange-400">{selectedColor?.name ?? 'Nenhuma'}</span>
+                Cor: <span className="text-brand-300">{selectedColor?.name ?? 'Nenhuma'}</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {product.colors.map((color) => (
@@ -76,7 +83,7 @@ export function ProductDetail({ product }: { product: Product }) {
                     title={color.name}
                     className={`w-8 h-8 rounded-full border-2 transition-all ${
                       selectedColor?.id === color.id
-                        ? 'border-orange-500 scale-110'
+                        ? 'border-brand-500 scale-110'
                         : 'border-zinc-600 hover:border-zinc-400'
                     }`}
                     style={{ backgroundColor: color.hex_code }}
@@ -88,7 +95,7 @@ export function ProductDetail({ product }: { product: Product }) {
 
           {/* Preço e CTA */}
           <div className="mt-auto space-y-3">
-            <div className="text-3xl font-black text-orange-400">{formatBRL(product.price)}</div>
+            <div className="text-3xl font-black text-brand-300">{formatBRL(product.price)}</div>
             <AddToCartButton product={product} selectedColor={selectedColor} selectedSize={null} />
             <a
               href={`https://wa.me/5511989525014?text=${encodeURIComponent(`Olá! Tenho interesse no produto: ${product.name}`)}`}

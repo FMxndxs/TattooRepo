@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Package, MessageCircle } from 'lucide-react'
+import Image from 'next/image'
+import { MessageCircle } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -9,10 +10,15 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 bg-orange-500 rounded-lg flex items-center justify-center">
-                <Package className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-bold text-white">Imagination <span className="text-orange-500">3D</span></span>
+              <Image
+                src="/logo.png"
+                alt="Imagination 3D"
+                width={28}
+                height={28}
+              />
+              <span className="font-bold text-white">
+                Imagination <span className="text-brand-300">3D</span>
+              </span>
             </div>
             <p className="text-zinc-500 text-sm leading-relaxed">
               Impressão 3D de alta qualidade com Bambu Lab A1. Produtos únicos, cores variadas e projetos personalizados.

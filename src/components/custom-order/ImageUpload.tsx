@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Image from 'next/image'
 import { Upload, X, Loader2 } from 'lucide-react'
@@ -16,17 +16,23 @@ export function ImageUpload({ preview, uploading, error, onChange }: ImageUpload
       <label
         htmlFor="image-upload"
         className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-2xl cursor-pointer transition-colors ${
-          preview ? 'border-orange-500/50' : 'border-zinc-700 hover:border-zinc-500'
+          preview ? 'border-brand-500/60' : 'border-zinc-700 hover:border-zinc-500'
         } bg-zinc-900`}
       >
         {uploading ? (
           <div className="flex flex-col items-center gap-2 text-zinc-400">
-            <Loader2 className="w-8 h-8 animate-spin text-orange-400" />
+            <Loader2 className="w-8 h-8 animate-spin text-brand-300" />
             <span className="text-sm">Enviando imagem...</span>
           </div>
         ) : preview ? (
           <div className="relative w-full h-full rounded-2xl overflow-hidden">
-            <Image src={preview} alt="Preview" fill className="object-cover opacity-70" />
+            <Image
+              src={preview}
+              alt="Preview"
+              fill
+              sizes="100vw"
+              className="object-cover opacity-70"
+            />
             <button
               type="button"
               onClick={(e) => { e.preventDefault(); onChange(null) }}

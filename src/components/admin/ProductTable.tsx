@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useState } from 'react'
@@ -40,7 +40,7 @@ export function ProductTable({ products, onRefresh }: ProductTableProps) {
         <h2 className="text-white font-bold text-lg">{products.length} produtos</h2>
         <Link
           href="/admin/products/new"
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-white font-semibold px-4 py-2 rounded-full text-sm transition-colors"
+          className="flex items-center gap-2 bg-brand-700 hover:bg-brand-500 text-white font-semibold px-4 py-2 rounded-full text-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           Novo produto
@@ -68,7 +68,7 @@ export function ProductTable({ products, onRefresh }: ProductTableProps) {
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-orange-400 font-semibold text-sm">{formatBRL(product.price)}</span>
+                  <span className="text-brand-300 font-semibold text-sm">{formatBRL(product.price)}</span>
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
                   <span className="text-zinc-400 text-xs">{product.category?.name ?? '—'}</span>
@@ -104,7 +104,7 @@ export function ProductTable({ products, onRefresh }: ProductTableProps) {
         {products.length === 0 && (
           <div className="py-12 text-center text-zinc-500">
             <p className="text-sm">Nenhum produto cadastrado.</p>
-            <Link href="/admin/products/new" className="text-orange-400 text-sm hover:underline mt-1 block">
+            <Link href="/admin/products/new" className="text-brand-300 text-sm hover:underline mt-1 block">
               Criar primeiro produto
             </Link>
           </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -66,7 +66,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
           <input
             {...register('name')}
             placeholder="Ex: Suporte de Fone"
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           />
           {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
         </div>
@@ -78,7 +78,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
             {...register('slug')}
             onFocus={() => setAutoSlug(false)}
             placeholder="suporte-de-fone"
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors font-mono"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors font-mono"
           />
           {errors.slug && <p className="text-red-400 text-xs mt-1">{errors.slug.message}</p>}
         </div>
@@ -88,7 +88,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
           <label className="block text-white text-sm font-medium mb-1.5">Categoria</label>
           <select
             {...register('category_id')}
-            className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           >
             <option value="">Sem categoria</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -103,7 +103,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
               <button
                 type="button"
                 onClick={() => setValue('price', Math.ceil(suggestedPrice * 10) / 10)}
-                className="ml-2 text-orange-400 text-xs hover:underline"
+                className="ml-2 text-brand-300 text-xs hover:underline"
               >
                 Usar sugerido: {formatBRL(suggestedPrice)}
               </button>
@@ -115,7 +115,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
             min="0"
             {...register('price', { valueAsNumber: true })}
             placeholder="29.90"
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           />
           {errors.price && <p className="text-red-400 text-xs mt-1">{errors.price.message}</p>}
         </div>
@@ -133,7 +133,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
             min="0"
             {...register('print_time_minutes', { valueAsNumber: true })}
             placeholder="120"
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           />
         </div>
 
@@ -146,7 +146,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
             min="0"
             {...register('filament_grams', { valueAsNumber: true })}
             placeholder="45"
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           />
         </div>
       </div>
@@ -158,7 +158,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
           {...register('description')}
           rows={3}
           placeholder="Descreva o produto..."
-          className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors resize-none"
+          className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors resize-none"
         />
       </div>
 
@@ -189,7 +189,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-orange-500 hover:bg-orange-400 disabled:opacity-50 text-white font-bold py-4 rounded-full transition-colors"
+        className="w-full bg-brand-700 hover:bg-brand-500 disabled:opacity-50 text-white font-bold py-4 rounded-full transition-colors"
       >
         {loading
           ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Salvando...</span>

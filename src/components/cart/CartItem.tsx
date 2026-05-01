@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Image from 'next/image'
 import { Trash2, Plus, Minus } from 'lucide-react'
@@ -20,7 +20,13 @@ export function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
       {/* Imagem */}
       <div className="w-20 h-20 relative bg-zinc-800 rounded-xl overflow-hidden shrink-0">
         {primaryImage ? (
-          <Image src={primaryImage.url} alt={item.product.name} fill className="object-cover" />
+          <Image
+            src={primaryImage.url}
+            alt={item.product.name}
+            fill
+            sizes="80px"
+            className="object-cover"
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-zinc-600">
             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,7 +74,7 @@ export function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
             </button>
           </div>
 
-          <span className="text-orange-400 font-bold text-sm">{formatBRL(subtotal)}</span>
+          <span className="text-brand-300 font-bold text-sm">{formatBRL(subtotal)}</span>
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { CategoryFilter } from '@/components/catalog/CategoryFilter'
 import { ProductGrid } from '@/components/catalog/ProductGrid'
+import { PrintLayerSkeletonGrid } from '@/components/ui/PrintLayerSkeleton'
 import type { Product, Category } from '@/types'
 import { createClient } from '@/lib/supabase/browser'
 
@@ -14,29 +15,47 @@ export default function CatalogPage() {
 
   useEffect(() => {
     const supabase = createClient()
+    let cancelled = false
 
-    supabase.from('categories').select('*').order('name').then(({ data }) => {
-      setCategories(data ?? [])
-    })
+    ;(async () => {
+      setLoading(true)
 
-    let query = supabase
-      .from('products')
-      .select('*, category:categories(*), images:product_images(*), colors:product_colors(color:colors(*))')
-      .eq('is_available', true)
-      .order('is_featured', { ascending: false })
+      const { data: cats } = await supabase.from('categories').select('*').order('name')
+      if (cancelled) return
+      setCategories(cats ?? [])
 
-    if (selected) {
-      query = query.eq('category.slug', selected) as typeof query
-    }
+      let q = supabase
+        .from('products')
+        .select(
+          '*, category:categories(*), images:product_images(*), colors:product_colors(color:colors(*))',
+        )
+        .eq('is_available', true)
+        .order('is_featured', { ascending: false })
 
-    query.then(({ data }) => {
+      // Filtra pela FK (slug vem só do metadata em categories; `.eq('category.slug', …)` não filtra no PostgREST).
+      if (selected) {
+        const cat = cats?.find((c) => c.slug === selected)
+        if (!cat) {
+          setProducts([])
+          setLoading(false)
+          return
+        }
+        q = q.eq('category_id', cat.id)
+      }
+
+      const { data } = await q
+      if (cancelled) return
       const mapped = (data ?? []).map((p) => ({
         ...p,
         colors: p.colors?.map((pc: { color: unknown }) => pc.color) ?? [],
       })) as Product[]
       setProducts(mapped)
       setLoading(false)
-    })
+    })()
+
+    return () => {
+      cancelled = true
+    }
   }, [selected])
 
   return (
@@ -55,11 +74,7 @@ export default function CatalogPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-square bg-zinc-800 rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <PrintLayerSkeletonGrid count={8} />
       ) : (
         <ProductGrid products={products} />
       )}

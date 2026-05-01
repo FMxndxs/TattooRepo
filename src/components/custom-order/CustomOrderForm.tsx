@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -44,7 +44,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
             id={id}
             placeholder={placeholder}
             {...register(id)}
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           />
           {errors[id] && <p role="alert" className="text-red-400 text-xs mt-1">{errors[id]?.message}</p>}
         </div>
@@ -60,7 +60,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
           rows={4}
           placeholder="Descreva o que você quer imprimir: tamanho, finalidade, detalhes importantes..."
           {...register('description')}
-          className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors resize-none"
+          className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors resize-none"
         />
         {errors.description && (
           <p role="alert" className="text-red-400 text-xs mt-1">{errors.description.message}</p>
@@ -73,7 +73,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
         <select
           id="color_name"
           {...register('color_name')}
-          className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+          className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
         >
           <option value="">Selecione uma cor</option>
           {COLORS.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -92,7 +92,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
           id="reference_url"
           placeholder="https://makerworld.com/..."
           {...register('reference_url')}
-          className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+          className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
         />
         {errors.reference_url && (
           <p role="alert" className="text-red-400 text-xs mt-1">{errors.reference_url.message}</p>
@@ -115,7 +115,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
       <button
         type="submit"
         disabled={loading || uploading}
-        className="w-full bg-orange-500 hover:bg-orange-400 disabled:opacity-50 text-white font-bold py-4 rounded-full transition-colors text-base"
+        className="w-full bg-brand-700 hover:bg-brand-500 disabled:opacity-50 text-white font-bold py-4 rounded-full transition-colors text-base"
       >
         {loading ? 'Enviando...' : 'Enviar solicitação via WhatsApp'}
       </button>

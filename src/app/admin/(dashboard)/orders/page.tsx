@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+﻿import { createClient } from '@/lib/supabase/server'
 import { MessageSquare } from 'lucide-react'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -49,13 +49,13 @@ export default async function AdminOrdersPage() {
               <div className="flex flex-wrap gap-3">
                 {order.reference_url && (
                   <a href={order.reference_url} target="_blank" rel="noopener noreferrer"
-                    className="text-orange-400 text-xs hover:underline">
+                    className="text-brand-300 text-xs hover:underline">
                     Ver referência →
                   </a>
                 )}
                 {order.reference_image_url && (
                   <a href={order.reference_image_url} target="_blank" rel="noopener noreferrer"
-                    className="text-orange-400 text-xs hover:underline">
+                    className="text-brand-300 text-xs hover:underline">
                     Ver imagem →
                   </a>
                 )}

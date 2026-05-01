@@ -39,6 +39,6 @@ describe('CategoryFilter', () => {
   it('destaca a categoria selecionada', () => {
     render(<CategoryFilter categories={mockCategories} selected="decoracao" onSelect={() => {}} />)
     const decoracaoBtn = screen.getByText('Decoração').closest('button')
-    expect(decoracaoBtn).toHaveClass('bg-orange-500')
+    expect(decoracaoBtn).toHaveClass('bg-brand-700')
   })
 })

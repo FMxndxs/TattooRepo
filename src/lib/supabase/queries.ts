@@ -13,6 +13,19 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getProducts(categorySlug?: string | null): Promise<Product[]> {
   const supabase = await createClient()
+
+  let categoryId: string | undefined
+  if (categorySlug) {
+    const { data: row, error } = await supabase
+      .from('categories')
+      .select('id')
+      .eq('slug', categorySlug)
+      .maybeSingle()
+    if (error) throw error
+    if (!row) return []
+    categoryId = row.id
+  }
+
   let query = supabase
     .from('products')
     .select(`
@@ -25,8 +38,8 @@ export async function getProducts(categorySlug?: string | null): Promise<Product
     .order('is_featured', { ascending: false })
     .order('created_at', { ascending: false })
 
-  if (categorySlug) {
-    query = query.eq('category.slug', categorySlug)
+  if (categoryId) {
+    query = query.eq('category_id', categoryId)
   }
 
   const { data, error } = await query

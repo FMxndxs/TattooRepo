@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Package, Loader2 } from 'lucide-react'
+import Image from 'next/image'
+import { Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/browser'
 
 export default function AdminLoginPage() {
@@ -34,11 +35,9 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
-            <Package className="w-6 h-6 text-white" />
-          </div>
+          <Image src="/logo.png" alt="Imagination 3D" width={40} height={40} />
           <span className="font-bold text-white text-xl">
-            Imagination <span className="text-orange-500">3D</span>
+            Imagination <span className="text-brand-300">3D</span>
           </span>
         </div>
 
@@ -55,7 +54,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="admin@exemplo.com"
-                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
               />
             </div>
 
@@ -68,7 +67,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
               />
             </div>
 
@@ -79,7 +78,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-orange-500 hover:bg-orange-400 disabled:opacity-50 text-white font-bold py-3 rounded-full transition-colors"
+              className="w-full bg-brand-700 hover:bg-brand-500 disabled:opacity-50 text-white font-bold py-3 rounded-full transition-colors"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Entrar'}
             </button>

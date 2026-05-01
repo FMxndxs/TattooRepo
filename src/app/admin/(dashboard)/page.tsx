@@ -10,7 +10,7 @@ export default async function AdminDashboardPage() {
   ])
 
   const stats = [
-    { label: 'Produtos cadastrados', value: productCount ?? 0, icon: Package, color: 'text-orange-400' },
+    { label: 'Produtos cadastrados', value: productCount ?? 0, icon: Package, color: 'text-brand-300' },
     { label: 'Pedidos personalizados pendentes', value: orderCount ?? 0, icon: MessageSquare, color: 'text-blue-400' },
     { label: 'Categorias', value: 5, icon: Eye, color: 'text-green-400' },
     { label: 'Cores disponíveis', value: 10, icon: TrendingUp, color: 'text-purple-400' },

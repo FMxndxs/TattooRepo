@@ -23,7 +23,7 @@ export default function CartPage() {
         <ShoppingCart className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-white mb-2">Seu carrinho está vazio</h1>
         <p className="text-zinc-400 mb-8">Adicione produtos do catálogo para começar.</p>
-        <Link href="/catalog" className="bg-orange-500 hover:bg-orange-400 text-white font-bold px-6 py-3 rounded-full transition-colors">
+        <Link href="/catalog" className="bg-brand-700 hover:bg-brand-500 text-white font-bold px-6 py-3 rounded-full transition-colors shadow-lg shadow-brand-glow">
           Ver catálogo
         </Link>
       </div>
