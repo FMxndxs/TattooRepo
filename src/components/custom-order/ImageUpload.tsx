@@ -26,7 +26,13 @@ export function ImageUpload({ preview, uploading, error, onChange }: ImageUpload
           </div>
         ) : preview ? (
           <div className="relative w-full h-full rounded-2xl overflow-hidden">
-            <Image src={preview} alt="Preview" fill className="object-cover opacity-70" />
+            <Image
+              src={preview}
+              alt="Preview"
+              fill
+              sizes="100vw"
+              className="object-cover opacity-70"
+            />
             <button
               type="button"
               onClick={(e) => { e.preventDefault(); onChange(null) }}

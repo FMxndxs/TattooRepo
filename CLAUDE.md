@@ -1,197 +1,153 @@
 # Imagination 3D — Project Intelligence
 
-## Visão Geral do Projeto
-Plataforma de catálogo e vendas para startup de impressão 3D com Bambu Lab A1.
-Integração com WhatsApp para finalização de pedidos.
+## Visão geral
+Plataforma de catálogo e vendas para startup de impressão 3D com Bambu Lab A1. Finalização de pedidos via WhatsApp.
 
-**Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Supabase · Zustand · React Hook Form · Zod · Jest + Testing Library · Motion 12 (animações)
+**Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Supabase · Zustand · React Hook Form · Zod · Jest + Testing Library · Motion (`motion/react`)
 
-**WhatsApp de pedidos:** (11) 98952-5014 → `5511989525014`
-**GitHub:** https://github.com/FMxndxs
-**Conta Git:** FMxndxs / felipemendescampos40@gmail.com
-**Supabase project:** oflozudwutxgvwyvygll
+**WhatsApp:** (11) 98952-5014 → `5511989525014`  
+**GitHub:** https://github.com/FMxndxs  
+**Conta Git:** FMxndxs / felipemendescampos40@gmail.com  
+**Supabase project:** oflozudwutxgvwyvygll  
+
+**Memórias relacionadas:** `.cursorrules`, `AGENTS.md` (índice rápido para agentes)
 
 ---
 
-## Status das Fases
+## Status das fases
 
-| Fase | Status | Branch | Testes |
+| Fase | Status | Branch | Notas |
 |------|--------|--------|--------|
-| 1 — Foundation | Concluída | `phase/1-foundation` | 19 verdes |
-| 2 — Catálogo | Concluída | `phase/2-catalog` | 34 verdes |
-| 3 — Carrinho & WhatsApp | Concluída | `phase/3-cart` | 51 verdes |
-| 4 — Pedido Personalizado | Concluída | `phase/4-custom-order` | 64 verdes |
-| 5 — Dashboard Admin | Concluída | `phase/5-admin` | 83 verdes |
-| **6.1 — Design Refresh & Catálogo** | **Em andamento** | `phase/6-design-refresh` | — |
-| 6.2 — Deploy final & SEO | Próxima | `phase/6-deploy` | — |
+| 1–5 | Concluídas | `phase/*` | Foundation → Admin |
+| **6.1 — Design & catálogo** | Avançada | `phase/6-design-refresh` | Tema 3D, filtros corretos, migrations 010, ~104 testes |
+| 6.2 — Deploy & SEO | Próxima | `phase/6-deploy` | — |
 
 ---
 
-## Sistema de Design
+## Sistema de design
 
-### Paleta de Cores — Brand `#431370`
+### Paleta — brand `#431370`
 
 | Token | Valor | Uso |
 |-------|-------|-----|
-| `brand-50` | `#f6f0ff` | Fundos muito claros |
-| `brand-300` | `#b683ff` | Textos de acento, preços, badges |
-| `brand-400` | `#8b4fd4` | Ícones, links hover |
+| `brand-300` | `#b683ff` | Preços, destaques |
 | `brand-500` | `#6a2ba8` | Hover de botões |
-| `brand-700` | `#431370` | **COR PRIMÁRIA** — botões, badges destaque |
-| `brand-900` | `#1f0735` | Gradientes de fundo |
-| `brand-glow` | `rgba(67,19,112,0.45)` | Sombra de botões CTA |
+| `brand-700` | `#431370` | **Primária** |
+| `brand-glow` | `rgba(67,19,112,0.45)` | Sombras CTA |
 
-Definidos em `src/app/globals.css` via `@theme inline` (Tailwind v4).
-**Nunca usar `orange-*` — paleta migrada completamente para `brand-*`.**
+Definidos em `src/app/globals.css` via `@theme inline`. **Nunca usar `orange-*`.**
 
 ### Logo
-Arquivo: `public/logo.png` (copiado de `src/assets/imagination-logo.PNG`)
-Uso: `<Image src="/logo.png" alt="Imagination 3D" width={36} height={36} />`
+`public/logo.png` · `<Image src="/logo.png" alt="Imagination 3D" width={36} height={36} />`
 
-### Animações (Motion 12)
-Primitivos em `src/components/ui/MotionPrimitives.tsx`:
-- `LayerReveal` — entrada de cima pra baixo com stagger (hero, seções)
-- `StaggerGroup` — anima filhos em sequência ao entrar na viewport
-- `PrintLineHover` — linha de varredura horizontal no hover de imagens
+### Animações — tema “impressão 3D”
+- **`src/components/ui/MotionPrimitives.tsx`**  
+  - `LayerReveal`, `StaggerGroup` — respeitam **`useReducedMotion()`**  
+  - `PrintLineHover` — hover com **duas linhas** estilo camada (CSS + `group/printlh`)
+- **`src/components/ui/PrintCtaLink.tsx`** — CTAs com lift/tap (Motion) + sheen `print-cta-filament` no hover
+- **`src/components/ui/PrintLayerSkeleton.tsx`** — skeleton de grid (camadas + “hotline”)
+- **`src/components/ui/FilamentBackdrop.tsx`** — hero decorativo (grade + pulso de luz; reduzido sem loop)
 
-Keyframes CSS em `src/app/globals.css`: `layer-build`, `nozzle-pulse`, `print-sweep`, `filament-drip`
+**CSS em `globals.css`:** `filament-grid`, `filament-rise`, `extrusion-scan`, `print-buildplate-bg`, `print-cta-sheen`, `print-extrusion-shimmer`, `.print-header-glow`, etc. + `@media (prefers-reduced-motion: reduce)`.
+
+**`next/image`:** com **`fill`**, sempre definir **`sizes`** (ProductCard, ProductDetail, CartItem, ImageUpload).
 
 ---
 
-## Catálogo — Estado atual
+## Catálogo Supabase — comportamento correto
 
-**Categorias (8):**
-1. Decoração (`decoracao`)
-2. Utilitários (`utilitarios`)
-3. Escritório (`escritorio`)
-4. Games (`games`)
-5. Bonecos & Colecionáveis (`bonecos`) — nova
-6. Maquiagem & Beleza (`maquiagem`) — nova
-7. Brindes & Presentes (`brindes`) — nova
-8. Personalizados (`personalizados`)
+### Filtro por categoria
+`.eq('category.slug', slug)` no cliente PostgREST **não filtra** a relação embutida da forma esperada; a listagem acaba trazendo todos os produtos.
 
-**Migrações pendentes de executar no Supabase:**
-- `docs/database/migrations/006_add_categories.sql` — adiciona categorias 5-7
-- `docs/database/seed/001_products.sql` — insere 22 produtos com imagens placeholder
+**Padrão correto:** obter o `id` em `categories` pelo `slug` e filtrar **`products.category_id`**.  
+Implementação: `src/app/catalog/page.tsx` e `getProducts()` em `src/lib/supabase/queries.ts`.
+
+### Categorias (8)
+decoração · utilitários · escritório · games · bonecos · maquiagem · brindes · personalizados (slugs ASCII em `categories.slug`).
+
+---
+
+## Banco de dados
+
+**Schema:** `docs/database/schema.sql`  
+**Seed produtos:** `docs/database/seed/001_products.sql` (22 produtos; slugs **curtos**, ex. `suporte-plantas-hexagonal`).
+
+**Migrations em `docs/database/migrations/`**  
+- **006** — categorias extras  
+- **007–009** — URLs de imagens (atenção: slugs SQL às vezes divergiam do seed)  
+- **010 — `010_fix_image_urls_seed_slugs.sql`** — alinha `UPDATE` aos slugs do seed + `INSERT` de `product_images` para produtos sem imagem  
+
+Rodar **010** no SQL Editor do Supabase se ainda houver placeholders ou updates que não bateram linhas.
 
 ---
 
 ## O que já existe (não recriar)
 
 ### Tipos — `src/types/index.ts`
-`Product`, `Category`, `Color`, `ProductSize`, `ProductImage`, `CartItem`, `CustomerInfo`, `CustomOrder`, `WhatsAppOrderPayload`
+`Product`, `Category`, `Color`, `ProductSize`, `ProductImage`, `CartItem`, `CustomerInfo`, `CustomOrder`, etc.
 
 ### Utilitários — `src/lib/utils/`
-- `formatters.ts` → `formatBRL(value)`, `formatPhone(phone)`, `slugify(text)`
-- `whatsapp.ts` → `buildWhatsAppMessage(payload)`, `buildWhatsAppUrl(payload)`
+`formatBRL`, `formatPhone`, `slugify` · `whatsapp.ts` (`buildWhatsAppUrl`, …)
 
 ### Supabase — `src/lib/supabase/`
-- `browser.ts` → `createClient()` para Client Components
-- `server.ts` → `createClient()` para Server Components / Route Handlers
-- `queries.ts` → `getCategories()`, `getProducts(slug?)`, `getFeaturedProducts()`, `getProductBySlug(slug)`
+- `browser.ts` / `server.ts` — `createClient()`  
+- `queries.ts` — `getCategories`, `getProducts` (filtro por slug via `category_id`), `getFeaturedProducts`, `getProductBySlug`
 
-### Componentes criados
-- `src/components/layout/Header.tsx` — logo PNG, nav com underline animado, carrinho
-- `src/components/layout/Footer.tsx` — logo PNG, links, WhatsApp, Instagram
-- `src/components/catalog/ProductCard.tsx` — card com imagem, preço brand-300, badge brand-700, cores
-- `src/components/catalog/ProductGrid.tsx` — grid 2-4 colunas, empty state
-- `src/components/catalog/CategoryFilter.tsx` — filtro por categoria (Client Component)
-- `src/components/ui/MotionPrimitives.tsx` — LayerReveal, StaggerGroup, PrintLineHover
+### Componentes (resumo)
+- **Layout:** `Header` (PrintCtaLink, micro-motion no logo), `Footer`, `CartIcon`, `AdminSidebar`  
+- **Catálogo:** `ProductCard` (client, tilt + PrintLineHover), `ProductGrid`, `CategoryFilter` (motion pills), `AddToCartButton` (motion + sheen)  
+- **Carrinho / custom-order / admin:** como antes  
 
-### Páginas criadas
-- `src/app/page.tsx` — Home: hero animado (LayerReveal), features (StaggerGroup), produtos em destaque
-- `src/app/catalog/page.tsx` — Listagem com filtro client-side
-- `src/app/product/[slug]/page.tsx` — Detalhe: imagem, specs, cores, CTA WhatsApp
-
-### Banco de Dados (Supabase — já executado)
-Tabelas: `categories`, `products`, `product_images`, `colors`, `product_colors`, `product_sizes`, `custom_orders`
-Schema completo: `docs/database/schema.sql`
+### Páginas
+- `app/page.tsx` — FilamentBackdrop, PrintCtaLink, NozzleWarmBadge  
+- `app/catalog/page.tsx` — loading `PrintLayerSkeletonGrid`  
+- `app/layout.tsx` — body com `print-buildplate-bg`  
+- `app/product/[slug]/` — `ProductDetail` + PrintLineHover na foto  
 
 ---
 
-## Arquitetura de Pastas
+## Arquitetura de pastas (resumida)
 
 ```
 src/
-├── app/
-│   ├── page.tsx                    # Home (Client Component — usa motion)
-│   ├── catalog/page.tsx            # Catálogo (Client Component)
-│   ├── product/[slug]/page.tsx     # Produto (Server Component)
-│   ├── cart/page.tsx               # Carrinho (Fase 3 — concluída)
-│   ├── custom-order/page.tsx       # Pedido Personalizado (Fase 4 — concluída)
-│   └── admin/                      # Dashboard Admin (Fase 5 — concluída)
+├── app/                 # App Router, globals.css
 ├── components/
-│   ├── ui/                         # MotionPrimitives.tsx
-│   ├── catalog/                    # ProductCard, ProductGrid, CategoryFilter, AddToCartButton
-│   ├── cart/                       # CartItem, CartSummary, CheckoutForm
-│   ├── custom-order/               # CustomOrderForm, ImageUpload
-│   ├── admin/                      # ProductForm, ProductTable, StockToggle
-│   └── layout/                     # Header, Footer, CartIcon, AdminSidebar
-├── lib/
-│   ├── supabase/                   # browser.ts, server.ts, queries.ts
-│   ├── store/                      # cartStore.ts (Zustand)
-│   ├── utils/                      # formatters.ts, whatsapp.ts
-│   └── validations/                # Zod schemas (checkoutSchema, customOrderSchema, productFormSchema)
-├── hooks/
-├── types/index.ts                  # Todos os tipos globais
-└── __tests__/
-    ├── unit/                       # 83+ testes
-    └── e2e/                        # FASE 6.2 — Playwright
+│   ├── ui/              # MotionPrimitives, PrintCtaLink, PrintLayerSkeleton, FilamentBackdrop
+│   ├── catalog/, cart/, custom-order/, admin/, layout/
+├── lib/supabase/, lib/store/, lib/utils/, lib/validations/
+├── types/index.ts
+└── __tests__/unit/
 ```
 
 ---
 
-## Metodologia TDD — Red → Green → Blue
+## TDD — Red → Green → Blue
 
-Obrigatório em cada fase:
-
-| Etapa | Ação |
-|-------|------|
-| **Red** | Escrever testes que falham (definir contrato da feature) |
-| **Green** | Implementar o mínimo para os testes passarem |
-| **Blue** | Refatorar mantendo todos os testes verdes + `npm run build` sem erros |
+Red: teste falha · Green: mínimo para passar · Blue: refatorar mantendo `npm test` e `npm run build` verdes.
 
 ---
 
-## Integração WhatsApp
+## WhatsApp
 
-Número: `5511989525014`
-Gerador pronto: `src/lib/utils/whatsapp.ts` → `buildWhatsAppUrl(payload)`
-
-Formato da mensagem:
-```
-Novo Pedido — Imagination 3D
-
-Cliente: Joao Silva
-Telefone: (11) 98765-4321
-Bairro: Vila Madalena / SP
-
-Itens:
-- Suporte de Fone (Preto) x2 — R$ 59,80
-
-Total: R$ 59,80
-
-Pedido gerado pelo site Imagination 3D
-```
+`5511989525014` · `src/lib/utils/whatsapp.ts`
 
 ---
 
-## Convenções de Código
+## Convenções
 
-- Componentes: PascalCase, um arquivo por componente
-- Hooks: prefixo `use`
-- `'use client'` quando necessário (interatividade, hooks, motion)
-- Nunca usar `any` no TypeScript
-- Commits: `feat:`, `fix:`, `test:`, `refactor:`, `docs:`
-- **Paleta:** sempre `brand-*` — nunca `orange-*`
+- `'use client'` só quando necessário  
+- Sem `any`  
+- Commits: `feat:`, `fix:`, `test:`, `refactor:`, `docs:`  
+- **brand-***, não orange-*
 
 ---
 
-## Banco de Dados — Variáveis de Ambiente
+## Variáveis de ambiente
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://oflozudwutxgvwyvygll.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=[em .env.local]
-SUPABASE_SERVICE_ROLE_KEY=[em .env.local — nunca expor no cliente]
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[.env.local]
+SUPABASE_SERVICE_ROLE_KEY=[.env.local — só servidor]
 NEXT_PUBLIC_WHATSAPP_NUMBER=5511989525014
+NEXT_PUBLIC_SITE_URL=[produção]
 ```

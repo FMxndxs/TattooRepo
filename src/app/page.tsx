@@ -3,10 +3,26 @@
 import Link from 'next/link'
 import { Sparkles, ArrowRight, Zap, Palette, Package } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
+import { FilamentBackdrop } from '@/components/ui/FilamentBackdrop'
+import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
 import { ProductGrid } from '@/components/catalog/ProductGrid'
 import type { Product } from '@/types'
+
+function NozzleWarmBadge({ children }: { children: React.ReactNode }) {
+  const reduced = useReducedMotion()
+
+  return (
+    <motion.div
+      className="inline-flex items-center gap-2 bg-brand-700/15 border border-brand-500/35 text-brand-300 text-xs font-semibold px-4 py-2 rounded-full mb-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+      animate={reduced ? undefined : { scale: [1, 1.032, 1] }}
+      transition={{ duration: 2.65, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      {children}
+    </motion.div>
+  )
+}
 
 export default function HomePage() {
   const [featured, setFeatured] = useState<Product[]>([])
@@ -35,16 +51,13 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-zinc-950 pt-16 pb-24">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-700/20 via-brand-900/10 to-transparent" />
+        <FilamentBackdrop />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <LayerReveal delay={0}>
-            <motion.div
-              className="inline-flex items-center gap-2 bg-brand-700/15 border border-brand-500/30 text-brand-300 text-xs font-semibold px-4 py-2 rounded-full mb-6"
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <Zap className="w-3.5 h-3.5" />
+            <NozzleWarmBadge>
+              <Zap className="w-3.5 h-3.5" aria-hidden />
               Bambu Lab A1 — Qualidade profissional
-            </motion.div>
+            </NozzleWarmBadge>
           </LayerReveal>
 
           <LayerReveal delay={0.08}>
@@ -63,13 +76,13 @@ export default function HomePage() {
 
           <LayerReveal delay={0.24}>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link href="/catalog" className="flex items-center gap-2 bg-brand-700 hover:bg-brand-500 text-white font-bold px-6 py-3 rounded-full transition-colors shadow-lg shadow-brand-glow">
-                Ver catálogo <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/custom-order" className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold px-6 py-3 rounded-full transition-colors">
-                <Sparkles className="w-4 h-4 text-brand-300" />
+              <PrintCtaLink href="/catalog">
+                Ver catálogo <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
+              </PrintCtaLink>
+              <PrintCtaLink href="/custom-order" variant="secondary">
+                <Sparkles className="w-4 h-4 shrink-0 text-brand-300" aria-hidden />
                 Projeto personalizado
-              </Link>
+              </PrintCtaLink>
             </div>
           </LayerReveal>
         </div>
@@ -119,10 +132,10 @@ export default function HomePage() {
           <LayerReveal>
             <h2 className="text-3xl font-bold text-white mb-4">Tem uma ideia em mente?</h2>
             <p className="text-zinc-400 mb-8">Envie sua referência e receba um orçamento via WhatsApp em minutos.</p>
-            <Link href="/custom-order" className="inline-flex items-center gap-2 bg-brand-700 hover:bg-brand-500 text-white font-bold px-8 py-4 rounded-full transition-colors text-lg shadow-lg shadow-brand-glow">
-              <Sparkles className="w-5 h-5" />
+            <PrintCtaLink href="/custom-order" className="!px-8 !py-4 text-lg">
+              <Sparkles className="w-5 h-5 shrink-0" aria-hidden />
               Solicitar orçamento
-            </Link>
+            </PrintCtaLink>
           </LayerReveal>
         </div>
       </section>

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Clock, Weight } from 'lucide-react'
 import { AddToCartButton } from '@/components/catalog/AddToCartButton'
+import { PrintLineHover } from '@/components/ui/MotionPrimitives'
 import { formatBRL } from '@/lib/utils/formatters'
 import type { Product, Color } from '@/types'
 
@@ -21,9 +22,15 @@ export function ProductDetail({ product }: { product: Product }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Imagem */}
-        <div className="aspect-square relative bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800">
+        <PrintLineHover className="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 shadow-[0_20px_50px_-28px_rgba(67,19,112,0.35)]">
           {primaryImage ? (
-            <Image src={primaryImage.url} alt={primaryImage.alt ?? product.name} fill className="object-cover" />
+            <Image
+              src={primaryImage.url}
+              alt={primaryImage.alt ?? product.name}
+              fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
+              className="object-cover transition-transform duration-500 ease-out hover:scale-[1.02]"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-zinc-600">
               <svg className="w-24 h-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,7 +38,7 @@ export function ProductDetail({ product }: { product: Product }) {
               </svg>
             </div>
           )}
-        </div>
+        </PrintLineHover>
 
         {/* Info */}
         <div className="flex flex-col">
