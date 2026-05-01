@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
-import { Sparkles, Package } from 'lucide-react'
+import Image from 'next/image'
+import { Sparkles } from 'lucide-react'
 import { CartIcon } from './CartIcon'
 
 export function Header() {
@@ -8,12 +11,17 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center group-hover:bg-orange-400 transition-colors">
-              <Package className="w-5 h-5 text-white" />
-            </div>
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <Image
+              src="/logo.png"
+              alt="Imagination 3D"
+              width={36}
+              height={36}
+              className="transition-opacity group-hover:opacity-80"
+              priority
+            />
             <span className="font-bold text-white text-lg tracking-tight">
-              Imagination <span className="text-orange-500">3D</span>
+              Imagination <span className="text-brand-300">3D</span>
             </span>
           </Link>
 
@@ -22,14 +30,14 @@ export function Header() {
             <Link
               href="/catalog"
               aria-label="catálogo"
-              className="text-zinc-400 hover:text-white text-sm font-medium transition-colors"
+              className="relative text-zinc-400 hover:text-white text-sm font-medium transition-colors after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-brand-500 after:to-brand-300 after:transition-all hover:after:w-full"
             >
               Catálogo
             </Link>
             <Link
               href="/custom-order"
               aria-label="pedido personalizado"
-              className="text-zinc-400 hover:text-white text-sm font-medium transition-colors"
+              className="relative text-zinc-400 hover:text-white text-sm font-medium transition-colors after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-brand-500 after:to-brand-300 after:transition-all hover:after:w-full"
             >
               Personalizado
             </Link>
@@ -40,7 +48,7 @@ export function Header() {
             <CartIcon />
             <Link
               href="/custom-order"
-              className="hidden md:flex items-center gap-1.5 bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold px-4 py-2 rounded-full transition-colors"
+              className="hidden md:flex items-center gap-1.5 bg-brand-700 hover:bg-brand-500 text-white text-sm font-semibold px-4 py-2 rounded-full transition-colors shadow-lg shadow-brand-glow"
             >
               <Sparkles className="w-4 h-4" />
               Pedir agora
