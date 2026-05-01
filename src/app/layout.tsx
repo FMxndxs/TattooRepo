@@ -4,15 +4,20 @@ import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
+const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 
 export const metadata: Metadata = {
   title: { default: 'Imagination 3D', template: '%s | Imagination 3D' },
   description: 'Impressão 3D de alta qualidade com Bambu Lab A1. Produtos únicos, cores variadas e projetos personalizados.',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     siteName: 'Imagination 3D',
     locale: 'pt_BR',
     type: 'website',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Imagination 3D' }],
   },
 }
 
