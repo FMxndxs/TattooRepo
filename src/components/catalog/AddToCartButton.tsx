@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ShoppingCart, Check } from 'lucide-react'
@@ -27,7 +27,7 @@ export function AddToCartButton({ product, selectedColor, selectedSize }: AddToC
       className={`w-full flex items-center justify-center gap-2 font-bold py-4 rounded-full transition-all text-base ${
         added
           ? 'bg-green-600 text-white'
-          : 'bg-orange-500 hover:bg-orange-400 text-white'
+          : 'bg-brand-700 hover:bg-brand-500 text-white'
       }`}
     >
       {added ? (

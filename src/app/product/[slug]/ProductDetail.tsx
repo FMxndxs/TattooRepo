@@ -36,7 +36,7 @@ export function ProductDetail({ product }: { product: Product }) {
         {/* Info */}
         <div className="flex flex-col">
           {product.category && (
-            <span className="text-orange-400 text-sm font-semibold uppercase tracking-wider mb-2">
+            <span className="text-brand-300 text-sm font-semibold uppercase tracking-wider mb-2">
               {product.category.name}
             </span>
           )}
@@ -50,13 +50,13 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="flex flex-wrap gap-3 mb-6">
             {product.print_time_minutes && (
               <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2">
-                <Clock className="w-4 h-4 text-orange-400" />
+                <Clock className="w-4 h-4 text-brand-300" />
                 <span className="text-zinc-300 text-sm">{Math.round(product.print_time_minutes / 60)}h de impressão</span>
               </div>
             )}
             {product.filament_grams && (
               <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2">
-                <Weight className="w-4 h-4 text-orange-400" />
+                <Weight className="w-4 h-4 text-brand-300" />
                 <span className="text-zinc-300 text-sm">{product.filament_grams}g de filamento</span>
               </div>
             )}
@@ -66,7 +66,7 @@ export function ProductDetail({ product }: { product: Product }) {
           {product.colors && product.colors.length > 0 && (
             <div className="mb-6">
               <p className="text-white font-semibold text-sm mb-3">
-                Cor: <span className="text-orange-400">{selectedColor?.name ?? 'Nenhuma'}</span>
+                Cor: <span className="text-brand-300">{selectedColor?.name ?? 'Nenhuma'}</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {product.colors.map((color) => (
@@ -76,7 +76,7 @@ export function ProductDetail({ product }: { product: Product }) {
                     title={color.name}
                     className={`w-8 h-8 rounded-full border-2 transition-all ${
                       selectedColor?.id === color.id
-                        ? 'border-orange-500 scale-110'
+                        ? 'border-brand-500 scale-110'
                         : 'border-zinc-600 hover:border-zinc-400'
                     }`}
                     style={{ backgroundColor: color.hex_code }}
@@ -88,7 +88,7 @@ export function ProductDetail({ product }: { product: Product }) {
 
           {/* Preço e CTA */}
           <div className="mt-auto space-y-3">
-            <div className="text-3xl font-black text-orange-400">{formatBRL(product.price)}</div>
+            <div className="text-3xl font-black text-brand-300">{formatBRL(product.price)}</div>
             <AddToCartButton product={product} selectedColor={selectedColor} selectedSize={null} />
             <a
               href={`https://wa.me/5511989525014?text=${encodeURIComponent(`Olá! Tenho interesse no produto: ${product.name}`)}`}

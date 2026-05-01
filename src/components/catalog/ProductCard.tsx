@@ -12,11 +12,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/product/${product.slug}`} className="group block">
-      <div className="relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-orange-500/50 transition-all duration-300">
+      <div className="relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-brand-500/60 transition-all duration-300">
         {/* Badges */}
         <div className="absolute top-3 left-3 z-10 flex gap-2">
           {product.is_featured && (
-            <span className="bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+            <span className="bg-brand-700 text-white text-xs font-semibold px-2 py-1 rounded-full">
               Destaque
             </span>
           )}
@@ -72,7 +72,7 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
 
           <div className="flex items-center justify-between">
-            <span className="text-orange-400 font-bold text-base">{formatBRL(product.price)}</span>
+            <span className="text-brand-300 font-bold text-base">{formatBRL(product.price)}</span>
             <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded-full">
               Ver produto
             </span>

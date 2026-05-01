@@ -56,7 +56,7 @@ export default function CustomOrderPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-10">
-        <div className="flex items-center gap-2 text-orange-400 text-sm font-semibold mb-3">
+        <div className="flex items-center gap-2 text-brand-300 text-sm font-semibold mb-3">
           <Sparkles className="w-4 h-4" />
           Projeto personalizado
         </div>
@@ -77,7 +77,7 @@ export default function CustomOrderPage() {
           { step: '3', text: 'Aprovado, imprimimos!' },
         ].map(({ step, text }) => (
           <div key={step} className="p-3">
-            <div className="w-8 h-8 bg-orange-500/10 text-orange-400 font-bold rounded-full flex items-center justify-center mx-auto mb-2 text-sm">
+            <div className="w-8 h-8 bg-brand-700/15 text-brand-300 font-bold rounded-full flex items-center justify-center mx-auto mb-2 text-sm">
               {step}
             </div>
             <p className="text-zinc-400 text-xs">{text}</p>

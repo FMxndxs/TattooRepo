@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,7 +35,7 @@ export function CheckoutForm({ onSubmit, loading = false }: CheckoutFormProps) {
             id={id}
             placeholder={placeholder}
             {...register(id)}
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           />
           {errors[id] && (
             <p role="alert" className="text-red-400 text-xs mt-1">

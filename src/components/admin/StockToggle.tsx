@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 interface StockToggleProps {
   available: boolean
@@ -14,7 +14,7 @@ export function StockToggle({ available, onChange, disabled = false }: StockTogg
         aria-checked={available}
         disabled={disabled}
         onClick={() => onChange(!available)}
-        className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 ${
+        className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 ${
           available ? 'bg-green-500' : 'bg-zinc-600'
         }`}
       >

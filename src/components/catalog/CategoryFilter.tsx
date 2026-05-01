@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import type { Category } from '@/types'
 
@@ -15,7 +15,7 @@ export function CategoryFilter({ categories, selected, onSelect }: CategoryFilte
         onClick={() => onSelect(null)}
         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
           selected === null
-            ? 'bg-orange-500 text-white'
+            ? 'bg-brand-700 text-white'
             : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
         }`}
       >
@@ -28,7 +28,7 @@ export function CategoryFilter({ categories, selected, onSelect }: CategoryFilte
           onClick={() => onSelect(category.slug)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
             selected === category.slug
-              ? 'bg-orange-500 text-white'
+              ? 'bg-brand-700 text-white'
               : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
           }`}
         >

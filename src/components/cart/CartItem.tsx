@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Image from 'next/image'
 import { Trash2, Plus, Minus } from 'lucide-react'
@@ -68,7 +68,7 @@ export function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
             </button>
           </div>
 
-          <span className="text-orange-400 font-bold text-sm">{formatBRL(subtotal)}</span>
+          <span className="text-brand-300 font-bold text-sm">{formatBRL(subtotal)}</span>
         </div>
       </div>
 

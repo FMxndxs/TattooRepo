@@ -1,4 +1,4 @@
-import { formatBRL } from '@/lib/utils/formatters'
+﻿import { formatBRL } from '@/lib/utils/formatters'
 
 interface CartSummaryProps {
   itemCount: number
@@ -14,7 +14,7 @@ export function CartSummary({ itemCount, total }: CartSummaryProps) {
       </div>
       <div className="border-t border-zinc-800 pt-3 flex justify-between">
         <span className="text-white font-semibold">Total</span>
-        <span className="text-orange-400 font-black text-xl">{formatBRL(total)}</span>
+        <span className="text-brand-300 font-black text-xl">{formatBRL(total)}</span>
       </div>
     </div>
   )
