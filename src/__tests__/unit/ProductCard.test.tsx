@@ -32,6 +32,12 @@ describe('ProductCard', () => {
     expect(screen.getByText(/R\$\s*29,90/)).toBeInTheDocument()
   })
 
+  it('preco usa cor brand (nao orange)', () => {
+    const { container } = render(<ProductCard product={mockProduct} />)
+    const price = container.querySelector('[class*="brand"]')
+    expect(price).not.toBeNull()
+  })
+
   it('exibe badge "Destaque" quando is_featured=true', () => {
     render(<ProductCard product={mockProduct} />)
     expect(screen.getByText('Destaque')).toBeInTheDocument()

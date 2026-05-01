@@ -8,6 +8,16 @@ describe('Header', () => {
     expect(screen.getByText('3D')).toBeInTheDocument()
   })
 
+  it('exibe o logo com alt correto', () => {
+    render(<Header />)
+    expect(screen.getByAltText('Imagination 3D')).toBeInTheDocument()
+  })
+
+  it('nao usa placeholder laranja (Package icon substituido por logo)', () => {
+    const { container } = render(<Header />)
+    expect(container.innerHTML).not.toMatch(/bg-orange/)
+  })
+
   it('exibe link para o catalogo', () => {
     render(<Header />)
     expect(screen.getByRole('link', { name: /catálogo/i })).toBeInTheDocument()
