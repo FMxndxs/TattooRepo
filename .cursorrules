@@ -1,17 +1,33 @@
 # Imagination 3D — Cursor Rules
-# Atualizado: Fase 2 concluída | Fase 3 em andamento
+# Atualizado: Fase 6.1 concluída | Fase 6.2 (Deploy & SEO) próxima
 
 ## Stack
 - Next.js 16 (App Router) + TypeScript estrito
-- Tailwind CSS v4
+- Tailwind CSS v4 — tokens via @theme inline em globals.css
 - Supabase (banco + auth + storage) — projeto: oflozudwutxgvwyvygll
 - Zustand para estado global do carrinho
 - React Hook Form + Zod para formulários
-- Jest + Testing Library para TDD
+- Jest + Testing Library para TDD (104 testes verdes)
+- Motion 12 (`motion` package) para animações
+
+## Sistema de Cores — NUNCA usar orange-*
+- Cor primária: `#431370` → token `bg-brand-700`
+- Hover botões: `hover:bg-brand-500`
+- Textos de acento / preços: `text-brand-300`
+- Bordas ativas: `border-brand-500/60`
+- Sombra CTA: `shadow-brand-glow`
+- Tokens completos em `src/app/globals.css` (@theme inline)
+
+## Animações (Motion 12)
+- Importar de `motion/react`
+- Primitivos prontos em `src/components/ui/MotionPrimitives.tsx`:
+  - `LayerReveal` — entrada por camada (hero, títulos)
+  - `StaggerGroup` — filhos animados em sequência ao entrar na viewport
+  - `PrintLineHover` — linha de varredura no hover de imagens
+- Keyframes CSS: `layer-build`, `nozzle-pulse`, `print-sweep`, `filament-drip` em globals.css
 
 ## Regras de Componentes
-- Server Components por padrão
-- `'use client'` apenas para: interatividade, useState/useEffect, hooks do browser
+- `'use client'` quando necessário: interatividade, useState/useEffect, motion, hooks do browser
 - Nunca usar `any` no TypeScript
 - Componentes em PascalCase, hooks com prefixo `use`
 - Um componente por arquivo
@@ -26,29 +42,74 @@
 - Server Components / Route Handlers → `createClient()` de `@/lib/supabase/server`
 - NUNCA expor `SUPABASE_SERVICE_ROLE_KEY` no cliente
 
+## Proxy (Auth Guard)
+- Arquivo: `src/proxy.ts` (renomeado de middleware.ts no Next.js 16)
+- Exporta função `proxy` (não `middleware`)
+- Protege rotas `/admin/*`, redireciona para `/admin/login` se não autenticado
+
 ## Arquivos já existentes (não recriar)
+### Tipos e utilitários
 - `src/types/index.ts` — todos os tipos globais
 - `src/lib/utils/formatters.ts` — formatBRL, formatPhone, slugify
-- `src/lib/utils/whatsapp.ts` — buildWhatsAppMessage, buildWhatsAppUrl
+- `src/lib/utils/whatsapp.ts` — buildWhatsAppMessage, buildWhatsAppUrl, buildCustomOrderUrl
 - `src/lib/supabase/browser.ts` + `server.ts` + `queries.ts`
-- `src/components/layout/Header.tsx` + `Footer.tsx`
-- `src/components/catalog/ProductCard.tsx` + `ProductGrid.tsx` + `CategoryFilter.tsx`
-- `src/app/page.tsx` + `catalog/page.tsx` + `product/[slug]/page.tsx`
+- `src/lib/store/cartStore.ts` — Zustand com persist
 
-## Fase 3 — O que construir agora
-- `src/lib/store/cartStore.ts` — Zustand + persist (localStorage)
+### Layout
+- `src/components/layout/Header.tsx` — logo PNG, nav com underline animado, CartIcon
+- `src/components/layout/Footer.tsx` — logo PNG, links, WhatsApp, Instagram
+- `src/components/layout/CartIcon.tsx` — ícone com badge de quantidade
+- `src/components/layout/AdminSidebar.tsx` — sidebar do painel admin
+
+### Catálogo
+- `src/components/catalog/ProductCard.tsx` — card com PrintLineHover, preço brand-300
+- `src/components/catalog/ProductGrid.tsx` — grid responsivo 2-4 cols
+- `src/components/catalog/CategoryFilter.tsx` — filtro por categoria
+- `src/components/catalog/AddToCartButton.tsx` — botão adicionar ao carrinho
+
+### Carrinho
 - `src/components/cart/CartItem.tsx`
 - `src/components/cart/CartSummary.tsx`
-- `src/components/cart/CheckoutForm.tsx` — Nome, Telefone, Bairro, Cidade
+- `src/components/cart/CheckoutForm.tsx`
+
+### Pedido personalizado
+- `src/components/custom-order/CustomOrderForm.tsx`
+- `src/components/custom-order/ImageUpload.tsx`
+
+### Admin
+- `src/components/admin/ProductForm.tsx`
+- `src/components/admin/ProductTable.tsx`
+- `src/components/admin/StockToggle.tsx`
+
+### Motion primitivos
+- `src/components/ui/MotionPrimitives.tsx` — LayerReveal, StaggerGroup, PrintLineHover
+
+### Páginas
+- `src/app/page.tsx` — Home com animações (Client Component)
+- `src/app/catalog/page.tsx` — Listagem com filtro
+- `src/app/product/[slug]/page.tsx` + `ProductDetail.tsx`
 - `src/app/cart/page.tsx`
-- Botão "Adicionar ao carrinho" em `product/[slug]/page.tsx`
-- Contador de itens no Header
+- `src/app/custom-order/page.tsx`
+- `src/app/admin/(auth)/login/page.tsx`
+- `src/app/admin/(dashboard)/` — page, products, orders
+
+## Catálogo atual (Supabase — executado)
+- 8 categorias: decoracao, utilitarios, escritorio, games, bonecos, maquiagem, brindes, personalizados
+- 22 produtos com imagens Unsplash reais, preços e cores
+- Hosts de imagem liberados: placehold.co, images.unsplash.com, picsum.photos, *.supabase.co
 
 ## WhatsApp
 - Número: 5511989525014
 - Gerador pronto: `src/lib/utils/whatsapp.ts`
 
+## Variáveis de ambiente necessárias
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE_KEY (nunca no cliente)
+- NEXT_PUBLIC_WHATSAPP_NUMBER=5511989525014
+- NEXT_PUBLIC_SITE_URL (produção — ex: https://imagination3d.com.br)
+
 ## Commits
 - Formato: `tipo: descricao curta`
 - Tipos: feat, fix, test, refactor, docs, chore
-- Branches: phase/1-foundation (done), phase/2-catalog (done), phase/3-cart (atual)
+- Branches: phase/1 a phase/5 (done), phase/6-design-refresh (done), phase/6-deploy (próxima)
