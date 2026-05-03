@@ -47,6 +47,13 @@ export function Header() {
             >
               Personalizado
             </Link>
+            <Link
+              href="/nossa-historia"
+              aria-label="nossa história"
+              className="relative text-zinc-400 hover:text-white text-sm font-medium transition-colors after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-brand-500 after:to-brand-300 after:transition-all hover:after:w-full"
+            >
+              Nossa História
+            </Link>
           </nav>
 
           {/* Actions */}

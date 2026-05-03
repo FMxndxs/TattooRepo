@@ -103,7 +103,7 @@ export function ProductDetail({ product }: { product: Product }) {
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3 rounded-full transition-colors text-sm"
             >
-              Tirar dúvidas no WhatsApp
+              Esclarecer dúvidas no WhatsApp
             </a>
           </div>
         </div>
