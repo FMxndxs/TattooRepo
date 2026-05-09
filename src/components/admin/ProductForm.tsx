@@ -65,7 +65,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
           <label className="block text-white text-sm font-medium mb-1.5">Nome do produto</label>
           <input
             {...register('name')}
-            placeholder="Ex: Suporte de Fone"
+            placeholder="Ex.: Suporte de Fone"
             className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
           />
           {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
@@ -123,7 +123,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
         {/* Tempo de impressão */}
         <div>
           <label className="block text-white text-sm font-medium mb-1.5">
-            Tempo de impressão (min)
+            Tempo de impressão (min.)
             {printTimeMinutes > 0 && (
               <span className="ml-2 text-zinc-500 text-xs">{formatPrintTime(printTimeMinutes)}</span>
             )}
@@ -173,8 +173,8 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
         </div>
         {[
           { field: 'is_featured' as const, label: 'Destaque' },
-          { field: 'allows_custom_color' as const, label: 'Cores custom' },
-          { field: 'allows_custom_size' as const, label: 'Tamanho custom' },
+          { field: 'allows_custom_color' as const, label: 'Cores personalizáveis' },
+          { field: 'allows_custom_size' as const, label: 'Tamanho personalizável' },
         ].map(({ field, label }) => (
           <div key={field}>
             <p className="text-zinc-400 text-xs mb-2">{label}</p>

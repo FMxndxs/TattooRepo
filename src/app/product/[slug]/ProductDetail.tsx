@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, Clock, Weight } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { AddToCartButton } from '@/components/catalog/AddToCartButton'
 import { PrintLineHover } from '@/components/ui/MotionPrimitives'
 import { formatBRL } from '@/lib/utils/formatters'
@@ -53,21 +53,21 @@ export function ProductDetail({ product }: { product: Product }) {
             <p className="text-zinc-400 leading-relaxed mb-6">{product.description}</p>
           )}
 
-          {/* Specs */}
-          <div className="flex flex-wrap gap-3 mb-6">
-            {product.print_time_minutes && (
-              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2">
-                <Clock className="w-4 h-4 text-brand-300" />
-                <span className="text-zinc-300 text-sm">{Math.round(product.print_time_minutes / 60)}h de impressão</span>
-              </div>
-            )}
-            {product.filament_grams && (
-              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2">
-                <Weight className="w-4 h-4 text-brand-300" />
-                <span className="text-zinc-300 text-sm">{product.filament_grams}g de filamento</span>
-              </div>
-            )}
-          </div>
+          {/* Referência MakerWorld */}
+          {product.makerworld_url && (
+            <div className="text-xs text-zinc-500 border border-zinc-800 rounded-xl px-4 py-3 bg-zinc-900/50 mb-4">
+              Imagem meramente ilustrativa. Modelo original disponível em{' '}
+              <a
+                href={product.makerworld_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-300 hover:underline"
+              >
+                MakerWorld ↗
+              </a>
+              . Vendemos o objeto físico impresso, não o arquivo digital.
+            </div>
+          )}
 
           {/* Seleção de cor */}
           {product.colors && product.colors.length > 0 && (
@@ -103,7 +103,7 @@ export function ProductDetail({ product }: { product: Product }) {
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3 rounded-full transition-colors text-sm"
             >
-              Tirar dúvidas no WhatsApp
+              Esclarecer dúvidas no WhatsApp
             </a>
           </div>
         </div>

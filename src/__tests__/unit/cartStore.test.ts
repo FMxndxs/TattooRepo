@@ -15,6 +15,7 @@ const mockProduct: Product = {
   is_featured: false,
   allows_custom_size: false,
   allows_custom_color: true,
+  makerworld_url: null,
   created_at: '',
   updated_at: '',
 }
