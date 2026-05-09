@@ -42,6 +42,7 @@ export interface Product {
   is_featured: boolean
   allows_custom_size: boolean
   allows_custom_color: boolean
+  makerworld_url: string | null
   created_at: string
   updated_at: string
   category?: Category
