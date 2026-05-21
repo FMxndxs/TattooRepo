@@ -47,7 +47,8 @@ export default function CatalogPage() {
         q = q.eq('category_id', cat.id)
       }
 
-      const { data } = await q
+      const { data, error: productsError } = await q
+      if (productsError) console.error('[catalog] products query error:', productsError)
       if (cancelled) return
       const mapped = (data ?? []).map((p) => ({
         ...p,
