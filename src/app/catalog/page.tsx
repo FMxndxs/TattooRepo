@@ -22,7 +22,7 @@ export default function CatalogPage() {
 
     ;(async () => {
       setLoading(true)
-      setPage(1)
+      setPage(1) 
 
       const { data: cats } = await supabase.from('categories').select('*').order('name')
       if (cancelled) return
