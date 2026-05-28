@@ -1,6 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import { Header } from '@/components/layout/Header'
 
+// Mock dynamic client-side components
+jest.mock('@/components/layout/CartIcon', () => ({
+  CartIcon: () => <a href="/cart" aria-label="carrinho">Cart</a>,
+}))
+jest.mock('@/components/layout/ChatIcon', () => ({
+  ChatIcon: () => <button type="button" aria-label="Abrir chat de ajuda">Chat</button>,
+}))
+jest.mock('@/components/layout/UserMenu', () => ({
+  UserMenu: () => <div data-testid="user-menu" />,
+}))
+
 describe('Header', () => {
   it('exibe o nome da marca', () => {
     render(<Header />)
@@ -13,7 +24,7 @@ describe('Header', () => {
     expect(screen.getByAltText('Imagination 3D')).toBeInTheDocument()
   })
 
-  it('nao usa placeholder laranja (Package icon substituido por logo)', () => {
+  it('nao usa placeholder laranja', () => {
     const { container } = render(<Header />)
     expect(container.innerHTML).not.toMatch(/bg-orange/)
   })
@@ -31,5 +42,10 @@ describe('Header', () => {
   it('exibe link para pedido personalizado', () => {
     render(<Header />)
     expect(screen.getByRole('link', { name: /personalizado/i })).toBeInTheDocument()
+  })
+
+  it('exibe icone de chat', () => {
+    render(<Header />)
+    expect(screen.getByRole('button', { name: /chat/i })).toBeInTheDocument()
   })
 })

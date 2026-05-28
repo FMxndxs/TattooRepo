@@ -3,6 +3,30 @@ import { render, screen } from '@testing-library/react'
 import { ProductDetail } from '@/app/product/[slug]/ProductDetail'
 import type { Product } from '@/types'
 
+jest.mock('@/lib/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: null,
+    profile: null,
+    loading: false,
+    isAuthenticated: false,
+    signIn: jest.fn(),
+    signUp: jest.fn(),
+    signOut: jest.fn(),
+    resetPassword: jest.fn(),
+    refreshProfile: jest.fn(),
+  }),
+}))
+
+jest.mock('@/lib/store/authModalStore', () => ({
+  useAuthModalStore: () => ({
+    openModal: jest.fn(),
+    closeModal: jest.fn(),
+    isOpen: false,
+    defaultTab: 'login',
+    pendingAction: null,
+  }),
+}))
+
 const base: Product = {
   id: 'p1',
   category_id: 'cat1',

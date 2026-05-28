@@ -2,10 +2,10 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Sparkles } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
 import { CartIcon } from './CartIcon'
+import { UserMenu } from './UserMenu'
+import { ChatIcon } from './ChatIcon'
 
 export function Header() {
   const reduced = useReducedMotion()
@@ -13,26 +13,26 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/90 print-header-glow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <motion.div whileHover={reduced ? undefined : { scale: 1.03 }} transition={{ type: 'spring', stiffness: 420, damping: 26 }}>
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <Image
                 src="/logo.png"
                 alt="Imagination 3D"
-                width={36}
-                height={36}
-                className="transition-[opacity,filter] duration-200 group-hover:opacity-90 group-hover:[filter:drop-shadow(0_0_10px_rgba(182,131,255,0.35))]"
+                width={44}
+                height={44}
+                className="[filter:drop-shadow(0_0_6px_rgba(182,131,255,0.18))] transition-[filter] duration-200 group-hover:[filter:drop-shadow(0_0_12px_rgba(182,131,255,0.45))]"
                 priority
               />
-              <span className="font-bold text-white text-lg tracking-tight">
+              <span className="font-bold text-white text-xl tracking-tight">
                 Imagination <span className="text-brand-300">3D</span>
               </span>
             </Link>
           </motion.div>
 
           {/* Nav */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-7">
             <Link
               href="/catalog"
               aria-label="catálogo"
@@ -57,12 +57,10 @@ export function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <CartIcon />
-            <PrintCtaLink href="/custom-order" className="hidden md:inline-flex !py-2 !px-4 !text-sm !font-semibold">
-              <Sparkles className="w-4 h-4 shrink-0" aria-hidden />
-              Pedir agora
-            </PrintCtaLink>
+            <ChatIcon />
+            <UserMenu />
           </div>
         </div>
       </div>

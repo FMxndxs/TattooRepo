@@ -62,6 +62,7 @@ export interface CartItem {
 export interface CustomerInfo {
   name: string
   phone: string
+  email?: string
   neighborhood: string
   city: string
 }
@@ -81,4 +82,81 @@ export interface WhatsAppOrderPayload {
   customer: CustomerInfo
   items: CartItem[]
   total: number
+}
+
+// ─── Auth & Profile ─────────────────────────────────────────────────────────
+
+export interface UserProfile {
+  id: string
+  first_name: string
+  last_name: string
+  phone: string
+  neighborhood: string | null
+  city: string | null
+  created_at: string
+  updated_at: string
+}
+
+// ─── Orders ─────────────────────────────────────────────────────────────────
+
+export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+
+export interface Order {
+  id: string
+  user_id: string
+  status: OrderStatus
+  total: number
+  neighborhood: string
+  city: string
+  notes: string | null
+  created_at: string
+  items?: OrderItem[]
+}
+
+export interface OrderItem {
+  id: string
+  order_id: string
+  product_id: string
+  color_id: string | null
+  size_id: string | null
+  quantity: number
+  unit_price: number
+  product?: Product
+  color?: Color | null
+  size?: ProductSize | null
+}
+
+// ─── Chatbot ─────────────────────────────────────────────────────────────────
+
+export type ChatNodeType =
+  | 'greeting'
+  | 'menu'
+  | 'info'
+  | 'action'
+  | 'product-list'
+  | 'whatsapp-redirect'
+
+export interface ChatOption {
+  label: string
+  nextNodeId: string
+  icon?: string
+}
+
+export interface ChatNode {
+  id: string
+  type: ChatNodeType
+  message: string
+  options?: ChatOption[]
+  action?: {
+    type: 'navigate' | 'open-url' | 'open-whatsapp'
+    payload?: string
+  }
+}
+
+export interface ChatMessage {
+  id: string
+  from: 'nozzle' | 'user'
+  text: string
+  timestamp: number
+  options?: ChatOption[]
 }

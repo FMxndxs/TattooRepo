@@ -1,9 +1,10 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { ShoppingCart, Check } from 'lucide-react'
 import { useCartStore } from '@/lib/store/cartStore'
+import { useAuthGate } from '@/hooks/useAuthGate'
 import type { Product, Color, ProductSize } from '@/types'
 
 interface AddToCartButtonProps {
@@ -14,13 +15,16 @@ interface AddToCartButtonProps {
 
 export function AddToCartButton({ product, selectedColor, selectedSize }: AddToCartButtonProps) {
   const addItem = useCartStore((s) => s.addItem)
+  const { requireAuth } = useAuthGate()
   const [added, setAdded] = useState(false)
   const reduced = useReducedMotion()
 
   function handleAdd() {
-    addItem(product, selectedColor, selectedSize, 1)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
+    requireAuth(() => {
+      addItem(product, selectedColor, selectedSize, 1)
+      setAdded(true)
+      setTimeout(() => setAdded(false), 2000)
+    })
   }
 
   return (

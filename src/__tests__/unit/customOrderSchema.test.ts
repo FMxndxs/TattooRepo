@@ -2,8 +2,6 @@ import { customOrderSchema } from '@/lib/validations/customOrder'
 
 describe('customOrderSchema', () => {
   const valid = {
-    name: 'Felipe Mendes',
-    phone: '11989525014',
     description: 'Quero imprimir um suporte de parede para roteador',
     reference_url: null,
     color_name: 'Preto',
@@ -13,16 +11,8 @@ describe('customOrderSchema', () => {
     expect(() => customOrderSchema.parse(valid)).not.toThrow()
   })
 
-  it('rejeita nome vazio', () => {
-    expect(() => customOrderSchema.parse({ ...valid, name: '' })).toThrow()
-  })
-
   it('rejeita descricao com menos de 20 caracteres', () => {
     expect(() => customOrderSchema.parse({ ...valid, description: 'curto demais' })).toThrow()
-  })
-
-  it('rejeita telefone com menos de 10 digitos', () => {
-    expect(() => customOrderSchema.parse({ ...valid, phone: '123' })).toThrow()
   })
 
   it('aceita reference_url nulo', () => {
@@ -39,5 +29,9 @@ describe('customOrderSchema', () => {
 
   it('aceita reference_url valida', () => {
     expect(() => customOrderSchema.parse({ ...valid, reference_url: 'https://makerworld.com/model/123' })).not.toThrow()
+  })
+
+  it('rejeita color_name vazio', () => {
+    expect(() => customOrderSchema.parse({ ...valid, color_name: '' })).toThrow()
   })
 })

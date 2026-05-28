@@ -15,11 +15,16 @@ export function buildWhatsAppMessage(payload: WhatsAppOrderPayload): string {
     })
     .join('\n')
 
-  return [
+  const lines = [
     'Novo Pedido — Imagination 3D',
     '',
     `Cliente: ${customer.name}`,
     `Telefone: ${customer.phone}`,
+  ]
+
+  if (customer.email) lines.push(`E-mail: ${customer.email}`)
+
+  lines.push(
     `Bairro: ${customer.neighborhood} / ${customer.city}`,
     '',
     'Itens:',
@@ -28,7 +33,9 @@ export function buildWhatsAppMessage(payload: WhatsAppOrderPayload): string {
     `Total: ${formatBRL(total)}`,
     '',
     'Pedido gerado pelo site Imagination 3D',
-  ].join('\n')
+  )
+
+  return lines.join('\n')
 }
 
 export function buildWhatsAppUrl(payload: WhatsAppOrderPayload): string {
@@ -40,6 +47,7 @@ export function buildWhatsAppUrl(payload: WhatsAppOrderPayload): string {
 export interface CustomOrderPayload {
   name: string
   phone: string
+  email?: string
   description: string
   color_name: string
   reference_url: string | null
@@ -52,17 +60,32 @@ export function buildCustomOrderMessage(payload: CustomOrderPayload): string {
     '',
     `Cliente: ${payload.name}`,
     `Telefone: ${payload.phone}`,
-    '',
-    `Descricao: ${payload.description}`,
-    `Cor desejada: ${payload.color_name}`,
   ]
-  if (payload.reference_url) lines.push(`Referencia: ${payload.reference_url}`)
+
+  if (payload.email) lines.push(`E-mail: ${payload.email}`)
+
+  lines.push(
+    '',
+    `Descrição: ${payload.description}`,
+    `Cor desejada: ${payload.color_name}`,
+  )
+
+  if (payload.reference_url) lines.push(`Referência: ${payload.reference_url}`)
   if (payload.image_url) lines.push(`Imagem: ${payload.image_url}`)
-  lines.push('', 'Aguardo seu orcamento!')
+  lines.push('', 'Aguardo seu orçamento!')
   return lines.join('\n')
 }
 
 export function buildCustomOrderUrl(payload: CustomOrderPayload): string {
   const message = buildCustomOrderMessage(payload)
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+}
+
+// Chatbot WhatsApp redirect helpers
+export function buildSupportMessage(issue: string): string {
+  return `Olá! Preciso de ajuda com: ${issue}`
+}
+
+export function buildSupportUrl(issue: string): string {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildSupportMessage(issue))}`
 }

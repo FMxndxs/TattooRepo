@@ -1,20 +1,49 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { ShoppingCart, ArrowLeft } from 'lucide-react'
 import { useCartStore } from '@/lib/store/cartStore'
+import { useAuth } from '@/lib/context/AuthContext'
+import { useAuthModalStore } from '@/lib/store/authModalStore'
 import { CartItem } from '@/components/cart/CartItem'
 import { CartSummary } from '@/components/cart/CartSummary'
 import { CheckoutForm } from '@/components/cart/CheckoutForm'
 import { buildWhatsAppUrl } from '@/lib/utils/whatsapp'
+import { createOrder } from '@/lib/supabase/clientQueries'
 import type { CustomerInfo } from '@/types'
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, total, itemCount } = useCartStore()
+  const { items, removeItem, updateQuantity, total, itemCount, clearCart } = useCartStore()
+  const { isAuthenticated, user } = useAuth()
+  const openModal = useAuthModalStore((s) => s.openModal)
+  const [loading, setLoading] = useState(false)
 
-  function handleCheckout(customer: CustomerInfo) {
+  async function handleCheckout(customer: CustomerInfo) {
+    if (!isAuthenticated || !user) {
+      openModal('login')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      // Save order to Supabase
+      await createOrder({
+        userId: user.id,
+        items,
+        total,
+        neighborhood: customer.neighborhood,
+        city: customer.city,
+      })
+    } catch {
+      // Silent fail — WhatsApp still opens
+    }
+
     const url = buildWhatsAppUrl({ customer, items, total })
     window.open(url, '_blank')
+    clearCart()
+    setLoading(false)
   }
 
   if (items.length === 0) {
@@ -61,8 +90,8 @@ export default function CartPage() {
         <div className="space-y-6">
           <CartSummary itemCount={itemCount} total={total} />
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
-            <h3 className="text-white font-bold mb-4">Seus dados para entrega</h3>
-            <CheckoutForm onSubmit={handleCheckout} />
+            <h3 className="text-white font-bold mb-4">Dados para entrega</h3>
+            <CheckoutForm onSubmit={handleCheckout} loading={loading} />
           </div>
         </div>
       </div>

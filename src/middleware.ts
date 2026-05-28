@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -21,16 +21,20 @@ export async function proxy(request: NextRequest) {
     },
   )
 
+  // IMPORTANT: never call supabase.auth.getSession() here — always getUser()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
-  const isLoginPage = request.nextUrl.pathname === '/admin/login'
+  const path = request.nextUrl.pathname
+  const isAdminRoute = path.startsWith('/admin')
+  const isAdminLogin = path === '/admin/login'
 
-  if (isAdminRoute && !isLoginPage && !user) {
+  // Protect admin routes
+  if (isAdminRoute && !isAdminLogin && !user) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
-  if (isLoginPage && user) {
+  // Redirect logged-in admin away from login page
+  if (isAdminLogin && user) {
     return NextResponse.redirect(new URL('/admin', request.url))
   }
 
@@ -38,5 +42,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon\\.ico|logo\\.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }

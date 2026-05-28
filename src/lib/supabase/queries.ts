@@ -74,6 +74,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   })) as Product[]
 }
 
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const supabase = await createClient()
   const { data, error } = await supabase
