@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 2. Enable Row Level Security
+-- 2. Enable Row Level Security 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- 3. RLS Policies
