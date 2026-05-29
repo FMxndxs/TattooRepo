@@ -6,9 +6,10 @@ import type { ChatOption } from '@/lib/chatbot/types'
 interface ChatOptionsProps {
   options: ChatOption[]
   onSelect: (option: ChatOption) => void
+  disabled?: boolean
 }
 
-export function ChatOptions({ options, onSelect }: ChatOptionsProps) {
+export function ChatOptions({ options, onSelect, disabled }: ChatOptionsProps) {
   const reduced = useReducedMotion()
 
   return (
@@ -22,7 +23,8 @@ export function ChatOptions({ options, onSelect }: ChatOptionsProps) {
         <motion.button
           key={opt.nextNodeId}
           type="button"
-          onClick={() => onSelect(opt)}
+          disabled={disabled}
+          onClick={() => !disabled && onSelect(opt)}
           initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -31,7 +33,7 @@ export function ChatOptions({ options, onSelect }: ChatOptionsProps) {
             ease: [0.22, 1, 0.36, 1],
           }}
           whileTap={reduced ? undefined : { scale: 0.96 }}
-          className="text-left text-xs text-brand-300 border border-brand-700/50 hover:border-brand-500 hover:bg-brand-700/10 rounded-full px-3 py-1.5 transition-colors"
+          className="text-left text-xs text-brand-300 border border-brand-700/50 hover:border-brand-500 hover:bg-brand-700/10 rounded-full px-3 py-1.5 transition-colors disabled:opacity-40 disabled:pointer-events-none"
         >
           {opt.label}
         </motion.button>

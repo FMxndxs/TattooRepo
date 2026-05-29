@@ -17,7 +17,7 @@ export function TypingIndicator() {
       aria-label="Nozzle está digitando"
     >
       <div className="w-8 h-8 rounded-full ring-1 ring-brand-500/40 overflow-hidden shrink-0 mt-auto">
-        <NozzleAvatar size={32} />
+        <NozzleAvatar size={50} />
       </div>
 
       <div className="bg-surface-elevated rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5">

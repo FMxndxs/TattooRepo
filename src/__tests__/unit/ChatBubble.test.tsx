@@ -33,16 +33,16 @@ describe('ChatBubble', () => {
     expect(screen.getByText('Quero ver o catálogo')).toBeInTheDocument()
   })
 
-  it('mensagem do nozzle exibe o NozzleAvatar (aria-hidden svg)', () => {
+  it('mensagem do nozzle exibe o NozzleAvatar (img)', () => {
     const { container } = render(<ChatBubble message={nozzleMsg} />)
-    const svg = container.querySelector('svg[aria-hidden]')
-    expect(svg).toBeInTheDocument()
+    const img = container.querySelector('img')
+    expect(img).toBeInTheDocument()
   })
 
   it('mensagem do user nao exibe avatar', () => {
     const { container } = render(<ChatBubble message={userMsg} />)
-    const svg = container.querySelector('svg[aria-hidden]')
-    expect(svg).not.toBeInTheDocument()
+    const img = container.querySelector('img')
+    expect(img).not.toBeInTheDocument()
   })
 
   it('renderiza children (ex: ProductPreviewList) dentro da bubble do nozzle', () => {

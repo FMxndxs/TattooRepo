@@ -23,7 +23,7 @@ interface ChatStore {
 }
 
 function makeId() {
-  return Math.random().toString(36).slice(2, 9)
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 }
 
 export const useChatStore = create<ChatStore>((set) => ({

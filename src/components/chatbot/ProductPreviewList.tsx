@@ -81,7 +81,7 @@ export function ProductPreviewList({ categorySlug, subFilter, limit = 3 }: Produ
       setAllProducts(cached)
       setLoading(false)
     }
-  })
+  }, [loading, categorySlug])
 
   const products = applyFilter(allProducts, subFilter, limit)
 
