@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react'
 import { NozzleAvatar } from './NozzleAvatar'
-import type { ChatMessage } from '@/lib/chatbot/types'
+import type { ChatMessage } from '@/lib/chatbot/types' 
 
 interface ChatBubbleProps {
   message: ChatMessage
@@ -19,7 +19,7 @@ export function ChatBubble({ message, children }: ChatBubbleProps) {
 
   return (
     <motion.div
-      initial={reduced ? { opacity: 0 } : { opacity: 0, y: 8 }}
+      initial={reduced ? { opacity: 0 } : { opacity: 0, y: 8 }} 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduced ? 0.05 : 0.22, ease: [0.22, 1, 0.36, 1] }}
       className={`flex gap-2 ${isNozzle ? 'justify-start' : 'justify-end'}`}
@@ -40,7 +40,7 @@ export function ChatBubble({ message, children }: ChatBubbleProps) {
         >
           {message.text}
         </div>
-
+ 
         {/* Inline product cards for nozzle product-list messages */}
         {children && (
           <div className="w-full mt-0.5">
