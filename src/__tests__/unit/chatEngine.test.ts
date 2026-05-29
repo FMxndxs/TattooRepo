@@ -2,7 +2,6 @@ import { registerNodes, getNode, getRootNode } from '@/lib/chatbot/engine'
 import { allNodes } from '@/lib/chatbot/trees'
 import type { ChatNode } from '@/lib/chatbot/types'
 
-// Fresh engine state for tests
 beforeEach(() => {
   registerNodes(allNodes)
 })
@@ -28,8 +27,7 @@ describe('Chat Engine', () => {
   it('todos os nextNodeIds das opcoes do root existem no registry', () => {
     const root = getRootNode()
     root?.options?.forEach((opt) => {
-      const target = getNode(opt.nextNodeId)
-      expect(target).toBeDefined()
+      expect(getNode(opt.nextNodeId)).toBeDefined()
     })
   })
 
@@ -53,10 +51,63 @@ describe('Chat Engine', () => {
     expect(node?.options?.length).toBeGreaterThan(0)
   })
 
-  it('nodes de catalog existem', () => {
-    expect(getNode('catalog-menu')).toBeDefined()
-    expect(getNode('catalog-cat-decoracao')).toBeDefined()
-    expect(getNode('catalog-cat-games')).toBeDefined()
+  it('catalog-menu tem exatamente 8 categorias', () => {
+    const menu = getNode('catalog-menu')
+    expect(menu).toBeDefined()
+    expect(menu?.options).toHaveLength(8)
+  })
+
+  it('catalog-menu inclui todas as 8 categorias esperadas', () => {
+    const menu = getNode('catalog-menu')
+    const nextIds = menu?.options?.map((o) => o.nextNodeId) ?? []
+    const expected = [
+      'catalog-cat-decoracao',
+      'catalog-cat-utilitarios',
+      'catalog-cat-escritorio',
+      'catalog-cat-games',
+      'catalog-cat-bonecos',
+      'catalog-cat-maquiagem',
+      'catalog-cat-brindes',
+      'catalog-cat-personalizados',
+    ]
+    expected.forEach((id) => expect(nextIds).toContain(id))
+  })
+
+  it('todos os catalog-cat-* existem e tem showProducts=true', () => {
+    const slugs = ['decoracao','utilitarios','escritorio','games','bonecos','maquiagem','brindes','personalizados']
+    slugs.forEach((slug) => {
+      const node = getNode(`catalog-cat-${slug}`)
+      expect(node).toBeDefined()
+      expect(node?.showProducts).toBe(true)
+      expect(node?.categorySlug).toBe(slug)
+    })
+  })
+
+  it('sub-nodes de categoria existem para cada slug', () => {
+    const slugs = ['decoracao', 'games', 'bonecos']
+    slugs.forEach((slug) => {
+      expect(getNode(`catalog-sub-featured-${slug}`)).toBeDefined()
+      expect(getNode(`catalog-sub-more-${slug}`)).toBeDefined()
+      expect(getNode(`catalog-sub-sort-${slug}`)).toBeDefined()
+    })
+  })
+
+  it('sub-nodes de categoria tem subFilter correto', () => {
+    const node = getNode('catalog-sub-featured-decoracao')
+    expect(node?.subFilter).toBe('featured')
+    expect(getNode('catalog-sub-more-decoracao')?.subFilter).toBe('more')
+    expect(getNode('catalog-sub-sort-decoracao')?.subFilter).toBe('sort-price-asc')
+  })
+
+  it('catalog-full tem action navigate para /catalog', () => {
+    const node = getNode('catalog-full')
+    expect(node).toBeDefined()
+    expect(node?.action?.type).toBe('navigate')
+    expect(node?.action?.payload).toBe('/catalog')
+  })
+
+  it('catalog-menu-2 nao existe mais (substituido por menu unificado)', () => {
+    expect(getNode('catalog-menu-2')).toBeUndefined()
   })
 
   it('nao retorna undefined para nodes de navigate action', () => {
@@ -73,5 +124,17 @@ describe('Chat Engine', () => {
     const ids = allNodes.map((n: ChatNode) => n.id)
     const unique = new Set(ids)
     expect(unique.size).toBe(ids.length)
+  })
+
+  it('todos os nextNodeIds em allNodes apontam para nodes registrados', () => {
+    const missingIds: string[] = []
+    allNodes.forEach((node: ChatNode) => {
+      node.options?.forEach((opt) => {
+        if (!getNode(opt.nextNodeId)) {
+          missingIds.push(`${node.id} → ${opt.nextNodeId}`)
+        }
+      })
+    })
+    expect(missingIds).toEqual([])
   })
 })

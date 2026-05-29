@@ -6,6 +6,8 @@ export type ChatNodeType =
   | 'product-list'
   | 'whatsapp-redirect'
 
+export type ChatSubFilter = 'featured' | 'more' | 'sort-price-asc'
+
 export interface ChatOption {
   label: string
   icon?: string
@@ -23,7 +25,9 @@ export interface ChatNode {
   message: string
   options?: ChatOption[]
   action?: ChatNodeAction
-  categorySlug?: string // for product-list nodes
+  categorySlug?: string
+  showProducts?: boolean
+  subFilter?: ChatSubFilter
 }
 
 export interface ChatMessage {
@@ -33,4 +37,7 @@ export interface ChatMessage {
   timestamp: number
   options?: ChatOption[]
   nodeId?: string
+  categorySlug?: string
+  showProducts?: boolean
+  subFilter?: ChatSubFilter
 }

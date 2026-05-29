@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { AuthProvider } from '@/lib/context/AuthContext'
 import { AuthModalProvider } from '@/components/auth/AuthModalProvider'
+import { NozzleFab } from '@/components/chatbot/NozzleFab'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist-sans' })
 
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="flex-1">{children}</main>
           <Footer />
           <AuthModalProvider />
+          <NozzleFab />
         </AuthProvider>
       </body>
     </html>

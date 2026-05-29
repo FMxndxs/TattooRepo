@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { motion, useReducedMotion } from 'motion/react'
 import { CartIcon } from './CartIcon'
 import { UserMenu } from './UserMenu'
-import { ChatIcon } from './ChatIcon'
 
 export function Header() {
   const reduced = useReducedMotion()
@@ -59,7 +58,6 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center gap-2.5">
             <CartIcon />
-            <ChatIcon />
             <UserMenu />
           </div>
         </div>

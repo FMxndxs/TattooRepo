@@ -6,9 +6,14 @@ import type { ChatMessage } from '@/lib/chatbot/types'
 
 interface ChatBubbleProps {
   message: ChatMessage
+  children?: React.ReactNode
 }
 
-export function ChatBubble({ message }: ChatBubbleProps) {
+function formatTime(ts: number): string {
+  return new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+}
+
+export function ChatBubble({ message, children }: ChatBubbleProps) {
   const reduced = useReducedMotion()
   const isNozzle = message.from === 'nozzle'
 
@@ -25,14 +30,28 @@ export function ChatBubble({ message }: ChatBubbleProps) {
         </div>
       )}
 
-      <div
-        className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
-          isNozzle
-            ? 'bg-surface-elevated text-foreground rounded-bl-sm'
-            : 'bg-brand-700 text-white rounded-br-sm'
-        }`}
-      >
-        {message.text}
+      <div className={`flex flex-col gap-0.5 ${isNozzle ? 'items-start' : 'items-end'} max-w-[84%]`}>
+        <div
+          className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
+            isNozzle
+              ? 'bg-surface-elevated text-foreground rounded-bl-sm'
+              : 'bg-brand-700 text-white rounded-br-sm'
+          }`}
+        >
+          {message.text}
+        </div>
+
+        {/* Inline product cards for nozzle product-list messages */}
+        {children && (
+          <div className="w-full mt-0.5">
+            {children}
+          </div>
+        )}
+
+        {/* Timestamp */}
+        <span className={`text-[10px] text-zinc-600 tabular-nums px-1 ${isNozzle ? 'self-start' : 'self-end'}`}>
+          {formatTime(message.timestamp)}
+        </span>
       </div>
     </motion.div>
   )

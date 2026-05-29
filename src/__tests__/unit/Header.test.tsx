@@ -5,9 +5,6 @@ import { Header } from '@/components/layout/Header'
 jest.mock('@/components/layout/CartIcon', () => ({
   CartIcon: () => <a href="/cart" aria-label="carrinho">Cart</a>,
 }))
-jest.mock('@/components/layout/ChatIcon', () => ({
-  ChatIcon: () => <button type="button" aria-label="Abrir chat de ajuda">Chat</button>,
-}))
 jest.mock('@/components/layout/UserMenu', () => ({
   UserMenu: () => <div data-testid="user-menu" />,
 }))
@@ -44,8 +41,8 @@ describe('Header', () => {
     expect(screen.getByRole('link', { name: /personalizado/i })).toBeInTheDocument()
   })
 
-  it('exibe icone de chat', () => {
+  it('nao exibe icone de chat no header (chat agora e FAB global)', () => {
     render(<Header />)
-    expect(screen.getByRole('button', { name: /chat/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /chat/i })).not.toBeInTheDocument()
   })
 })

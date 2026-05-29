@@ -1,15 +1,24 @@
 import { create } from 'zustand'
-import type { ChatMessage, ChatOption } from '@/lib/chatbot/types'
+import type { ChatMessage, ChatOption, ChatSubFilter } from '@/lib/chatbot/types'
 
 interface ChatStore {
   isDrawerOpen: boolean
+  isTyping: boolean
   messages: ChatMessage[]
   currentNodeId: string
   openChat: () => void
   closeChat: () => void
   toggleChat: () => void
+  setTyping: (value: boolean) => void
   addUserMessage: (text: string, options?: ChatOption[]) => void
-  addNozzleMessage: (text: string, nodeId: string, options?: ChatOption[]) => void
+  addNozzleMessage: (
+    text: string,
+    nodeId: string,
+    options?: ChatOption[],
+    categorySlug?: string,
+    showProducts?: boolean,
+    subFilter?: ChatSubFilter,
+  ) => void
   reset: () => void
 }
 
@@ -19,6 +28,7 @@ function makeId() {
 
 export const useChatStore = create<ChatStore>((set) => ({
   isDrawerOpen: false,
+  isTyping: false,
   messages: [],
   currentNodeId: 'root',
 
@@ -34,6 +44,10 @@ export const useChatStore = create<ChatStore>((set) => ({
     set((s) => ({ isDrawerOpen: !s.isDrawerOpen }))
   },
 
+  setTyping(value) {
+    set({ isTyping: value })
+  },
+
   addUserMessage(text, options) {
     set((s) => ({
       messages: [
@@ -43,17 +57,27 @@ export const useChatStore = create<ChatStore>((set) => ({
     }))
   },
 
-  addNozzleMessage(text, nodeId, options) {
+  addNozzleMessage(text, nodeId, options, categorySlug, showProducts, subFilter) {
     set((s) => ({
       currentNodeId: nodeId,
       messages: [
         ...s.messages,
-        { id: makeId(), from: 'nozzle', text, timestamp: Date.now(), options, nodeId },
+        {
+          id: makeId(),
+          from: 'nozzle',
+          text,
+          timestamp: Date.now(),
+          options,
+          nodeId,
+          categorySlug,
+          showProducts,
+          subFilter,
+        },
       ],
     }))
   },
 
   reset() {
-    set({ messages: [], currentNodeId: 'root' })
+    set({ messages: [], currentNodeId: 'root', isTyping: false })
   },
 }))
