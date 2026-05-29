@@ -20,7 +20,7 @@ import type { ChatOption } from '@/lib/chatbot/types'
 registerNodes(allNodes)
 
 export function ChatPanel() {
-  const { messages, isTyping, addUserMessage, addNozzleMessage, setTyping, reset } = useChatStore()
+  const { messages, isTyping, addUserMessage, addNozzleMessage, setTyping, reset, closeChat } = useChatStore()
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement>(null)
   const bootedRef = useRef(false)
@@ -57,7 +57,10 @@ export function ChatPanel() {
       if (node.action) {
         if (node.action.type === 'navigate' && node.action.payload) {
           addNozzleMessage(node.message, node.id, node.options)
-          setTimeout(() => router.push(node.action!.payload!), 400)
+          setTimeout(() => {
+            closeChat()
+            router.push(node.action!.payload!)
+          }, 400)
           return
         }
         if (node.action.type === 'open-whatsapp' && node.action.payload) {
@@ -98,8 +101,8 @@ export function ChatPanel() {
         </div>
 
         <div className="relative z-10 flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full bg-brand-700/20 ring-1 ring-brand-500/30 flex items-center justify-center">
-            <NozzleAvatar size={22} />
+          <div className="w-9 h-9 rounded-full ring-1 ring-brand-500/40 overflow-hidden shrink-0">
+            <NozzleAvatar size={36} />
           </div>
           <div>
             <p className="text-white font-semibold text-sm">Nozzle</p>

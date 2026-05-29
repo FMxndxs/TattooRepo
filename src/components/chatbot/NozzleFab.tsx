@@ -61,7 +61,6 @@ export function NozzleFab() {
                   <p className="text-[10px] text-zinc-400 mt-0.5 leading-snug">
                     Posso te ajudar a encontrar o produto perfeito!
                   </p>
-                  {/* Arrow pointing down-right */}
                   <span
                     aria-hidden
                     className="absolute -bottom-[7px] right-8 w-3 h-3 bg-zinc-900 border-r border-b border-brand-700/70 rotate-45"
@@ -72,36 +71,53 @@ export function NozzleFab() {
 
             {/* FAB */}
             <div className="relative">
-              {/* Outer pulse ring */}
+              {/* Outer pulse rings */}
               {showPulse && !reduced && (
                 <>
                   <span
                     aria-hidden
-                    className="absolute -inset-1.5 rounded-full border border-brand-500/30"
-                    style={{ animation: 'nozzle-pulse 2s ease-in-out infinite 0.25s' }}
+                    className="absolute -inset-2 rounded-full border border-brand-300/25"
+                    style={{ animation: 'nozzle-pulse 2s ease-in-out infinite 0.4s' }}
                   />
                   <span
                     aria-hidden
-                    className="absolute inset-0 rounded-full border-2 border-brand-300/40"
+                    className="absolute -inset-0.5 rounded-full border-2 border-brand-300/45"
                     style={{ animation: 'nozzle-pulse 2s ease-in-out infinite' }}
                   />
                 </>
               )}
 
+              {/* Glow halo behind button */}
+              <div
+                aria-hidden
+                className="absolute inset-0 rounded-full"
+                style={{
+                  boxShadow: '0 0 32px 8px rgba(182,131,255,0.22), 0 4px 28px rgba(67,19,112,0.8)',
+                }}
+              />
+
               <motion.button
                 type="button"
                 onClick={handleOpen}
-                whileHover={reduced ? undefined : { scale: 1.09 }}
-                whileTap={reduced ? undefined : { scale: 0.93 }}
+                whileHover={reduced ? undefined : { scale: 1.1 }}
+                whileTap={reduced ? undefined : { scale: 0.92 }}
                 transition={{ type: 'spring', stiffness: 480, damping: 26 }}
                 aria-label="Abrir Nozzle, assistente Imagination 3D"
                 aria-expanded={isDrawerOpen}
-                className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-brand-700 hover:bg-brand-500 transition-colors shadow-[0_4px_28px_rgba(67,19,112,0.75)] ring-1 ring-brand-500/50 print-cta-sheen overflow-hidden"
+                className="relative w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-full overflow-hidden ring-2 ring-brand-500/60 hover:ring-brand-300/70 transition-[box-shadow,ring] cursor-pointer"
               >
-                <span className="print-cta-filament" aria-hidden />
-                <span className="relative z-10">
-                  <NozzleAvatar size={28} />
-                </span>
+                {/* Mascote preenchendo o botão inteiro */}
+                <NozzleAvatar fill objectPosition="50% 32%" />
+
+                {/* Scanline sutil no hover */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    background:
+                      'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(182,131,255,0.06) 100%)',
+                  }}
+                />
               </motion.button>
             </div>
           </motion.div>
