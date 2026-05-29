@@ -1,5 +1,5 @@
 'use client'
-
+//chatbot
 import Image from 'next/image'
 import { useRef } from 'react'
 import { motion, useReducedMotion, useInView } from 'motion/react'
