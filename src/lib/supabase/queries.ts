@@ -75,6 +75,49 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 }
 
 
+type ClickRow = { product_id: string; click_count: number }
+
+export async function getMostClickedProducts(limit = 8): Promise<Product[]> {
+  const supabase = await createClient()
+
+  const { data: clicks, error: clicksError } = await supabase
+    .rpc('get_most_clicked_products', { p_limit: limit })
+
+  if (clicksError) throw clicksError
+
+  const productIds = (clicks as ClickRow[] ?? []).map((r) => r.product_id)
+  let products: Product[] = []
+
+  if (productIds.length > 0) {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        *,
+        category:categories(*),
+        images:product_images(*),
+        colors:product_colors(color:colors(*))
+      `)
+      .eq('is_available', true)
+      .in('id', productIds)
+
+    if (error) throw error
+
+    const countMap = new Map((clicks as ClickRow[]).map((r) => [r.product_id, r.click_count]))
+    products = (data ?? [])
+      .map((p) => ({ ...p, colors: p.colors?.map((pc: { color: unknown }) => pc.color) ?? [] }) as Product)
+      .sort((a, b) => ((countMap.get(b.id) as number) ?? 0) - ((countMap.get(a.id) as number) ?? 0))
+  }
+
+  if (products.length < limit) {
+    const featured = await getFeaturedProducts()
+    const existingIds = new Set(products.map((p) => p.id))
+    const extras = featured.filter((p) => !existingIds.has(p.id)).slice(0, limit - products.length)
+    products = [...products, ...extras]
+  }
+
+  return products
+}
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const supabase = await createClient()
   const { data, error } = await supabase

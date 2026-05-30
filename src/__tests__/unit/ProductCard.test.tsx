@@ -1,6 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { ProductCard } from '@/components/catalog/ProductCard'
 import type { Product } from '@/types'
+
+const mockTrack = jest.fn()
+jest.mock('@/lib/analytics/trackProductClick', () => ({
+  trackProductClick: (...args: unknown[]) => mockTrack(...args),
+}))
 
 const mockProduct: Product = {
   id: '1',
@@ -23,6 +28,14 @@ const mockProduct: Product = {
 }
 
 describe('ProductCard', () => {
+  beforeEach(() => mockTrack.mockClear())
+
+  it('chama trackProductClick ao clicar no card', () => {
+    render(<ProductCard product={mockProduct} />)
+    fireEvent.click(screen.getByRole('link'))
+    expect(mockTrack).toHaveBeenCalledWith(mockProduct.id)
+  })
+
   it('exibe o nome do produto', () => {
     render(<ProductCard product={mockProduct} />)
     expect(screen.getByText('Suporte de Fone')).toBeInTheDocument()

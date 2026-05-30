@@ -74,7 +74,7 @@ export interface CustomOrder {
   description: string
   reference_url: string | null
   reference_image_url: string | null
-  status?: 'pending' | 'reviewing' | 'quoted' | 'accepted' | 'rejected'
+  status?: 'pending' | 'reviewing' | 'quoted' | 'accepted' | 'rejected' | 'in_production' | 'completed' | 'cancelled'
   created_at?: string
 }
 
@@ -99,11 +99,13 @@ export interface UserProfile {
 
 // ─── Orders ─────────────────────────────────────────────────────────────────
 
-export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'in_production' | 'completed'
 
 export interface Order {
   id: string
   user_id: string
+  customer_name: string
+  customer_phone: string
   status: OrderStatus
   total: number
   neighborhood: string

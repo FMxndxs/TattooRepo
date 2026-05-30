@@ -42,6 +42,8 @@ export interface CreateOrderParams {
   neighborhood: string
   city: string
   notes?: string
+  customerName: string
+  customerPhone: string
 }
 
 export async function createOrder(params: CreateOrderParams): Promise<string | null> {
@@ -56,6 +58,8 @@ export async function createOrder(params: CreateOrderParams): Promise<string | n
       city: params.city,
       notes: params.notes ?? null,
       status: 'pending',
+      customer_name: params.customerName,
+      customer_phone: params.customerPhone,
     })
     .select('id')
     .single()

@@ -49,21 +49,44 @@ export default function HomePage() {
   const [featured, setFeatured] = useState<Product[]>([])
 
   useEffect(() => {
-    import('@/lib/supabase/browser').then(({ createClient }) => {
+    import('@/lib/supabase/browser').then(async ({ createClient }) => {
       const supabase = createClient()
-      supabase
-        .from('products')
-        .select('*, category:categories(*), images:product_images(*), colors:product_colors(color:colors(*))')
-        .eq('is_featured', true)
-        .eq('is_available', true)
-        .limit(8)
-        .then(({ data }) => {
-          const mapped = (data ?? []).map((p) => ({
-            ...p,
-            colors: p.colors?.map((pc: { color: unknown }) => pc.color) ?? [],
-          })) as Product[]
-          setFeatured(mapped)
-        })
+      type ClickRow = { product_id: string; click_count: number }
+      const SELECT = '*, category:categories(*), images:product_images(*), colors:product_colors(color:colors(*))'
+
+      const { data: clicks } = await supabase.rpc('get_most_clicked_products', { p_limit: 12 })
+      let products: Product[] = []
+
+      if (clicks && (clicks as ClickRow[]).length > 0) {
+        const ids = (clicks as ClickRow[]).map((c) => c.product_id)
+        const { data } = await supabase.from('products').select(SELECT).eq('is_available', true).in('id', ids)
+        if (data) {
+          const countMap = new Map((clicks as ClickRow[]).map((c) => [c.product_id, c.click_count]))
+          products = data
+            .map((p) => ({ ...p, colors: p.colors?.map((pc: { color: unknown }) => pc.color) ?? [] }) as Product)
+            .sort((a, b) => ((countMap.get(b.id) as number) ?? 0) - ((countMap.get(a.id) as number) ?? 0))
+        }
+      }
+
+      if (products.length < 12) {
+        const existingIds = new Set(products.map((p) => p.id))
+        const { data: fillData } = await supabase
+          .from('products')
+          .select(SELECT)
+          .eq('is_available', true)
+          .order('is_featured', { ascending: false })
+          .order('created_at', { ascending: false })
+          .limit(12)
+        if (fillData) {
+          const extras = fillData
+            .filter((p) => !existingIds.has(p.id))
+            .slice(0, 12 - products.length)
+            .map((p) => ({ ...p, colors: p.colors?.map((pc: { color: unknown }) => pc.color) ?? [] }) as Product)
+          products = [...products, ...extras]
+        }
+      }
+
+      setFeatured(products)
     })
   }, [])
 
@@ -132,12 +155,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Produtos em destaque */}
+      {/* Os queridinhos */}
       {featured.length > 0 && (
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-white">Produtos em destaque</h2>
+              <h2 className="text-2xl font-bold text-white">Os produtos mais populares</h2>
               <Link href="/catalog" className="text-brand-300 hover:text-brand-200 text-sm font-medium flex items-center gap-1">
                 Ver todos <ArrowRight className="w-4 h-4" />
               </Link>

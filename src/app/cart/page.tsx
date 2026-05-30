@@ -35,6 +35,8 @@ export default function CartPage() {
         total,
         neighborhood: customer.neighborhood,
         city: customer.city,
+        customerName: customer.name,
+        customerPhone: customer.phone,
       })
     } catch {
       // Silent fail — WhatsApp still opens

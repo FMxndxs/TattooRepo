@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/browser'
 const navItems = [
   { href: '/admin', label: 'Visão Geral', icon: LayoutGrid, exact: true },
   { href: '/admin/products', label: 'Produtos', icon: Package },
-  { href: '/admin/orders', label: 'Pedidos Custom', icon: MessageSquare },
+  { href: '/admin/orders', label: 'Pedidos', icon: MessageSquare },
 ]
 
 export function AdminSidebar() {

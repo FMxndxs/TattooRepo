@@ -7,6 +7,7 @@ import { motion, useReducedMotion, useSpring } from 'motion/react'
 import type { Product } from '@/types'
 import { formatBRL } from '@/lib/utils/formatters'
 import { PrintLineHover } from '@/components/ui/MotionPrimitives'
+import { trackProductClick } from '@/lib/analytics/trackProductClick'
 
 interface ProductCardProps {
   product: Product
@@ -40,7 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
   }, [rotateX, rotateY])
 
   return (
-    <Link href={`/product/${product.slug}`} className="group block">
+    <Link href={`/product/${product.slug}`} className="group block" onClick={() => { trackProductClick(product.id) }}>
       <div style={{ perspective: reduced ? 'none' : '980px' }}>
         <motion.div
           ref={ref}
