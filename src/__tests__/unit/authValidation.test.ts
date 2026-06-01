@@ -2,16 +2,16 @@ import { loginSchema, signupSchema, forgotPasswordSchema, resetPasswordSchema } 
 
 describe('loginSchema', () => {
   it('aceita dados validos', () => {
-    const result = loginSchema.safeParse({ email: 'test@test.com', password: 'abcdef' })
+    const result = loginSchema.safeParse({ email: 'test@test.com', password: 'abcdefgh' })
     expect(result.success).toBe(true)
   })
 
   it('rejeita email invalido', () => {
-    const result = loginSchema.safeParse({ email: 'nao-e-email', password: 'abcdef' })
+    const result = loginSchema.safeParse({ email: 'nao-e-email', password: 'abcdefgh' })
     expect(result.success).toBe(false)
   })
 
-  it('rejeita senha muito curta', () => {
+  it('rejeita senha menor que 8 caracteres', () => {
     const result = loginSchema.safeParse({ email: 'test@test.com', password: '123' })
     expect(result.success).toBe(false)
   })

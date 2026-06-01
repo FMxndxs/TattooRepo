@@ -73,7 +73,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) return { error: error.message }
+    if (error) {
+      console.error('[Auth] signIn error:', error.message)
+      return { error: error.message }
+    }
     return { error: null }
   }, [supabase])
 
@@ -82,17 +85,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
-        data: { first_name, last_name },
+        // phone included so handle_new_user() trigger can persist it atomically
+        data: { first_name, last_name, phone },
       },
     })
-    if (error) return { error: error.message }
+    if (error) {
+      console.error('[Auth] signUp error:', error.message)
+      return { error: error.message }
+    }
 
-    // Update profile with phone (trigger creates the row, we update phone)
+    // Guard: if email confirmation is required, session will be null.
+    // Return a sentinel so the form can show a "check your email" message
+    // instead of silently closing.
+    if (!data.session) {
+      return { error: 'EMAIL_NOT_CONFIRMED' }
+    }
+
+    // Defensive update: trigger already set first_name/last_name/phone,
+    // but sync again in case of race or future schema changes.
     if (data.user) {
-      await supabase
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({ phone, first_name, last_name })
         .eq('id', data.user.id)
+      if (profileError) {
+        console.error('[Auth] profile update error:', profileError.message)
+      }
     }
 
     return { error: null }

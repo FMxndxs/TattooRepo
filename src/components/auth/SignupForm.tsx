@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { User, Phone, Mail, Lock, Loader2 } from 'lucide-react'
+import { User, Phone, Mail, Lock, Loader2, CheckCircle } from 'lucide-react'
 import { signupSchema, type SignupFormData } from '@/lib/validations/auth'
 import { useAuth } from '@/lib/context/AuthContext'
 import { formatPhoneBR } from '@/lib/utils/phoneMask'
+import { mapAuthError } from '@/lib/utils/authErrors'
 
 interface SignupFormProps {
   onSuccess: () => void
@@ -18,6 +19,7 @@ const inputClass =
 export function SignupForm({ onSuccess }: SignupFormProps) {
   const { signUp } = useAuth()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [emailConfirmation, setEmailConfirmation] = useState(false)
   const [phoneValue, setPhoneValue] = useState('')
 
   const {
@@ -35,6 +37,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
 
   async function onSubmit(data: SignupFormData) {
     setServerError(null)
+    setEmailConfirmation(false)
     const { error } = await signUp({
       email: data.email,
       password: data.password,
@@ -42,9 +45,13 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
       last_name: data.last_name,
       phone: data.phone,
     })
+    if (error === 'EMAIL_NOT_CONFIRMED') {
+      // Confirmation email sent — show guidance instead of closing
+      setEmailConfirmation(true)
+      return
+    }
     if (error) {
-      // Generic message — never reveal if email exists
-      setServerError('Não foi possível criar a conta. Tente novamente.')
+      setServerError(mapAuthError(error, 'signup'))
       return
     }
     onSuccess()
@@ -199,6 +206,14 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
           <p role="alert" className="text-red-400 text-xs mt-1">{errors.password_confirm.message}</p>
         )}
       </div>
+
+      {/* Email confirmation notice */}
+      {emailConfirmation && (
+        <div role="status" className="flex items-start gap-2 text-green-400 text-xs bg-green-400/10 rounded-lg py-2 px-3">
+          <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>Conta criada! Confirme pelo link enviado ao seu e-mail antes de entrar.</span>
+        </div>
+      )}
 
       {/* Server error */}
       {serverError && (

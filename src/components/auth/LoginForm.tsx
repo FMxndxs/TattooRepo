@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Mail, Lock, Loader2 } from 'lucide-react'
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth'
 import { useAuth } from '@/lib/context/AuthContext'
+import { mapAuthError } from '@/lib/utils/authErrors'
 
 interface LoginFormProps {
   onSuccess: () => void
@@ -29,7 +30,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
     setServerError(null)
     const { error } = await signIn(data.email, data.password)
     if (error) {
-      setServerError('E-mail ou senha incorretos. Verifique seus dados.')
+      setServerError(mapAuthError(error, 'login'))
       return
     }
     onSuccess()
