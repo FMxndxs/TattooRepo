@@ -93,7 +93,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-zinc-950 pt-16 pb-24">
+      <section className="relative overflow-hidden bg-zinc-950 pt-10 pb-16 sm:pt-16 sm:pb-24">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-700/20 via-brand-900/10 to-transparent" />
         <FilamentBackdrop />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -159,9 +159,9 @@ export default function HomePage() {
       {featured.length > 0 && (
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-white">Os produtos mais populares</h2>
-              <Link href="/catalog" className="text-brand-300 hover:text-brand-200 text-sm font-medium flex items-center gap-1">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Os mais populares</h2>
+              <Link href="/catalog" className="text-brand-300 hover:text-brand-200 text-sm font-medium flex items-center gap-1 shrink-0 ml-4">
                 Ver todos <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

@@ -122,7 +122,7 @@ export default function ProfilePage() {
 
               <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
                 {/* Nome (readonly) */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-foreground-muted text-sm font-medium mb-1.5">Nome</label>
                     <div className="relative">

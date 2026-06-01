@@ -14,13 +14,13 @@ export function ProductDetail({ product }: { product: Product }) {
   const [selectedColor, setSelectedColor] = useState<Color | null>(product.colors?.[0] ?? null)
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Link href="/catalog" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-8 transition-colors">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <Link href="/catalog" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-6 md:mb-8 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Voltar ao catálogo
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-12">
         {/* Imagem */}
         <PrintLineHover className="aspect-square bg-zinc-900 rounded-2xl border border-zinc-800 shadow-[0_20px_50px_-28px_rgba(67,19,112,0.35)]">
           {primaryImage ? (
@@ -47,7 +47,7 @@ export function ProductDetail({ product }: { product: Product }) {
               {product.category.name}
             </span>
           )}
-          <h1 className="text-3xl font-bold text-white mb-4">{product.name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4">{product.name}</h1>
 
           {product.description && (
             <p className="text-zinc-400 leading-relaxed mb-6">{product.description}</p>

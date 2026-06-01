@@ -62,17 +62,17 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Link href="/catalog" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-8 transition-colors">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <Link href="/catalog" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-6 md:mb-8 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Continuar comprando
       </Link>
 
-      <h1 className="text-3xl font-bold text-white mb-8">
-        Carrinho <span className="text-zinc-500 text-lg font-normal">({itemCount} {itemCount === 1 ? 'item' : 'itens'})</span>
+      <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 md:mb-8">
+        Carrinho <span className="text-zinc-500 text-base sm:text-lg font-normal">({itemCount} {itemCount === 1 ? 'item' : 'itens'})</span>
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Itens */}
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => {

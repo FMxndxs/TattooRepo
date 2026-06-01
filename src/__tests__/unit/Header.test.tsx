@@ -8,6 +8,12 @@ jest.mock('@/components/layout/CartIcon', () => ({
 jest.mock('@/components/layout/UserMenu', () => ({
   UserMenu: () => <div data-testid="user-menu" />,
 }))
+jest.mock('@/lib/context/AuthContext', () => ({
+  useAuth: () => ({ isAuthenticated: false, isAdmin: false, profile: null, signOut: jest.fn(), loading: false }),
+}))
+jest.mock('@/lib/store/authModalStore', () => ({
+  useAuthModalStore: () => jest.fn(),
+}))
 
 describe('Header', () => {
   it('exibe o nome da marca', () => {

@@ -67,7 +67,24 @@ export function UserMenu() {
   const firstName = profile?.first_name ?? 'Você'
 
   return (
-    <div ref={menuRef} className="relative hidden md:block">
+    <div ref={menuRef} className="relative hidden md:flex items-center gap-2">
+      {isAdmin && (
+        <motion.div
+          whileHover={reduced ? undefined : { scale: 1.05 }}
+          whileTap={reduced ? undefined : { scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 480, damping: 26 }}
+        >
+          <Link
+            href="/admin"
+            aria-label="Painel Admin"
+            className="flex items-center gap-1.5 border border-brand-500/50 hover:border-brand-300/70 text-brand-300 hover:text-white hover:bg-brand-700/30 rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
+          >
+            <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
+            <span>Admin</span>
+          </Link>
+        </motion.div>
+      )}
+
       <motion.button
         type="button"
         onClick={() => setDropdownOpen((v) => !v)}
