@@ -6,8 +6,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 export const metadata: Metadata = {
-  title: 'Nossa História | Imagination 3D',
+  title: 'Nossa História',
   description: 'Conheça a história, os princípios e a visão por trás da Imagination 3D — impressão 3D de alta qualidade com Bambu Lab A1.',
+  alternates: { canonical: '/nossa-historia' },
+  openGraph: { type: 'website' },
 }
 
 const values = [
