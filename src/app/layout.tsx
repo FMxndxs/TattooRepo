@@ -15,13 +15,17 @@ export const metadata: Metadata = {
   description: 'Impressão 3D de alta qualidade com Bambu Lab A1. Produtos únicos, cores variadas e projetos personalizados.',
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    // apple-icon.tsx é detectado automaticamente pelo Next.js na convenção de arquivo
   },
   openGraph: {
     siteName: 'Imagination 3D',
     locale: 'pt_BR',
     type: 'website',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Imagination 3D' }],
+    // opengraph-image.tsx é detectado automaticamente pelo Next.js
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@imagination3d',
   },
 }
 
