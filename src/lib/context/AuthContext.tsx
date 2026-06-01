@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/browser'
 import type { UserProfile } from '@/types'
@@ -10,6 +10,7 @@ interface AuthContextValue {
   profile: UserProfile | null
   loading: boolean
   isAuthenticated: boolean
+  isAdmin: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (params: SignUpParams) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
@@ -32,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   const fetchProfile = useCallback(async (userId: string) => {
     const { data } = await supabase
@@ -136,6 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         isAuthenticated: !!user,
+        isAdmin: !!profile?.is_admin,
         signIn,
         signUp,
         signOut,

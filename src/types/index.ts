@@ -91,6 +91,7 @@ export interface UserProfile {
   first_name: string
   last_name: string
   phone: string
+  is_admin: boolean
   neighborhood: string | null
   city: string | null
   created_at: string

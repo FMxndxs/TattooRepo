@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Package, MessageSquare, Search } from 'lucide-react'
+import { Package, MessageSquare, Search, Trash2, X, Check } from 'lucide-react'
+import { createClient } from '@/lib/supabase/browser'
 import { OrderStatusSelect } from './OrderStatusSelect'
 import {
   STATUS_DISPLAY,
@@ -21,9 +22,32 @@ interface OrdersPanelProps {
   orders: AdminOrderRow[]
 }
 
-export function OrdersPanel({ orders }: OrdersPanelProps) {
+export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
   const [tab, setTab] = useState<TabValue>('all')
   const [search, setSearch] = useState('')
+  const [orders, setOrders] = useState<AdminOrderRow[]>(initialOrders)
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  async function handleDelete(order: AdminOrderRow) {
+    setDeletingId(order.id)
+    setDeleteError(null)
+
+    const supabase = createClient()
+    const table = order.type === 'custom' ? 'custom_orders' : 'orders'
+    const { error } = await supabase.from(table).delete().eq('id', order.id)
+
+    setDeletingId(null)
+    setConfirmingId(null)
+
+    if (error) {
+      setDeleteError(order.id)
+      return
+    }
+
+    setOrders((prev) => prev.filter((o) => o.id !== order.id))
+  }
 
   const filtered = orders.filter((o) => {
     if (tab === 'normal' && o.type !== 'normal') return false
@@ -37,6 +61,9 @@ export function OrdersPanel({ orders }: OrdersPanelProps) {
     }
     return true
   })
+
+  const isDeleting = (id: string) => deletingId === id
+  const isConfirming = (id: string) => confirmingId === id
 
   return (
     <div>
@@ -159,13 +186,46 @@ export function OrdersPanel({ orders }: OrdersPanelProps) {
                     </a>
                   )}
 
-                  <div className="ml-auto">
+                  <div className="ml-auto flex items-center gap-2">
                     <OrderStatusSelect
                       orderId={order.id}
                       orderType={order.type as OrderType}
                       currentStatus={order.status}
                     />
+
+                    {isConfirming(order.id) ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleDelete(order)}
+                          disabled={isDeleting(order.id)}
+                          className="flex items-center gap-1 px-2 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition-colors disabled:opacity-50"
+                          aria-label="Confirmar exclusão"
+                        >
+                          <Check className="w-3 h-3" />
+                          {isDeleting(order.id) ? '...' : 'Confirmar'}
+                        </button>
+                        <button
+                          onClick={() => { setConfirmingId(null); setDeleteError(null) }}
+                          disabled={isDeleting(order.id)}
+                          className="p-1 rounded-lg text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
+                          aria-label="Cancelar exclusão"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => { setConfirmingId(order.id); setDeleteError(null) }}
+                        className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                        aria-label="Excluir pedido"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
+                  {deleteError === order.id && (
+                    <span className="text-red-400 text-xs w-full text-right">Erro ao excluir</span>
+                  )}
                 </div>
               </div>
             </div>

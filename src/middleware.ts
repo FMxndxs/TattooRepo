@@ -28,14 +28,27 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = path.startsWith('/admin')
   const isAdminLogin = path === '/admin/login'
 
-  // Protect admin routes
-  if (isAdminRoute && !isAdminLogin && !user) {
-    return NextResponse.redirect(new URL('/admin/login', request.url))
-  }
+  if (isAdminRoute) {
+    // /admin/login is no longer a public page — redirect everyone away from it
+    if (isAdminLogin) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
 
-  // Redirect logged-in admin away from login page
-  if (isAdminLogin && user) {
-    return NextResponse.redirect(new URL('/admin', request.url))
+    // Not logged in → send to homepage (admin logs in via the regular AuthModal)
+    if (!user) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    // Logged in — verify is_admin flag
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single()
+
+    if (profileData?.is_admin !== true) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
   }
 
   return supabaseResponse

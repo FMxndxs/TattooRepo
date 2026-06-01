@@ -3,13 +3,13 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
-import { Sparkles, ChevronDown, User, LogOut, Layers, LogIn, Package } from 'lucide-react'
+import { Sparkles, ChevronDown, User, LogOut, Layers, LogIn, Package, LayoutDashboard } from 'lucide-react'
 import { useAuth } from '@/lib/context/AuthContext'
 import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
 import { useAuthModalStore } from '@/lib/store/authModalStore'
 
 export function UserMenu() {
-  const { isAuthenticated, profile, signOut, loading } = useAuth()
+  const { isAuthenticated, isAdmin, profile, signOut, loading } = useAuth()
   const openModal = useAuthModalStore((s) => s.openModal)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -110,6 +110,16 @@ export function UserMenu() {
 
             {/* Menu items */}
             <div className="py-1.5">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-brand-300 hover:text-white hover:bg-zinc-800 text-sm font-medium transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4 shrink-0" />
+                  Painel Admin
+                </Link>
+              )}
               <Link
                 href="/perfil"
                 onClick={() => setDropdownOpen(false)}
