@@ -10,6 +10,7 @@ export const faqNodes: ChatNode[] = [
       { label: 'Quanto tempo demora um pedido?', nextNodeId: 'faq-time' },
       { label: 'Quais materiais são usados?', nextNodeId: 'faq-materials' },
       { label: 'Frete e entrega', nextNodeId: 'faq-shipping' },
+      { label: '🏠 Menu principal', nextNodeId: 'root' },
     ],
   },
   {

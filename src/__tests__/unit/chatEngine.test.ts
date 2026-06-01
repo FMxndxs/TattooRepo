@@ -51,10 +51,10 @@ describe('Chat Engine', () => {
     expect(node?.options?.length).toBeGreaterThan(0)
   })
 
-  it('catalog-menu tem exatamente 8 categorias', () => {
+  it('catalog-menu tem 8 categorias + opção de menu principal', () => {
     const menu = getNode('catalog-menu')
     expect(menu).toBeDefined()
-    expect(menu?.options).toHaveLength(8)
+    expect(menu?.options).toHaveLength(9)
   })
 
   it('catalog-menu inclui todas as 8 categorias esperadas', () => {
@@ -110,10 +110,11 @@ describe('Chat Engine', () => {
     expect(getNode('catalog-menu-2')).toBeUndefined()
   })
 
-  it('nao retorna undefined para nodes de navigate action', () => {
-    const ctaNode = getNode('custom-cta')
+  it('navigate-custom tem action navigate para /custom-order', () => {
+    const ctaNode = getNode('navigate-custom')
     expect(ctaNode).toBeDefined()
     expect(ctaNode?.action?.type).toBe('navigate')
+    expect(ctaNode?.action?.payload).toBe('/custom-order')
   })
 
   it('getNode retorna undefined para id inexistente', () => {

@@ -48,10 +48,9 @@ export const customOrderGuideNodes: ChatNode[] = [
   },
   {
     id: 'custom-cta',
-    type: 'action',
+    type: 'info',
     message:
       'Perfeito! Clique no botão abaixo para acessar o formulário de pedido personalizado. Você precisa estar logado na conta para enviar. 🚀',
-    action: { type: 'navigate', payload: '/custom-order' },
     options: [
       { label: '✨ Ir para pedido personalizado', nextNodeId: 'navigate-custom' },
       { label: '🏠 Menu principal', nextNodeId: 'root' },

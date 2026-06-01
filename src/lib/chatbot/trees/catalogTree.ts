@@ -61,10 +61,13 @@ export const catalogNodes: ChatNode[] = [
     id: 'catalog-menu',
     type: 'menu',
     message: 'Explore nosso catálogo! Escolha uma categoria para ver os produtos. 🛍️',
-    options: CATEGORIES.map(({ slug, label, emoji }) => ({
-      label: `${emoji} ${label}`,
-      nextNodeId: `catalog-cat-${slug}`,
-    })),
+    options: [
+      ...CATEGORIES.map(({ slug, label, emoji }) => ({
+        label: `${emoji} ${label}`,
+        nextNodeId: `catalog-cat-${slug}`,
+      })),
+      { label: '🏠 Menu principal', nextNodeId: 'root' },
+    ],
   },
   ...CATEGORIES.flatMap(({ slug, label, emoji }) => makeCategoryNodes(slug, label, emoji)),
   {

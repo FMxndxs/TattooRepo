@@ -5,40 +5,49 @@ import { Sparkles, CheckCircle } from 'lucide-react'
 import { CustomOrderForm } from '@/components/custom-order/CustomOrderForm'
 import { buildCustomOrderUrl } from '@/lib/utils/whatsapp'
 import { createClient } from '@/lib/supabase/browser'
+import { useAuth } from '@/lib/context/AuthContext'
+import { useAuthGate } from '@/hooks/useAuthGate'
 import type { CustomOrderFormData } from '@/lib/validations/customOrder'
 
 export default function CustomOrderPage() {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const { profile } = useAuth()
+  const { requireAuth } = useAuthGate()
 
   async function handleSubmit(data: CustomOrderFormData & { image_url: string | null }) {
-    setLoading(true)
-    try {
-      const supabase = createClient()
-      await supabase.from('custom_orders').insert({
-        customer_name: data.name,
-        customer_phone: data.phone,
+    requireAuth(async () => {
+      const customerName = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || 'Cliente'
+      const customerPhone = profile?.phone ?? ''
+
+      setLoading(true)
+      try {
+        const supabase = createClient()
+        await supabase.from('custom_orders').insert({
+          customer_name: customerName,
+          customer_phone: customerPhone,
+          description: data.description,
+          reference_url: data.reference_url ?? null,
+          reference_image_url: data.image_url ?? null,
+        })
+      } catch {
+        // falha silenciosa — WhatsApp ainda abre
+      } finally {
+        setLoading(false)
+      }
+
+      const url = buildCustomOrderUrl({
+        name: customerName,
+        phone: customerPhone,
         description: data.description,
+        color_name: data.color_name,
         reference_url: data.reference_url ?? null,
-        reference_image_url: data.image_url ?? null,
+        image_url: data.image_url ?? null,
       })
-    } catch {
-      // falha silenciosa — WhatsApp ainda abre
-    } finally {
-      setLoading(false)
-    }
 
-    const url = buildCustomOrderUrl({
-      name: data.name,
-      phone: data.phone,
-      description: data.description,
-      color_name: data.color_name,
-      reference_url: data.reference_url ?? null,
-      image_url: data.image_url ?? null,
+      window.open(url, '_blank')
+      setSubmitted(true)
     })
-
-    window.open(url, '_blank')
-    setSubmitted(true)
   }
 
   if (submitted) {

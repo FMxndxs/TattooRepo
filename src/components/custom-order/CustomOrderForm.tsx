@@ -1,7 +1,9 @@
-﻿'use client'
+'use client'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { User } from 'lucide-react'
+import { useAuth } from '@/lib/context/AuthContext'
 import { customOrderSchema, type CustomOrderFormData, type CustomOrderFormInput } from '@/lib/validations/customOrder'
 import { ImageUpload } from './ImageUpload'
 import { useImageUpload } from '@/hooks/useImageUpload'
@@ -14,6 +16,7 @@ interface CustomOrderFormProps {
 }
 
 export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormProps) {
+  const { profile } = useAuth()
   const { uploading, preview, uploadedUrl, error: uploadError, handleFile } = useImageUpload()
 
   const {
@@ -25,10 +28,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
     defaultValues: { reference_url: '' },
   })
 
-  const fields: { id: keyof CustomOrderFormData; label: string; placeholder: string; type?: string }[] = [
-    { id: 'name', label: 'Nome', placeholder: 'Seu nome completo' },
-    { id: 'phone', label: 'Telefone', placeholder: '(11) 98765-4321' },
-  ]
+  const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ')
 
   return (
     <form
@@ -36,19 +36,13 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
       noValidate
       className="space-y-5"
     >
-      {/* Nome e Telefone */}
-      {fields.map(({ id, label, placeholder }) => (
-        <div key={id}>
-          <label htmlFor={id} className="block text-white text-sm font-medium mb-1.5">{label}</label>
-          <input
-            id={id}
-            placeholder={placeholder}
-            {...register(id)}
-            className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
-          />
-          {errors[id] && <p role="alert" className="text-red-400 text-xs mt-1">{errors[id]?.message}</p>}
+      {/* Identificação do usuário (read-only) */}
+      {fullName && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-brand-700/10 border border-brand-700/30 rounded-xl">
+          <User className="w-4 h-4 text-brand-300 shrink-0" />
+          <span className="text-zinc-200 text-sm font-medium">{fullName}</span>
         </div>
-      ))}
+      )}
 
       {/* Descrição */}
       <div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { createClient } from './browser'
-import type { CartItem, Product } from '@/types'
+import type { CartItem, Order, Product } from '@/types'
 
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
   const supabase = createClient()
@@ -79,4 +79,25 @@ export async function createOrder(params: CreateOrderParams): Promise<string | n
   if (itemsError) return null
 
   return order.id
+}
+
+export async function getUserOrders(userId: string): Promise<Order[]> {
+  const supabase = createClient()
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select(`
+      *,
+      items:order_items(
+        *,
+        product:products(id, name, slug),
+        color:colors(id, name, hex_code),
+        size:product_sizes(id, label)
+      )
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) return []
+  return (data ?? []) as Order[]
 }
