@@ -10,6 +10,7 @@ export function StockToggle({ available, onChange, disabled = false }: StockTogg
   return (
     <div className="flex items-center gap-3">
       <button
+        type="button"
         role="switch"
         aria-checked={available}
         disabled={disabled}
