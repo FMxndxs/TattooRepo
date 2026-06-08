@@ -39,6 +39,10 @@ export interface CreateOrderParams {
   userId: string
   items: CartItem[]
   total: number
+  freight?: number | null
+  cep?: string
+  street?: string
+  streetNumber?: string
   neighborhood: string
   city: string
   notes?: string
@@ -54,6 +58,10 @@ export async function createOrder(params: CreateOrderParams): Promise<string | n
     .insert({
       user_id: params.userId,
       total: params.total,
+      freight: params.freight ?? null,
+      cep: params.cep ?? null,
+      street: params.street ?? null,
+      street_number: params.streetNumber ?? null,
       neighborhood: params.neighborhood,
       city: params.city,
       notes: params.notes ?? null,

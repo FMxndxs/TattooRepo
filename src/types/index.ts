@@ -63,8 +63,29 @@ export interface CustomerInfo {
   name: string
   phone: string
   email?: string
+  cep: string
+  street: string
+  number: string
   neighborhood: string
   city: string
+}
+
+// ─── Freight / Delivery ──────────────────────────────────────────────────────
+
+export type DeliveryMode = 'delivery' | 'pickup_or_courier' | 'unknown'
+
+export interface DeliveryQuote {
+  distanceKm: number | null
+  withinRadius: boolean
+  freight: number | null
+  mode: DeliveryMode
+  address?: {
+    cep: string
+    street: string
+    neighborhood: string
+    city: string
+    state: string
+  }
 }
 
 export interface CustomOrder {
@@ -82,6 +103,7 @@ export interface WhatsAppOrderPayload {
   customer: CustomerInfo
   items: CartItem[]
   total: number
+  deliveryQuote?: DeliveryQuote | null
 }
 
 // ─── Auth & Profile ─────────────────────────────────────────────────────────
@@ -109,6 +131,10 @@ export interface Order {
   customer_phone: string
   status: OrderStatus
   total: number
+  freight: number | null
+  cep: string | null
+  street: string | null
+  street_number: string | null
   neighborhood: string
   city: string
   notes: string | null

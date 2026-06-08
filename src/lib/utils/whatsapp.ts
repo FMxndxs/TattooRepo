@@ -4,7 +4,9 @@ import { formatBRL } from './formatters'
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '5511989525014'
 
 export function buildWhatsAppMessage(payload: WhatsAppOrderPayload): string {
-  const { customer, items, total } = payload
+  const { customer, items, total, deliveryQuote } = payload
+  const freight = deliveryQuote?.freight ?? null
+  const grandTotal = total + (freight ?? 0)
 
   const itemLines = items
     .map((item) => {
@@ -24,16 +26,37 @@ export function buildWhatsAppMessage(payload: WhatsAppOrderPayload): string {
 
   if (customer.email) lines.push(`E-mail: ${customer.email}`)
 
+  // Endereço completo
   lines.push(
+    `CEP: ${customer.cep}`,
+    `Endereço: ${customer.street}, ${customer.number}`,
     `Bairro: ${customer.neighborhood} / ${customer.city}`,
     '',
     'Itens:',
     itemLines,
     '',
-    `Total: ${formatBRL(total)}`,
-    '',
-    'Pedido gerado pelo site Imagination 3D',
+    `Subtotal: ${formatBRL(total)}`,
   )
+
+  // Frete e total
+  if (deliveryQuote?.mode === 'delivery' && freight !== null) {
+    lines.push(
+      `Frete: ${formatBRL(freight)} (entrega própria · ${deliveryQuote.distanceKm?.toFixed(1)} km · R$ 2,50/km)`,
+      `Total: ${formatBRL(grandTotal)}`,
+    )
+  } else if (deliveryQuote?.mode === 'pickup_or_courier') {
+    lines.push(
+      'Frete: a combinar (retirada na sede ou Uber Flash / 99 Entregas)',
+      `Total: ${formatBRL(total)} + frete`,
+    )
+  } else {
+    lines.push(
+      'Frete: a combinar',
+      `Total: ${formatBRL(total)} + frete`,
+    )
+  }
+
+  lines.push('', 'Pedido gerado pelo site Imagination 3D')
 
   return lines.join('\n')
 }

@@ -11,13 +11,14 @@ import { CartSummary } from '@/components/cart/CartSummary'
 import { CheckoutForm } from '@/components/cart/CheckoutForm'
 import { buildWhatsAppUrl } from '@/lib/utils/whatsapp'
 import { createOrder } from '@/lib/supabase/clientQueries'
-import type { CustomerInfo } from '@/types'
+import type { CustomerInfo, DeliveryQuote } from '@/types'
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total, itemCount, clearCart } = useCartStore()
   const { isAuthenticated, user } = useAuth()
   const openModal = useAuthModalStore((s) => s.openModal)
   const [loading, setLoading] = useState(false)
+  const [deliveryQuote, setDeliveryQuote] = useState<DeliveryQuote | null>(null)
 
   async function handleCheckout(customer: CustomerInfo) {
     if (!isAuthenticated || !user) {
@@ -27,12 +28,19 @@ export default function CartPage() {
 
     setLoading(true)
 
+    const freight = deliveryQuote?.freight ?? null
+    const grandTotal = total + (freight ?? 0)
+
     try {
-      // Save order to Supabase
+      // Persiste o pedido no Supabase (falha silenciosa — WhatsApp ainda abre)
       await createOrder({
         userId: user.id,
         items,
-        total,
+        total: grandTotal,
+        freight,
+        cep: customer.cep,
+        street: customer.street,
+        streetNumber: customer.number,
         neighborhood: customer.neighborhood,
         city: customer.city,
         customerName: customer.name,
@@ -42,7 +50,7 @@ export default function CartPage() {
       // Silent fail — WhatsApp still opens
     }
 
-    const url = buildWhatsAppUrl({ customer, items, total })
+    const url = buildWhatsAppUrl({ customer, items, total, deliveryQuote })
     window.open(url, '_blank')
     clearCart()
     setLoading(false)
@@ -90,10 +98,14 @@ export default function CartPage() {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <CartSummary itemCount={itemCount} total={total} />
+          <CartSummary itemCount={itemCount} total={total} deliveryQuote={deliveryQuote} />
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
             <h3 className="text-white font-bold mb-4">Dados para entrega</h3>
-            <CheckoutForm onSubmit={handleCheckout} loading={loading} />
+            <CheckoutForm
+              onSubmit={handleCheckout}
+              onDeliveryQuote={setDeliveryQuote}
+              loading={loading}
+            />
           </div>
         </div>
       </div>

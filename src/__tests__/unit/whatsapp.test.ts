@@ -30,6 +30,9 @@ const mockPayload: WhatsAppOrderPayload = {
   customer: {
     name: 'Joao Silva',
     phone: '(11) 98765-4321',
+    cep: '06502000',
+    street: 'Rua das Flores',
+    number: '42',
     neighborhood: 'Vila Madalena',
     city: 'SP',
   },
