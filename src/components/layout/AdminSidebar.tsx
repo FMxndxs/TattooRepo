@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Package, LayoutGrid, MessageSquare, LogOut, Home } from 'lucide-react'
+import { Package, LayoutGrid, MessageSquare, LogOut, Home, Settings } from 'lucide-react'
 import { createClient } from '@/lib/supabase/browser'
 
 const navItems = [
   { href: '/admin', label: 'Visão Geral', icon: LayoutGrid, exact: true },
   { href: '/admin/products', label: 'Produtos', icon: Package },
   { href: '/admin/orders', label: 'Pedidos', icon: MessageSquare },
+  { href: '/admin/settings', label: 'Configurações', icon: Settings },
 ]
 
 export function AdminSidebar() {

@@ -79,6 +79,10 @@ export interface DeliveryQuote {
   withinRadius: boolean
   freight: number | null
   mode: DeliveryMode
+  /** R$ por km aplicado nesta cotação */
+  perKm: number
+  /** Raio máximo de entrega (km) aplicado nesta cotação */
+  radiusKm: number
   address?: {
     cep: string
     street: string

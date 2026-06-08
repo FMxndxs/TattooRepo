@@ -1,4 +1,4 @@
-import type { Order, CustomOrder } from '@/types'
+import type { Order, CustomOrder, OrderItem } from '@/types'
 
 export type AdminStatus = 'pending' | 'in_production' | 'completed' | 'cancelled'
 export type OrderType = 'normal' | 'custom'
@@ -15,6 +15,15 @@ export interface AdminOrderRow {
   total?: number
   reference_url?: string | null
   reference_image_url?: string | null
+  // Endereço e frete — presentes apenas em pedidos normais (tipo 'normal')
+  freight?: number | null
+  cep?: string | null
+  street?: string | null
+  street_number?: string | null
+  neighborhood?: string
+  city?: string
+  notes?: string | null
+  items?: OrderItem[]
 }
 
 export const ADMIN_STATUS_OPTIONS: { value: AdminStatus; label: string }[] = [
@@ -62,6 +71,14 @@ export function normalizeOrders(
     created_at: o.created_at,
     summary: itemsSummary(o),
     total: o.total,
+    freight: o.freight,
+    cep: o.cep,
+    street: o.street,
+    street_number: o.street_number,
+    neighborhood: o.neighborhood,
+    city: o.city,
+    notes: o.notes,
+    items: o.items,
   }))
 
   const custom: AdminOrderRow[] = customOrders.map((c) => ({

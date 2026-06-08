@@ -165,7 +165,7 @@ function DeliveryPanel({ quote }: { quote: DeliveryQuote }) {
             {quote.distanceKm?.toFixed(1)} km da sede ·{' '}
             Frete{' '}
             <span className="font-bold text-green-300">{formatBRL(quote.freight!)}</span>
-            {' '}(R$ 2,50/km)
+            {' '}(R$ {quote.perKm.toFixed(2).replace('.', ',')}/km)
           </p>
         </div>
       </div>
@@ -177,7 +177,7 @@ function DeliveryPanel({ quote }: { quote: DeliveryQuote }) {
       <div className="rounded-xl bg-amber-950/50 border border-amber-800 p-4 flex gap-3 items-start">
         <Store className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
         <div>
-          <p className="text-amber-300 text-sm font-semibold">Fora da área de entrega (8 km)</p>
+          <p className="text-amber-300 text-sm font-semibold">Fora da área de entrega ({quote.radiusKm} km)</p>
           <p className="text-amber-400/80 text-xs mt-0.5">
             Você pode <strong className="text-amber-300">retirar na sede</strong> (centro histórico
             de Santana de Parnaíba) ou solicitar{' '}

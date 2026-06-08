@@ -10,6 +10,18 @@ export const HQ_COORDS: Coords = { lat: -23.4442, lng: -46.9178 }
 export const DELIVERY_RADIUS_KM = 8
 export const FREIGHT_PER_KM = 2.5
 
+export interface FreightConfig {
+  hqCoords: Coords
+  perKm: number
+  radiusKm: number
+}
+
+export const DEFAULT_FREIGHT_CONFIG: FreightConfig = {
+  hqCoords: HQ_COORDS,
+  perKm: FREIGHT_PER_KM,
+  radiusKm: DELIVERY_RADIUS_KM,
+}
+
 /** Distância em km entre dois pontos geográficos (linha reta). */
 export function haversineKm(a: Coords, b: Coords): number {
   const R = 6371
@@ -24,26 +36,32 @@ export function haversineKm(a: Coords, b: Coords): number {
 
 /**
  * Calcula a cotação de frete com base na distância da sede.
- * - ≤ 8 km → entrega própria a R$ 2,50/km
- * - > 8 km → retirada na sede ou Uber Flash/99 (a combinar)
+ * - ≤ radiusKm → entrega própria a perKm R$/km
+ * - > radiusKm → retirada na sede ou Uber Flash/99 (a combinar)
  * - sem coords → frete a combinar
+ *
+ * O terceiro argumento `config` é opcional — omiti-lo usa DEFAULT_FREIGHT_CONFIG,
+ * mantendo retrocompatibilidade com chamadas existentes e testes.
  */
 export function quoteFreight(
   clientCoords: Coords | null,
   address?: DeliveryQuote['address'],
+  config: FreightConfig = DEFAULT_FREIGHT_CONFIG,
 ): DeliveryQuote {
+  const { hqCoords, perKm, radiusKm } = config
+
   if (!clientCoords) {
-    return { distanceKm: null, withinRadius: false, freight: null, mode: 'unknown', address }
+    return { distanceKm: null, withinRadius: false, freight: null, mode: 'unknown', perKm, radiusKm, address }
   }
 
-  const distanceKm = haversineKm(HQ_COORDS, clientCoords)
-  const withinRadius = distanceKm <= DELIVERY_RADIUS_KM
+  const distanceKm = haversineKm(hqCoords, clientCoords)
+  const withinRadius = distanceKm <= radiusKm
 
   if (withinRadius) {
     // Arredonda para 2 casas decimais
-    const freight = Math.round(distanceKm * FREIGHT_PER_KM * 100) / 100
-    return { distanceKm, withinRadius: true, freight, mode: 'delivery', address }
+    const freight = Math.round(distanceKm * perKm * 100) / 100
+    return { distanceKm, withinRadius: true, freight, mode: 'delivery', perKm, radiusKm, address }
   }
 
-  return { distanceKm, withinRadius: false, freight: null, mode: 'pickup_or_courier', address }
+  return { distanceKm, withinRadius: false, freight: null, mode: 'pickup_or_courier', perKm, radiusKm, address }
 }

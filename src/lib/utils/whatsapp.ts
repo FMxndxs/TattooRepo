@@ -41,7 +41,7 @@ export function buildWhatsAppMessage(payload: WhatsAppOrderPayload): string {
   // Frete e total
   if (deliveryQuote?.mode === 'delivery' && freight !== null) {
     lines.push(
-      `Frete: ${formatBRL(freight)} (entrega própria · ${deliveryQuote.distanceKm?.toFixed(1)} km · R$ 2,50/km)`,
+      `Frete: ${formatBRL(freight)} (entrega própria · ${deliveryQuote.distanceKm?.toFixed(1)} km · R$ ${deliveryQuote.perKm.toFixed(2).replace('.', ',')}/km)`,
       `Total: ${formatBRL(grandTotal)}`,
     )
   } else if (deliveryQuote?.mode === 'pickup_or_courier') {

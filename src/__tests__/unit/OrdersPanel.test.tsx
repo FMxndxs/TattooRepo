@@ -72,13 +72,14 @@ describe('OrdersPanel', () => {
     expect(screen.queryByText('Caixa com logotipo')).not.toBeInTheDocument()
   })
 
-  it('shows customer name header once when the same customer has multiple orders', () => {
+  it('shows customer name in each card (name shown per order, not as external group header)', () => {
     render(<OrdersPanel orders={orders} />)
-    // Ana Silva appears twice in the list but header should render once before the first occurrence
-    const headers = screen.getAllByText('Ana Silva')
-    // One header span (uppercase) + possibly customer_phone cells — check the header specifically
-    const header = headers.find((el) => el.tagName === 'SPAN' && el.className.includes('brand-300'))
-    expect(header).toBeTruthy()
+    // Ana Silva has 2 orders; her name appears in each order card as a <p>
+    const nameEls = screen.getAllByText('Ana Silva')
+    const cardNames = nameEls.filter(
+      (el) => el.tagName === 'P' && el.className.includes('brand-300'),
+    )
+    expect(cardNames.length).toBe(2)
   })
 
   it('shows empty state when no orders match filter', () => {

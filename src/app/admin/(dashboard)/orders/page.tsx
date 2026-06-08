@@ -13,7 +13,9 @@ export default async function AdminOrdersPage() {
         *,
         items:order_items(
           *,
-          product:products(id, name)
+          product:products(id, name),
+          color:colors(name, hex_code),
+          size:product_sizes(label)
         )
       `)
       .order('created_at', { ascending: false }),
