@@ -142,3 +142,21 @@ export const ORDER_STATUS_OPTIONS: OrderStatus[] = [
   'delivered',
   'cancelled',
 ]
+
+// ─── Fulfillment metadata ─────────────────────────────────────────────────────
+
+export interface FulfillmentMeta {
+  label: string
+  /** Classes Tailwind para badge (text + bg) */
+  color: string
+}
+
+/**
+ * Metadados de exibição para as modalidades de atendimento.
+ * Usado no painel admin para mostrar como o pedido será entregue.
+ */
+export const FULFILLMENT_META: Record<FulfillmentType, FulfillmentMeta> = {
+  delivery: { label: 'Entrega',          color: 'text-green-400 bg-green-400/10' },
+  shipping: { label: 'Envio (Correios)', color: 'text-blue-400 bg-blue-400/10'  },
+  pickup:   { label: 'Retirada na sede', color: 'text-amber-400 bg-amber-400/10' },
+}

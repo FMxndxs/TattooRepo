@@ -15,6 +15,7 @@ import {
   type AdminStatus,
   type OrderType,
 } from '@/lib/admin/orders'
+import { FULFILLMENT_META } from '@/lib/orders/stateMachine'
 import { formatBRL } from '@/lib/utils/formatters'
 import { buildOrderConfirmationUrl } from '@/lib/utils/whatsapp'
 import type { FulfillmentType } from '@/types'
@@ -393,18 +394,52 @@ export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
                     </div>
                   )}
 
+                  {/* Modalidade de atendimento */}
+                  <div>
+                    <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                      Atendimento
+                    </p>
+                    {order.fulfillment_type && FULFILLMENT_META[order.fulfillment_type as FulfillmentType] ? (
+                      <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${FULFILLMENT_META[order.fulfillment_type as FulfillmentType].color}`}>
+                        <Truck className="w-3 h-3 shrink-0" />
+                        {FULFILLMENT_META[order.fulfillment_type as FulfillmentType].label}
+                      </span>
+                    ) : (
+                      <span className="text-zinc-500 text-xs">Não informado</span>
+                    )}
+                  </div>
+
                   {/* Frete */}
                   <div>
                     <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">
                       Frete
                     </p>
-                    <p className="text-sm flex items-center gap-1.5">
-                      <Truck className="w-4 h-4 text-zinc-500 shrink-0" />
-                      {order.freight != null
-                        ? <span className="text-green-400 font-medium">{formatBRL(order.freight)} — entrega própria</span>
-                        : <span className="text-amber-400">A combinar — retirada ou courier</span>}
+                    <p className="text-sm">
+                      {order.fulfillment_type === 'pickup'
+                        ? <span className="text-amber-400">Retirada na sede — sem frete</span>
+                        : order.freight != null
+                          ? <span className="text-green-400 font-medium">{formatBRL(order.freight)}</span>
+                          : <span className="text-zinc-500">A combinar</span>}
                     </p>
                   </div>
+
+                  {/* Entregador / Rastreamento */}
+                  {order.courier_name && (
+                    <div>
+                      <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">
+                        Entregador
+                      </p>
+                      <p className="text-zinc-300 text-sm">{order.courier_name}</p>
+                    </div>
+                  )}
+                  {order.tracking_code && (
+                    <div>
+                      <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-1">
+                        Rastreamento
+                      </p>
+                      <p className="font-mono text-brand-300 text-sm">{order.tracking_code}</p>
+                    </div>
+                  )}
 
                   {/* Observações */}
                   {order.notes && (

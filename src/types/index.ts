@@ -94,6 +94,8 @@ export interface DeliveryQuote {
 
 export interface CustomOrder {
   id?: string
+  /** Usuário autenticado que enviou o pedido (null em registros antigos pré-mig032). */
+  user_id?: string | null
   customer_name: string
   customer_phone: string
   description: string

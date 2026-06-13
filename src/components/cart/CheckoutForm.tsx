@@ -48,10 +48,8 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, onFulfillmentChange, l
     if (!q) {
       setSelectedFulfillment(null)
       onFulfillmentChange?.(null)
-    } else if (q.mode === 'delivery') {
-      onFulfillmentChange?.('delivery')
     }
-    // pickup_or_courier ou unknown: aguarda seleção do cliente
+    // Nenhum modo pré-seleciona — cliente escolhe sempre
   }
 
   function handleFulfillmentSelect(type: FulfillmentType) {
@@ -164,10 +162,17 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, onFulfillmentChange, l
         />
       )}
 
+      {/* Hint de seleção obrigatória */}
+      {quote && (quote.mode === 'delivery' || quote.mode === 'pickup_or_courier') && !selectedFulfillment && (
+        <p className="text-amber-400 text-xs text-center">
+          Escolha como deseja receber para continuar.
+        </p>
+      )}
+
       <button
         type="submit"
-        disabled={loading}
-        className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-bold py-4 rounded-full transition-colors text-base mt-2"
+        disabled={loading || !!(quote && (quote.mode === 'delivery' || quote.mode === 'pickup_or_courier') && !selectedFulfillment)}
+        className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-full transition-colors text-base mt-2"
       >
         {loading ? 'Processando...' : 'Finalizar pedido via WhatsApp'}
       </button>
@@ -184,16 +189,44 @@ interface DeliveryPanelProps {
 function DeliveryPanel({ quote, selectedFulfillment, onFulfillmentSelect }: DeliveryPanelProps) {
   if (quote.mode === 'delivery') {
     return (
-      <div className="rounded-xl bg-green-950/50 border border-green-800 p-4 flex gap-3 items-start">
-        <Truck className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-green-300 text-sm font-semibold">Entrega disponível ✓</p>
-          <p className="text-green-400/80 text-xs mt-0.5">
-            {quote.distanceKm?.toFixed(1)} km da sede ·{' '}
-            Frete{' '}
-            <span className="font-bold text-green-300">{formatBRL(quote.freight!)}</span>
-            {' '}(R$ {quote.perKm.toFixed(2).replace('.', ',')}/km)
-          </p>
+      <div className="rounded-xl bg-green-950/50 border border-green-800 p-4">
+        <div className="flex gap-3 items-start mb-3">
+          <Truck className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-green-300 text-sm font-semibold">
+              Entrega disponível · {quote.distanceKm?.toFixed(1)} km da sede
+            </p>
+            <p className="text-green-400/80 text-xs mt-0.5">Escolha como deseja receber:</p>
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 ml-8">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="fulfillment_type"
+              value="delivery"
+              checked={selectedFulfillment === 'delivery'}
+              onChange={() => onFulfillmentSelect('delivery')}
+              className="accent-brand-700"
+            />
+            <span className="text-green-200 text-sm">
+              Receber em casa{' '}
+              <span className="text-green-400 font-medium">({formatBRL(quote.freight!)})</span>
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="fulfillment_type"
+              value="pickup"
+              checked={selectedFulfillment === 'pickup'}
+              onChange={() => onFulfillmentSelect('pickup')}
+              className="accent-brand-700"
+            />
+            <span className="text-green-200 text-sm">
+              Retirar na sede <span className="text-green-400 font-medium">(sem frete)</span>
+            </span>
+          </label>
         </div>
       </div>
     )

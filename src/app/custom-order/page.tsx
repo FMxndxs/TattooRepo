@@ -12,7 +12,7 @@ import type { CustomOrderFormData } from '@/lib/validations/customOrder'
 export default function CustomOrderPage() {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const { profile } = useAuth()
+  const { profile, user } = useAuth()
   const { requireAuth } = useAuthGate()
 
   async function handleSubmit(data: CustomOrderFormData & { image_url: string | null }) {
@@ -24,6 +24,7 @@ export default function CustomOrderPage() {
       try {
         const supabase = createClient()
         await supabase.from('custom_orders').insert({
+          user_id: user!.id,
           customer_name: customerName,
           customer_phone: customerPhone,
           description: data.description,

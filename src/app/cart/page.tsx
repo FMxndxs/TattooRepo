@@ -29,7 +29,8 @@ export default function CartPage() {
 
     setLoading(true)
 
-    const freight = deliveryQuote?.freight ?? null
+    // Frete só se aplica quando cliente optou pela entrega (não na retirada)
+    const freight = fulfillmentType === 'delivery' ? (deliveryQuote?.freight ?? null) : null
     const grandTotal = total + (freight ?? 0)
 
     try {
