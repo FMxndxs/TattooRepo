@@ -16,14 +16,14 @@ COMMENT ON COLUMN public.order_items.color_name IS
 COMMENT ON COLUMN public.order_items.size_label IS
   'Snapshot do label do tamanho selecionado';
 
--- 2. Backfill para registros existentes via JOIN com as tabelas de catálogo
+-- 2. Backfill para registros existentes
+-- color_name e size_label usam subquery porque LEFT JOIN na tabela-alvo
+-- não pode referenciar o alias dela nos ON clauses do FROM.
 UPDATE public.order_items oi
 SET
   product_name = p.name,
-  color_name   = c.name,
-  size_label   = ps.label
+  color_name   = (SELECT c.name  FROM public.colors        c  WHERE c.id  = oi.color_id),
+  size_label   = (SELECT ps.label FROM public.product_sizes ps WHERE ps.id = oi.size_id)
 FROM public.products p
-LEFT JOIN public.colors c       ON c.id  = oi.color_id
-LEFT JOIN public.product_sizes ps ON ps.id = oi.size_id
 WHERE p.id = oi.product_id
   AND oi.product_name IS NULL;

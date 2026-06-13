@@ -7,6 +7,7 @@
 
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { PrintButton } from '@/components/admin/PrintButton'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -48,13 +49,7 @@ export default async function NotaProducaoPage({ params }: Props) {
     <>
       {/* Botão de impressão — não aparece no print */}
       <div className="no-print flex items-center gap-3 p-4 bg-zinc-950 border-b border-zinc-800">
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="px-4 py-2 bg-brand-700 hover:bg-brand-500 text-white text-sm font-semibold rounded-lg transition-colors"
-        >
-          Imprimir (Ctrl+P)
-        </button>
+        <PrintButton />
         <a href="/admin/orders" className="text-zinc-400 text-sm hover:text-white">
           ← Voltar para pedidos
         </a>
