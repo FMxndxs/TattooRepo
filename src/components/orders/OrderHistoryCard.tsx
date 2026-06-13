@@ -14,7 +14,7 @@ interface OrderHistoryCardProps {
 function itemsSummary(order: Order): string {
   if (!order.items?.length) return 'Sem itens'
   const parts = order.items.map((i) => {
-    const name = i.product?.name ?? 'Produto'
+    const name = i.product_name ?? i.product?.name ?? 'Produto'
     return i.quantity > 1 ? `${i.quantity}× ${name}` : name
   })
   return parts.join(', ')
@@ -43,6 +43,11 @@ export function OrderHistoryCard({ order }: OrderHistoryCardProps) {
               <Package className="w-3 h-3" />
               Pedido
             </span>
+            {order.order_code && (
+              <span className="font-mono text-xs font-bold text-brand-300">
+                #{order.order_code}
+              </span>
+            )}
             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusMeta.color}`}>
               {statusMeta.label}
             </span>
@@ -91,23 +96,27 @@ export function OrderHistoryCard({ order }: OrderHistoryCardProps) {
 
                       <div className="min-w-0">
                         <p className="text-white font-medium truncate">
-                          {item.product?.name ?? 'Produto'}
+                          {item.product_name ?? item.product?.name ?? 'Produto'}
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
                           {/* Cor */}
-                          {item.color && (
+                          {(item.color_name ?? item.color?.name) && (
                             <span className="flex items-center gap-1 text-xs text-zinc-400">
-                              <span
-                                className="inline-block w-3 h-3 rounded-full border border-zinc-700 shrink-0"
-                                style={{ backgroundColor: item.color.hex_code }}
-                                aria-label={item.color.name}
-                              />
-                              {item.color.name}
+                              {item.color?.hex_code && (
+                                <span
+                                  className="inline-block w-3 h-3 rounded-full border border-zinc-700 shrink-0"
+                                  style={{ backgroundColor: item.color.hex_code }}
+                                  aria-label={item.color_name ?? item.color.name}
+                                />
+                              )}
+                              {item.color_name ?? item.color?.name}
                             </span>
                           )}
                           {/* Tamanho */}
-                          {item.size && (
-                            <span className="text-xs text-zinc-500">{item.size.label}</span>
+                          {(item.size_label ?? item.size?.label) && (
+                            <span className="text-xs text-zinc-500">
+                              {item.size_label ?? item.size?.label}
+                            </span>
                           )}
                         </div>
                       </div>

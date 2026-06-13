@@ -11,7 +11,7 @@ import { CartSummary } from '@/components/cart/CartSummary'
 import { CheckoutForm } from '@/components/cart/CheckoutForm'
 import { buildWhatsAppUrl } from '@/lib/utils/whatsapp'
 import { createOrder } from '@/lib/supabase/clientQueries'
-import type { CustomerInfo, DeliveryQuote } from '@/types'
+import type { CustomerInfo, DeliveryQuote, FulfillmentType } from '@/types'
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total, itemCount, clearCart } = useCartStore()
@@ -19,6 +19,7 @@ export default function CartPage() {
   const openModal = useAuthModalStore((s) => s.openModal)
   const [loading, setLoading] = useState(false)
   const [deliveryQuote, setDeliveryQuote] = useState<DeliveryQuote | null>(null)
+  const [fulfillmentType, setFulfillmentType] = useState<FulfillmentType | null>(null)
 
   async function handleCheckout(customer: CustomerInfo) {
     if (!isAuthenticated || !user) {
@@ -38,6 +39,7 @@ export default function CartPage() {
         items,
         total: grandTotal,
         freight,
+        fulfillmentType,
         cep: customer.cep,
         street: customer.street,
         streetNumber: customer.number,
@@ -104,6 +106,7 @@ export default function CartPage() {
             <CheckoutForm
               onSubmit={handleCheckout}
               onDeliveryQuote={setDeliveryQuote}
+              onFulfillmentChange={setFulfillmentType}
               loading={loading}
             />
           </div>

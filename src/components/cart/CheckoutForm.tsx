@@ -6,11 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, Truck, Store, AlertCircle } from 'lucide-react'
 import { checkoutSchema, type CheckoutFormData } from '@/lib/validations/checkout'
 import { formatBRL } from '@/lib/utils/formatters'
-import type { CustomerInfo, DeliveryQuote } from '@/types'
+import type { CustomerInfo, DeliveryQuote, FulfillmentType } from '@/types'
 
 interface CheckoutFormProps {
   onSubmit: (data: CustomerInfo) => void
   onDeliveryQuote?: (quote: DeliveryQuote | null) => void
+  /** Chamado sempre que o fulfillment_type muda: 'delivery' automático, 'pickup'/'shipping' por escolha do cliente, null ao limpar. */
+  onFulfillmentChange?: (type: FulfillmentType | null) => void
   loading?: boolean
 }
 
@@ -19,7 +21,7 @@ const inputCls =
 const labelCls = 'block text-white text-sm font-medium mb-1.5'
 const errorCls = 'text-red-400 text-xs mt-1'
 
-export function CheckoutForm({ onSubmit, onDeliveryQuote, loading = false }: CheckoutFormProps) {
+export function CheckoutForm({ onSubmit, onDeliveryQuote, onFulfillmentChange, loading = false }: CheckoutFormProps) {
   const {
     register,
     handleSubmit,
@@ -36,12 +38,25 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, loading = false }: Che
   const { field: cepField } = useController({ name: 'cep', control })
 
   const [quote, setQuote] = useState<DeliveryQuote | null>(null)
+  const [selectedFulfillment, setSelectedFulfillment] = useState<FulfillmentType | null>(null)
   const [loadingFreight, setLoadingFreight] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function propagateQuote(q: DeliveryQuote | null) {
     setQuote(q)
     onDeliveryQuote?.(q)
+    if (!q) {
+      setSelectedFulfillment(null)
+      onFulfillmentChange?.(null)
+    } else if (q.mode === 'delivery') {
+      onFulfillmentChange?.('delivery')
+    }
+    // pickup_or_courier ou unknown: aguarda seleção do cliente
+  }
+
+  function handleFulfillmentSelect(type: FulfillmentType) {
+    setSelectedFulfillment(type)
+    onFulfillmentChange?.(type)
   }
 
   function handleCepChange(raw: string) {
@@ -141,7 +156,13 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, loading = false }: Che
       </div>
 
       {/* Painel de entrega */}
-      {quote && <DeliveryPanel quote={quote} />}
+      {quote && (
+        <DeliveryPanel
+          quote={quote}
+          selectedFulfillment={selectedFulfillment}
+          onFulfillmentSelect={handleFulfillmentSelect}
+        />
+      )}
 
       <button
         type="submit"
@@ -154,7 +175,13 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, loading = false }: Che
   )
 }
 
-function DeliveryPanel({ quote }: { quote: DeliveryQuote }) {
+interface DeliveryPanelProps {
+  quote: DeliveryQuote
+  selectedFulfillment: FulfillmentType | null
+  onFulfillmentSelect: (type: FulfillmentType) => void
+}
+
+function DeliveryPanel({ quote, selectedFulfillment, onFulfillmentSelect }: DeliveryPanelProps) {
   if (quote.mode === 'delivery') {
     return (
       <div className="rounded-xl bg-green-950/50 border border-green-800 p-4 flex gap-3 items-start">
@@ -174,16 +201,37 @@ function DeliveryPanel({ quote }: { quote: DeliveryQuote }) {
 
   if (quote.mode === 'pickup_or_courier') {
     return (
-      <div className="rounded-xl bg-amber-950/50 border border-amber-800 p-4 flex gap-3 items-start">
-        <Store className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-amber-300 text-sm font-semibold">Fora da área de entrega ({quote.radiusKm} km)</p>
-          <p className="text-amber-400/80 text-xs mt-0.5">
-            Você pode <strong className="text-amber-300">retirar na sede</strong> (centro histórico
-            de Santana de Parnaíba) ou solicitar{' '}
-            <strong className="text-amber-300">Uber Flash / 99 Entregas</strong> — valor a combinar
-            no WhatsApp.
-          </p>
+      <div className="rounded-xl bg-amber-950/50 border border-amber-800 p-4">
+        <div className="flex gap-3 items-start mb-3">
+          <Store className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-amber-300 text-sm font-semibold">Fora da área de entrega ({quote.radiusKm} km)</p>
+            <p className="text-amber-400/80 text-xs mt-0.5">Escolha como quer receber:</p>
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 ml-8">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="fulfillment_type"
+              value="pickup"
+              checked={selectedFulfillment === 'pickup'}
+              onChange={() => onFulfillmentSelect('pickup')}
+              className="accent-brand-700"
+            />
+            <span className="text-amber-200 text-sm">Retirar na sede</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="fulfillment_type"
+              value="shipping"
+              checked={selectedFulfillment === 'shipping'}
+              onChange={() => onFulfillmentSelect('shipping')}
+              className="accent-brand-700"
+            />
+            <span className="text-amber-200 text-sm">Enviar pelos Correios</span>
+          </label>
         </div>
       </div>
     )
