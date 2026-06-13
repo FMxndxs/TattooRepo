@@ -2,13 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Package, LayoutGrid, MessageSquare, LogOut, Home, Settings } from 'lucide-react'
+import { Package, LayoutGrid, MessageSquare, LogOut, Home, Settings, Layers, BarChart2, SendHorizontal } from 'lucide-react'
 import { createClient } from '@/lib/supabase/browser'
 
 const navItems = [
   { href: '/admin', label: 'Visão Geral', icon: LayoutGrid, exact: true },
   { href: '/admin/products', label: 'Produtos', icon: Package },
   { href: '/admin/orders', label: 'Pedidos', icon: MessageSquare },
+  { href: '/admin/producao', label: 'Produção', icon: Layers },
+  { href: '/admin/despacho', label: 'Despacho', icon: SendHorizontal },
+  { href: '/admin/relatorios', label: 'Relatórios', icon: BarChart2 },
   { href: '/admin/settings', label: 'Configurações', icon: Settings },
 ]
 

@@ -104,6 +104,36 @@ export function buildCustomOrderUrl(payload: CustomOrderPayload): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
 }
 
+// ─── Confirmação de pedido (admin → cliente) ──────────────────────────────────
+
+export interface OrderConfirmationPayload {
+  customerPhone: string
+  orderCode: string
+  customerName?: string
+}
+
+/**
+ * Mensagem de confirmação de pedido enviada pelo admin ao cliente via WhatsApp.
+ * Abre wa.me com texto pré-preenchido para o número do cliente (não da loja).
+ */
+export function buildOrderConfirmationMessage(payload: OrderConfirmationPayload): string {
+  const greeting = payload.customerName ? `Olá, ${payload.customerName}!` : 'Olá!'
+  return [
+    greeting,
+    `Seu pedido *#${payload.orderCode}* na Imagination 3D foi confirmado! ✅`,
+    '',
+    'Entraremos em contato assim que estiver pronto.',
+    '',
+    '— Equipe Imagination 3D',
+  ].join('\n')
+}
+
+export function buildOrderConfirmationUrl(payload: OrderConfirmationPayload): string {
+  const phone = payload.customerPhone.replace(/\D/g, '')
+  const message = buildOrderConfirmationMessage(payload)
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+}
+
 // Chatbot WhatsApp redirect helpers
 export function buildSupportMessage(issue: string): string {
   return `Olá! Preciso de ajuda com: ${issue}`

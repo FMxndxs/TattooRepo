@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import {
   Package, MessageSquare, Search, Trash2, X, Check,
   ChevronDown, ChevronUp, MapPin, Truck, ChevronLeft, ChevronRight,
-  ArrowUpDown,
+  ArrowUpDown, Printer,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/browser'
 import { OrderStatusSelect } from './OrderStatusSelect'
@@ -16,6 +16,8 @@ import {
   type OrderType,
 } from '@/lib/admin/orders'
 import { formatBRL } from '@/lib/utils/formatters'
+import { buildOrderConfirmationUrl } from '@/lib/utils/whatsapp'
+import type { FulfillmentType } from '@/types'
 
 type TabValue = 'all' | 'normal' | 'custom'
 type SortDir = 'desc' | 'asc'
@@ -194,6 +196,11 @@ export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
                         Normal
                       </span>
                     )}
+                    {order.order_code && (
+                      <span className="text-xs font-mono font-bold text-brand-300 bg-brand-700/15 px-2 py-0.5 rounded">
+                        #{order.order_code}
+                      </span>
+                    )}
                     <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusMeta.color}`}>
                       {statusMeta.label}
                     </span>
@@ -262,10 +269,28 @@ export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
                   )}
 
                   <div className="ml-auto flex items-center gap-2">
+                    {/* Botão de confirmação WhatsApp (apenas pedidos no estado pending) */}
+                    {order.order_code && order.status === 'pending' && (
+                      <a
+                        href={buildOrderConfirmationUrl({
+                          customerPhone: order.customer_phone,
+                          orderCode: order.order_code,
+                          customerName: order.customer_name !== '—' ? order.customer_name : undefined,
+                        })}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Confirmar pedido via WhatsApp"
+                        className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-green-600/15 text-green-400 hover:bg-green-600/25 text-xs font-medium transition-colors"
+                      >
+                        <Check className="w-3 h-3" />
+                        Confirmar WA
+                      </a>
+                    )}
                     <OrderStatusSelect
                       orderId={order.id}
                       orderType={order.type as OrderType}
                       currentStatus={order.status}
+                      fulfillmentType={order.fulfillment_type as FulfillmentType | null}
                     />
 
                     {isConfirming(order.id) ? (
@@ -390,6 +415,30 @@ export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
                       <p className="text-zinc-300 text-sm leading-relaxed">{order.notes}</p>
                     </div>
                   )}
+
+                  {/* Botões de ticket imprimível */}
+                  <div className="flex items-center gap-2 pt-2 border-t border-zinc-800/60">
+                    <a
+                      href={`/admin/pedidos/${order.id}/nota-producao`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white text-xs font-medium transition-colors"
+                    >
+                      <Printer className="w-3.5 h-3.5" />
+                      Nota de produção
+                    </a>
+                    {(order.fulfillment_type === 'delivery' || order.fulfillment_type === 'shipping') && (
+                      <a
+                        href={`/admin/pedidos/${order.id}/etiqueta-envio`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white text-xs font-medium transition-colors"
+                      >
+                        <Truck className="w-3.5 h-3.5" />
+                        Etiqueta de envio
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

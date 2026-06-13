@@ -99,7 +99,13 @@ export interface CustomOrder {
   description: string
   reference_url: string | null
   reference_image_url: string | null
-  status?: 'pending' | 'reviewing' | 'quoted' | 'accepted' | 'rejected' | 'in_production' | 'completed' | 'cancelled'
+  status?:
+    | 'pending' | 'reviewing' | 'quoted' | 'accepted' | 'rejected'
+    | 'in_production' | 'finishing' | 'ready'
+    | 'out_for_delivery' | 'shipped' | 'delivered'
+    | 'completed' | 'cancelled'
+  /** Código amigável gerado pelo banco (ex. A4F9). null em registros antigos pré-mig026. */
+  order_code?: string | null
   created_at?: string
 }
 
@@ -126,7 +132,20 @@ export interface UserProfile {
 
 // ─── Orders ─────────────────────────────────────────────────────────────────
 
-export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'in_production' | 'completed'
+export type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'in_production'
+  | 'finishing'         // impressão concluída, em acabamento/pós-processamento
+  | 'ready'             // pronto para entrega/envio/retirada
+  | 'out_for_delivery'  // saiu para entrega local (raio 8km)
+  | 'shipped'           // enviado pelos correios/transportadora
+  | 'delivered'
+  | 'cancelled'
+  | 'completed'         // legado — mapeado para delivered na exibição
+
+/** Modalidade de atendimento do pedido */
+export type FulfillmentType = 'delivery' | 'shipping' | 'pickup'
 
 export interface Order {
   id: string
@@ -143,6 +162,14 @@ export interface Order {
   city: string
   notes: string | null
   created_at: string
+  /** Código amigável gerado no banco (ex. #A4F9). null em registros antigos pré-mig026. */
+  order_code: string | null
+  /** Modalidade de atendimento. null em registros antigos pré-mig025. */
+  fulfillment_type: FulfillmentType | null
+  /** Nome do entregador local (preenchido no despacho). */
+  courier_name: string | null
+  /** Código de rastreamento dos correios (preenchido no envio). */
+  tracking_code: string | null
   items?: OrderItem[]
 }
 
@@ -154,6 +181,12 @@ export interface OrderItem {
   size_id: string | null
   quantity: number
   unit_price: number
+  /** Snapshot do nome do produto no momento da compra (pré-mig028 pode ser null). */
+  product_name: string | null
+  /** Snapshot do nome da cor selecionada. */
+  color_name: string | null
+  /** Snapshot do label do tamanho selecionado. */
+  size_label: string | null
   product?: Product
   color?: Color | null
   size?: ProductSize | null

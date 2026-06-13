@@ -27,6 +27,10 @@ const orderWithItems: Order = {
   city: 'São Paulo',
   notes: null,
   created_at: '2026-01-15T10:00:00Z',
+  order_code: 'A4F9',
+  fulfillment_type: 'pickup',
+  courier_name: null,
+  tracking_code: null,
   items: [
     {
       id: 'item-1',
@@ -36,6 +40,9 @@ const orderWithItems: Order = {
       size_id: null,
       quantity: 2,
       unit_price: 39.9,
+      product_name: 'Vaso Hexagonal',
+      color_name: 'Roxo',
+      size_label: null,
       product: { id: 'prod-1', name: 'Vaso Hexagonal', slug: 'vaso-hexagonal', price: 39.9, is_available: true, is_featured: false, allows_custom_color: true, allows_custom_size: false, category_id: null, description: null, print_time_minutes: null, filament_grams: null, makerworld_url: null, created_at: '', updated_at: '' },
       color: { id: 'color-1', name: 'Roxo', hex_code: '#431370', is_available: true },
       size: null,
@@ -48,6 +55,9 @@ const orderWithItems: Order = {
       size_id: 'size-1',
       quantity: 1,
       unit_price: 10.1,
+      product_name: 'Suporte Celular',
+      color_name: null,
+      size_label: 'P',
       product: { id: 'prod-2', name: 'Suporte Celular', slug: 'suporte-celular', price: 10.1, is_available: true, is_featured: false, allows_custom_color: false, allows_custom_size: true, category_id: null, description: null, print_time_minutes: null, filament_grams: null, makerworld_url: null, created_at: '', updated_at: '' },
       color: null,
       size: { id: 'size-1', label: 'P', price_modifier: 0, is_available: true },
@@ -56,12 +66,12 @@ const orderWithItems: Order = {
 }
 
 describe('OrderHistoryCard', () => {
-  it('exibe o badge de status com label correto (Em produção)', () => {
+  it('exibe o badge de status com label correto (Imprimindo)', () => {
     render(<OrderHistoryCard order={orderWithItems} />)
-    expect(screen.getByText('Em produção')).toBeInTheDocument()
+    expect(screen.getByText('Imprimindo')).toBeInTheDocument()
   })
 
-  it('exibe o status "Pendente" via STATUS_DISPLAY fallback', () => {
+  it('exibe o status "Pendente" via STATUS_META fallback', () => {
     const pendingOrder: Order = { ...orderWithItems, status: 'pending', items: [] }
     render(<OrderHistoryCard order={pendingOrder} />)
     expect(screen.getByText('Pendente')).toBeInTheDocument()

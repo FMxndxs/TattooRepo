@@ -40,6 +40,8 @@ export interface CreateOrderParams {
   items: CartItem[]
   total: number
   freight?: number | null
+  /** Modalidade de atendimento inferida do DeliveryQuote. */
+  fulfillmentType?: import('@/types').FulfillmentType | null
   cep?: string
   street?: string
   streetNumber?: string
@@ -59,6 +61,7 @@ export async function createOrder(params: CreateOrderParams): Promise<string | n
       user_id: params.userId,
       total: params.total,
       freight: params.freight ?? null,
+      fulfillment_type: params.fulfillmentType ?? 'pickup',
       cep: params.cep ?? null,
       street: params.street ?? null,
       street_number: params.streetNumber ?? null,
@@ -74,6 +77,7 @@ export async function createOrder(params: CreateOrderParams): Promise<string | n
 
   if (orderError || !order) return null
 
+  // Inclui snapshots de nome/cor/tamanho para preservar histórico
   const orderItems = params.items.map((item) => ({
     order_id: order.id,
     product_id: item.product.id,
@@ -81,6 +85,9 @@ export async function createOrder(params: CreateOrderParams): Promise<string | n
     size_id: item.selected_size?.id ?? null,
     quantity: item.quantity,
     unit_price: item.unit_price,
+    product_name: item.product.name,
+    color_name: item.selected_color?.name ?? null,
+    size_label: item.selected_size?.label ?? null,
   }))
 
   const { error: itemsError } = await supabase.from('order_items').insert(orderItems)

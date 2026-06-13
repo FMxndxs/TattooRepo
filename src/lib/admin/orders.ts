@@ -1,6 +1,38 @@
 import type { Order, CustomOrder, OrderItem } from '@/types'
+import {
+  STATUS_META,
+  ORDER_STATUS_OPTIONS,
+  type StatusMeta,
+} from '@/lib/orders/stateMachine'
 
-export type AdminStatus = 'pending' | 'in_production' | 'completed' | 'cancelled'
+// ─── Re-exports ───────────────────────────────────────────────────────────────
+// Mantém compatibilidade com componentes que importam deste módulo.
+
+export type { StatusMeta }
+
+/** @deprecated Use STATUS_META de '@/lib/orders/stateMachine' */
+export const STATUS_DISPLAY: Record<string, StatusMeta> = STATUS_META
+
+/** @deprecated Use ORDER_STATUS_OPTIONS de '@/lib/orders/stateMachine' */
+export const ADMIN_STATUS_OPTIONS = ORDER_STATUS_OPTIONS.map((value) => ({
+  value,
+  label: STATUS_META[value]?.label ?? value,
+}))
+
+// ─── Tipos ────────────────────────────────────────────────────────────────────
+
+/** Status operacionais no painel admin (ciclo de produção + cancelado). */
+export type AdminStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'in_production'
+  | 'finishing'
+  | 'ready'
+  | 'out_for_delivery'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+
 export type OrderType = 'normal' | 'custom'
 
 export interface AdminOrderRow {
@@ -10,12 +42,16 @@ export interface AdminOrderRow {
   customer_phone: string
   status: string
   created_at: string
-  /** Formatted summary of items (normal) or description (custom) */
+  /** Resumo dos itens (pedido normal) ou descrição (pedido personalizado) */
   summary: string
+  /** Código amigável gerado pelo banco (ex. A4F9). Ausente/null em registros antigos pré-mig026. */
+  order_code?: string | null
+  /** Modalidade de atendimento (apenas pedidos normais). */
+  fulfillment_type?: string | null
   total?: number
   reference_url?: string | null
   reference_image_url?: string | null
-  // Endereço e frete — presentes apenas em pedidos normais (tipo 'normal')
+  // Endereço e frete — presentes apenas em pedidos normais
   freight?: number | null
   cep?: string | null
   street?: string | null
@@ -23,41 +59,28 @@ export interface AdminOrderRow {
   neighborhood?: string
   city?: string
   notes?: string | null
+  courier_name?: string | null
+  tracking_code?: string | null
   items?: OrderItem[]
 }
 
-export const ADMIN_STATUS_OPTIONS: { value: AdminStatus; label: string }[] = [
-  { value: 'pending', label: 'Pendente' },
-  { value: 'in_production', label: 'Em produção' },
-  { value: 'completed', label: 'Concluído' },
-  { value: 'cancelled', label: 'Cancelado' },
-]
-
-export const STATUS_DISPLAY: Record<string, { label: string; color: string }> = {
-  pending: { label: 'Pendente', color: 'text-yellow-400 bg-yellow-400/10' },
-  in_production: { label: 'Em produção', color: 'text-blue-400 bg-blue-400/10' },
-  completed: { label: 'Concluído', color: 'text-green-400 bg-green-400/10' },
-  cancelled: { label: 'Cancelado', color: 'text-red-400 bg-red-400/10' },
-  // Legacy custom_order statuses (display only, not selectable)
-  reviewing: { label: 'Em análise', color: 'text-blue-400 bg-blue-400/10' },
-  quoted: { label: 'Orçado', color: 'text-purple-400 bg-purple-400/10' },
-  accepted: { label: 'Aceito', color: 'text-green-400 bg-green-400/10' },
-  rejected: { label: 'Recusado', color: 'text-red-400 bg-red-400/10' },
-  // Legacy order_status values
-  confirmed: { label: 'Confirmado', color: 'text-blue-400 bg-blue-400/10' },
-  shipped: { label: 'Enviado', color: 'text-purple-400 bg-purple-400/10' },
-  delivered: { label: 'Entregue', color: 'text-green-400 bg-green-400/10' },
-}
+// ─── Helpers internos ─────────────────────────────────────────────────────────
 
 function itemsSummary(order: Order): string {
   if (!order.items?.length) return 'Sem itens'
   const parts = order.items.map((i) => {
-    const name = i.product?.name ?? 'Produto'
+    const name = i.product_name ?? i.product?.name ?? 'Produto'
     return i.quantity > 1 ? `${i.quantity}× ${name}` : name
   })
   return parts.join(', ')
 }
 
+// ─── Normalizador ─────────────────────────────────────────────────────────────
+
+/**
+ * Combina orders e custom_orders em uma lista uniforme AdminOrderRow[],
+ * ordenada por data de criação (mais recente primeiro).
+ */
 export function normalizeOrders(
   orders: Order[],
   customOrders: CustomOrder[],
@@ -70,6 +93,8 @@ export function normalizeOrders(
     status: o.status,
     created_at: o.created_at,
     summary: itemsSummary(o),
+    order_code: o.order_code ?? null,
+    fulfillment_type: o.fulfillment_type ?? null,
     total: o.total,
     freight: o.freight,
     cep: o.cep,
@@ -78,6 +103,8 @@ export function normalizeOrders(
     neighborhood: o.neighborhood,
     city: o.city,
     notes: o.notes,
+    courier_name: o.courier_name ?? null,
+    tracking_code: o.tracking_code ?? null,
     items: o.items,
   }))
 
@@ -89,11 +116,13 @@ export function normalizeOrders(
     status: c.status ?? 'pending',
     created_at: c.created_at!,
     summary: c.description,
+    order_code: c.order_code ?? null,
     reference_url: c.reference_url,
     reference_image_url: c.reference_image_url,
   }))
 
-  return [...normal, ...custom].sort((a, b) =>
-    a.customer_name.localeCompare(b.customer_name, 'pt-BR', { sensitivity: 'base' }),
+  // Mais recentes primeiro
+  return [...normal, ...custom].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   )
 }
