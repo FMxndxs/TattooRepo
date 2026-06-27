@@ -92,6 +92,7 @@ export default function AdminProductsPage() {
                 : products.filter((p) => p.category?.slug === selectedCategory)
             }
             onRefresh={fetchAll}
+            
           />
         </>
       ) : (
