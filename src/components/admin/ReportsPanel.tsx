@@ -1,21 +1,13 @@
 'use client'
 
-/**
- * ReportsPanel — Dashboard de relatórios do dono.
- *
- * Mostra 4 seções:
- *  1. Faturamento diário (tabela + total/ticket médio)
- *  2. Produtos mais vendidos
- *  3. Lead time de produção
- *  4. Horários de pico
- *
- * Export CSV e PDF via window.print().
- */
-
 import { Download, Printer } from 'lucide-react'
 import { formatBRL } from '@/lib/utils/formatters'
+import { RevenueAreaChart } from './charts/RevenueAreaChart'
+import { TopProductsBarChart } from './charts/TopProductsBarChart'
+import { PeakHoursChart } from './charts/PeakHoursChart'
+import { LayerReveal } from '@/components/ui/MotionPrimitives'
 
-// ─── Tipos dos dados de relatório ─────────────────────────────────────────────
+// ─── Tipos ────────────────────────────────────────────────────────────────────
 
 interface RevenueRow {
   day: string
@@ -102,8 +94,6 @@ export function ReportsPanel({ days, revenue, topProducts, leadTimes, peakHours 
   const ticket = avgTicket(revenue)
   const leadAvg = avgLeadTime(leadTimes)
 
-  const maxPeakCount = Math.max(...peakHours.map((r) => r.order_count), 1)
-
   function handlePrint() { window.print() }
 
   function handleCsvRevenue() {
@@ -135,6 +125,7 @@ export function ReportsPanel({ days, revenue, topProducts, leadTimes, peakHours 
 
   return (
     <div className="space-y-8 reports-content">
+
       {/* Ações globais */}
       <div className="no-print flex items-center gap-3">
         <button
@@ -164,154 +155,153 @@ export function ReportsPanel({ days, revenue, topProducts, leadTimes, peakHours 
       </div>
 
       {/* ── KPI Cards ──────────────────────────────────────────────────── */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: `Faturamento (${days}d)`, value: formatBRL(total), highlight: true },
-          { label: 'Pedidos', value: String(orders) },
-          { label: 'Ticket médio', value: formatBRL(ticket) },
-          { label: 'Lead time médio', value: formatMinutes(leadAvg) },
-        ].map(({ label, value, highlight }) => (
-          <div key={label} className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5">
-            <p className="text-zinc-500 text-xs mb-1">{label}</p>
-            <p className={`font-bold text-2xl ${highlight ? 'text-brand-300' : 'text-white'}`}>
-              {value}
-            </p>
-          </div>
-        ))}
-      </section>
+      <LayerReveal>
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: `Faturamento (${days}d)`, value: formatBRL(total), highlight: true },
+            { label: 'Pedidos', value: String(orders) },
+            { label: 'Ticket médio', value: formatBRL(ticket) },
+            { label: 'Lead time médio', value: formatMinutes(leadAvg) },
+          ].map(({ label, value, highlight }) => (
+            <div key={label} className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5">
+              <p className="text-zinc-500 text-xs mb-1">{label}</p>
+              <p className={`font-bold text-2xl ${highlight ? 'text-brand-300' : 'text-white'}`}>
+                {value}
+              </p>
+            </div>
+          ))}
+        </section>
+      </LayerReveal>
 
-      {/* ── Faturamento diário ─────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-white font-semibold mb-4">Faturamento diário</h2>
-        {revenue.length === 0 ? (
-          <p className="text-zinc-600 text-sm">Nenhum pedido no período.</p>
-        ) : (
-          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
-                  <th className="text-left px-5 py-3">Data</th>
-                  <th className="text-right px-5 py-3">Pedidos</th>
-                  <th className="text-right px-5 py-3">Faturamento</th>
-                  <th className="text-right px-5 py-3">Ticket médio</th>
-                </tr>
-              </thead>
-              <tbody>
-                {revenue.map((row) => (
-                  <tr key={row.day} className="border-b border-zinc-800/50 last:border-0">
-                    <td className="px-5 py-3 text-zinc-300">
-                      {new Date(row.day + 'T12:00:00').toLocaleDateString('pt-BR')}
-                    </td>
-                    <td className="px-5 py-3 text-right text-zinc-300">{row.order_count}</td>
-                    <td className="px-5 py-3 text-right font-semibold text-brand-300">
-                      {formatBRL(row.revenue)}
-                    </td>
-                    <td className="px-5 py-3 text-right text-zinc-400">
-                      {formatBRL(row.avg_ticket)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+      {/* ── Gráfico de faturamento ─────────────────────────────────────── */}
+      <LayerReveal delay={0.05}>
+        <section className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5">
+          <h2 className="text-white font-semibold mb-4">Faturamento diário</h2>
+          <RevenueAreaChart data={revenue} />
+        </section>
+      </LayerReveal>
 
-      {/* ── Top produtos ──────────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-white font-semibold mb-4">Produtos mais vendidos</h2>
-        {topProducts.length === 0 ? (
-          <p className="text-zinc-600 text-sm">Sem dados.</p>
-        ) : (
-          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
-                  <th className="text-left px-5 py-3">Produto</th>
-                  <th className="text-left px-5 py-3">Cor</th>
-                  <th className="text-right px-5 py-3">Pedidos</th>
-                  <th className="text-right px-5 py-3">Qtd.</th>
-                  <th className="text-right px-5 py-3">Receita</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topProducts.map((row, i) => (
-                  <tr key={i} className="border-b border-zinc-800/50 last:border-0">
-                    <td className="px-5 py-3 text-zinc-200 font-medium">{row.product_name}</td>
-                    <td className="px-5 py-3 text-zinc-400">{row.color_name ?? '—'}</td>
-                    <td className="px-5 py-3 text-right text-zinc-300">{row.order_count}</td>
-                    <td className="px-5 py-3 text-right text-zinc-300">{row.total_qty}</td>
-                    <td className="px-5 py-3 text-right font-semibold text-brand-300">
-                      {formatBRL(row.total_revenue)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* ── Top produtos — gráfico + tabela ───────────────────────────── */}
+      <LayerReveal delay={0.1}>
+        <section>
+          <h2 className="text-white font-semibold mb-4">Produtos mais vendidos</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Gráfico de barras */}
+            <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5">
+              <TopProductsBarChart data={topProducts} />
+            </div>
+            {/* Tabela de detalhes */}
+            {topProducts.length > 0 && (
+              <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
+                      <th className="text-left px-4 py-3">Produto</th>
+                      <th className="text-right px-4 py-3">Qtd.</th>
+                      <th className="text-right px-4 py-3">Receita</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topProducts.map((row, i) => (
+                      <tr key={i} className="border-b border-zinc-800/50 last:border-0">
+                        <td className="px-4 py-2.5 text-zinc-200 text-xs">
+                          <span className="block font-medium truncate max-w-[160px]">{row.product_name}</span>
+                          {row.color_name && <span className="text-zinc-500">{row.color_name}</span>}
+                        </td>
+                        <td className="px-4 py-2.5 text-right text-zinc-300 text-xs">{row.total_qty}</td>
+                        <td className="px-4 py-2.5 text-right font-semibold text-brand-300 text-xs">
+                          {formatBRL(row.total_revenue)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
-      </section>
+        </section>
+      </LayerReveal>
 
       {/* ── Horários de pico ──────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-white font-semibold mb-4">Horários de pico</h2>
-        {peakHours.length === 0 ? (
-          <p className="text-zinc-600 text-sm">Sem dados.</p>
-        ) : (
-          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
-            <div className="flex items-end gap-1 h-32">
-              {Array.from({ length: 24 }, (_, h) => {
-                const row = peakHours.find((r) => r.hour_of_day === h)
-                const count = row?.order_count ?? 0
-                const pct = maxPeakCount > 0 ? (count / maxPeakCount) * 100 : 0
-                return (
-                  <div key={h} className="flex-1 flex flex-col items-center gap-1" title={`${h}h: ${count} pedidos`}>
-                    <div
-                      className="w-full rounded-t bg-brand-700/60 hover:bg-brand-500/70 transition-colors"
-                      style={{ height: `${Math.max(pct, count > 0 ? 4 : 0)}%` }}
-                    />
-                    {h % 4 === 0 && (
-                      <span className="text-zinc-600 text-[9px]">{h}h</span>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-      </section>
+      <LayerReveal delay={0.15}>
+        <section className="bg-zinc-900 rounded-2xl border border-zinc-800 p-5">
+          <h2 className="text-white font-semibold mb-4">Horários de pico</h2>
+          <PeakHoursChart data={peakHours} />
+        </section>
+      </LayerReveal>
 
       {/* ── Lead times ────────────────────────────────────────────────── */}
       {leadTimes.length > 0 && (
-        <section>
-          <h2 className="text-white font-semibold mb-4">Lead time de produção (últimos {leadTimes.length})</h2>
-          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
-                  <th className="text-left px-5 py-3">Pedido</th>
-                  <th className="text-left px-5 py-3">Cliente</th>
-                  <th className="text-right px-5 py-3">Total</th>
-                  <th className="text-right px-5 py-3">Lead time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leadTimes.map((row) => (
-                  <tr key={row.order_id} className="border-b border-zinc-800/50 last:border-0">
-                    <td className="px-5 py-3 font-mono text-xs text-brand-300">
-                      {row.order_code ? `#${row.order_code}` : '—'}
-                    </td>
-                    <td className="px-5 py-3 text-zinc-300">{row.customer_name}</td>
-                    <td className="px-5 py-3 text-right text-zinc-300">{formatBRL(row.total)}</td>
-                    <td className="px-5 py-3 text-right font-semibold text-zinc-200">
-                      {formatMinutes(row.lead_minutes)}
-                    </td>
+        <LayerReveal delay={0.2}>
+          <section>
+            <h2 className="text-white font-semibold mb-4">
+              Lead time de produção (últimos {leadTimes.length})
+            </h2>
+            <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
+                    <th className="text-left px-5 py-3">Pedido</th>
+                    <th className="text-left px-5 py-3">Cliente</th>
+                    <th className="text-right px-5 py-3">Total</th>
+                    <th className="text-right px-5 py-3">Lead time</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                </thead>
+                <tbody>
+                  {leadTimes.map((row) => (
+                    <tr key={row.order_id} className="border-b border-zinc-800/50 last:border-0">
+                      <td className="px-5 py-3 font-mono text-xs text-brand-300">
+                        {row.order_code ? `#${row.order_code}` : '—'}
+                      </td>
+                      <td className="px-5 py-3 text-zinc-300">{row.customer_name}</td>
+                      <td className="px-5 py-3 text-right text-zinc-300">{formatBRL(row.total)}</td>
+                      <td className="px-5 py-3 text-right font-semibold text-zinc-200">
+                        {formatMinutes(row.lead_minutes)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </LayerReveal>
+      )}
+
+      {/* ── Tabela de faturamento diário (detalhamento) ────────────────── */}
+      {revenue.length > 0 && (
+        <LayerReveal delay={0.25}>
+          <section>
+            <h2 className="text-white font-semibold mb-4">Faturamento — detalhe por dia</h2>
+            <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-800 text-zinc-500 text-xs uppercase tracking-wider">
+                    <th className="text-left px-5 py-3">Data</th>
+                    <th className="text-right px-5 py-3">Pedidos</th>
+                    <th className="text-right px-5 py-3">Faturamento</th>
+                    <th className="text-right px-5 py-3">Ticket médio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {revenue.map((row) => (
+                    <tr key={row.day} className="border-b border-zinc-800/50 last:border-0">
+                      <td className="px-5 py-3 text-zinc-300">
+                        {new Date(row.day + 'T12:00:00').toLocaleDateString('pt-BR')}
+                      </td>
+                      <td className="px-5 py-3 text-right text-zinc-300">{row.order_count}</td>
+                      <td className="px-5 py-3 text-right font-semibold text-brand-300">
+                        {formatBRL(row.revenue)}
+                      </td>
+                      <td className="px-5 py-3 text-right text-zinc-400">
+                        {formatBRL(row.avg_ticket)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </LayerReveal>
       )}
 
       <style>{`

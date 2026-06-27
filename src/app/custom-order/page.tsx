@@ -7,6 +7,7 @@ import { buildCustomOrderUrl } from '@/lib/utils/whatsapp'
 import { createClient } from '@/lib/supabase/browser'
 import { useAuth } from '@/lib/context/AuthContext'
 import { useAuthGate } from '@/hooks/useAuthGate'
+import { useToast } from '@/lib/context/ToastContext'
 import type { CustomOrderFormData } from '@/lib/validations/customOrder'
 
 export default function CustomOrderPage() {
@@ -14,6 +15,7 @@ export default function CustomOrderPage() {
   const [submitted, setSubmitted] = useState(false)
   const { profile, user } = useAuth()
   const { requireAuth } = useAuthGate()
+  const { showToast } = useToast()
 
   async function handleSubmit(data: CustomOrderFormData & { image_url: string | null }) {
     requireAuth(async () => {
@@ -33,7 +35,8 @@ export default function CustomOrderPage() {
           reference_image_url: data.image_url ?? null,
         })
       } catch {
-        // falha silenciosa — WhatsApp ainda abre
+        // WhatsApp ainda abre; avisamos o cliente discretamente
+        showToast('Não foi possível salvar o registro interno, mas seu pedido foi enviado.', 'info')
       } finally {
         setLoading(false)
       }

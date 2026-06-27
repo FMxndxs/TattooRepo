@@ -195,3 +195,15 @@ body {
     transition-delay: 0ms !important;
   }
 }
+
+/* ── Acessibilidade: anel de foco visível (teclado / switch) ──────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-brand-300);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove outline em cliques — mantém visibilidade para navegação por teclado */
+:focus:not(:focus-visible) {
+  outline: none;
+}

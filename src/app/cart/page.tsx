@@ -11,12 +11,14 @@ import { CartSummary } from '@/components/cart/CartSummary'
 import { CheckoutForm } from '@/components/cart/CheckoutForm'
 import { buildWhatsAppUrl } from '@/lib/utils/whatsapp'
 import { createOrderAction } from '@/app/actions/cart'
+import { useToast } from '@/lib/context/ToastContext'
 import type { CustomerInfo, DeliveryQuote, FulfillmentType } from '@/types'
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total, itemCount, clearCart } = useCartStore()
   const { isAuthenticated, user } = useAuth()
   const openModal = useAuthModalStore((s) => s.openModal)
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [orderError, setOrderError] = useState<string | null>(null)
   const [deliveryQuote, setDeliveryQuote] = useState<DeliveryQuote | null>(null)
@@ -69,6 +71,7 @@ export default function CartPage() {
     window.open(url, '_blank')
     clearCart()
     setLoading(false)
+    showToast('Pedido criado! O WhatsApp foi aberto com o resumo.', 'success')
   }
 
   if (items.length === 0) {

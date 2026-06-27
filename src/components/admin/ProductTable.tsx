@@ -47,7 +47,7 @@ export function ProductTable({ products, onRefresh }: ProductTableProps) {
         </Link>
       </div>
 
-      <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden">
+      <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-zinc-800">
