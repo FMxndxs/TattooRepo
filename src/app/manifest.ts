@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Imagination 3D',
     short_name: 'Imagination 3D',
     description:
-      'Impressão 3D de alta qualidade com Bambu Lab A1. Produtos únicos, cores variadas e projetos personalizados.',
+      'Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados.',
     start_url: '/',
     display: 'standalone',
     background_color: '#09090b',

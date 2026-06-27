@@ -1,6 +1,6 @@
 # Plano de Curadoria de Modelos 3D — Imagination 3D
 
-> **Objetivo:** colocar produtos reais no site de forma que o time de criação consiga obter o arquivo fonte (`.3mf` / `.stl`) para imprimir no Bambu Lab A1 — usando modelos com licença comercial verificável.
+> **Objetivo:** colocar produtos reais no site de forma que o time de criação consiga obter o arquivo fonte (`.3mf` / `.stl`) para imprimir no Bambu Lab — usando modelos com licença comercial verificável.
 >
 > **Estratégia escolhida:** Ideia 1 — Catálogo curado de modelos com licença livre comercial em Printables, MakerWorld, Thingiverse e Cults3D, com fallback para Cults3D Commercial / MakerWorld Membership / Patreon Merchant Tier quando o modelo desejado não tiver licença livre.
 >

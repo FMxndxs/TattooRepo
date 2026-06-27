@@ -7,7 +7,7 @@ import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Nossa História',
-  description: 'Conheça a história, os princípios e a visão por trás da Imagination 3D — impressão 3D de alta qualidade com Bambu Lab A1.',
+  description: 'Conheça a história, os princípios e a visão por trás da Imagination 3D — impressão 3D de alta qualidade com Bambu Lab.',
   alternates: { canonical: '/nossa-historia' },
   openGraph: { type: 'website' },
 }
@@ -21,7 +21,7 @@ const values = [
   {
     icon: Zap,
     title: 'Tecnologia de ponta',
-    desc: 'A Bambu Lab A1 é uma das impressoras mais precisas do mercado. Escolhemos o melhor equipamento para entregarmos o melhor resultado.',
+    desc: 'A Bambu Lab é uma das impressoras mais precisas do mercado. Escolhemos o melhor equipamento para entregarmos o melhor resultado.',
   },
   {
     icon: Users,
@@ -39,17 +39,17 @@ const milestones = [
   {
     year: '2023',
     title: 'O primeiro projeto',
-    desc: 'Tudo começou com uma impressora, um quarto e a vontade de transformar arquivos digitais em objetos reais. O primeiro pedido foi de um amigo — um suporte de mesa personalizado. A entrega foi perfeita, o entusiasmo, maior ainda.',
+    desc: 'Tudo começou com uma impressora, um quarto e a vontade de transformar arquivos digitais em objetos reais. O primeiro pedido foi de um amigo — um suporte de headset personalizado. A entrega foi perfeita, o entusiasmo, maior ainda.',
   },
   {
     year: '2024',
-    title: 'Bambu Lab A1',
-    desc: 'Com o crescimento dos pedidos, chegou o momento de investir no melhor: a Bambu Lab A1. Precisão de 0,05 mm, velocidade e confiabilidade levaram a qualidade das peças a outro nível.',
+    title: 'Bambu Lab',
+    desc: 'Com o crescimento dos pedidos, chegou o momento de investir no melhor: a Bambu Lab. Precisão de 0,05 mm, velocidade e confiabilidade levaram a qualidade das peças a outro nível.',
   },
   {
     year: '2025',
     title: 'Imagination 3D nasce oficialmente',
-    desc: 'O que era um hobby virou um catálogo com mais de 20 produtos, dezenas de cores disponíveis e a possibilidade de qualquer pessoa trazer sua própria ideia para a realidade.',
+    desc: 'O que era um hobby virou um catálogo com dezenas de produtos e cores disponíveis e a possibilidade de qualquer pessoa trazer sua própria ideia para a realidade.',
   },
 ]
 

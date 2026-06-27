@@ -100,7 +100,7 @@ export function HomeClient() {
           <LayerReveal delay={0}>
             <NozzleWarmBadge>
               <Zap className="w-3.5 h-3.5" aria-hidden />
-              Bambu Lab A1 — Qualidade profissional
+              Bambu Lab — Qualidade profissional
             </NozzleWarmBadge>
           </LayerReveal>
 
@@ -137,7 +137,7 @@ export function HomeClient() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <StaggerGroup className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Package, title: 'Alta qualidade', desc: 'Impressora Bambu Lab A1 com precisão de 0,05 mm' },
+              { icon: Package, title: 'Alta qualidade', desc: 'Impressora Bambu Lab com precisão de 0,05 mm' },
               { icon: Palette, title: 'Múltiplas cores', desc: 'Mais de 10 cores de filamento disponíveis' },
               { icon: Sparkles, title: 'Personalização', desc: 'Traga sua ideia e a imprimimos para você' },
             ].map(({ icon: Icon, title, desc }) => (

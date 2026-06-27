@@ -13,7 +13,7 @@ export function organizationSchema() {
     url,
     logo: `${url}/logo.png`,
     description:
-      'Impressão 3D de alta qualidade com Bambu Lab A1. Produtos únicos, cores variadas e projetos personalizados.',
+      'Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados.',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',

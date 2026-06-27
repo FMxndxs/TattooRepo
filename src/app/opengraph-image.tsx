@@ -73,7 +73,7 @@ export default function Image() {
             marginTop: 8,
           }}
         >
-          Bambu Lab A1 · Alta qualidade · Personalizado para você
+          Bambu Lab · Alta qualidade · Personalizado para você
         </div>
       </div>
     ),

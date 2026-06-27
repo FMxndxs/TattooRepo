@@ -1,7 +1,7 @@
 # Imagination 3D — Project Intelligence
 
 ## Visão geral
-Plataforma de catálogo e vendas para startup de impressão 3D com Bambu Lab A1. Finalização de pedidos via WhatsApp.
+Plataforma de catálogo e vendas para startup de impressão 3D com Bambu Lab. Finalização de pedidos via WhatsApp.
 
 **Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Supabase · Zustand · React Hook Form · Zod · Jest + Testing Library · Motion (`motion/react`)
 
@@ -150,4 +150,5 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=[.env.local]
 SUPABASE_SERVICE_ROLE_KEY=[.env.local — só servidor]
 NEXT_PUBLIC_WHATSAPP_NUMBER=5511989525014
 NEXT_PUBLIC_SITE_URL=[produção]
+REPORTS_API_KEY=[.env.local e Vercel — chave de 64 chars hex para GET /api/reports]
 ```

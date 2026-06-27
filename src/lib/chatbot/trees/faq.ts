@@ -17,7 +17,7 @@ export const faqNodes: ChatNode[] = [
     id: 'faq-how',
     type: 'info',
     message:
-      'A impressão 3D cria objetos físicos camada por camada a partir de um arquivo digital! 🖨️\n\nUsamos a tecnologia FDM (Fused Deposition Modeling) com a impressora Bambu Lab A1, que deposita filamento plástico fundido em camadas ultra-finas para construir o objeto.',
+      'A impressão 3D cria objetos físicos camada por camada a partir de um arquivo digital! 🖨️\n\nUsamos a tecnologia FDM (Fused Deposition Modeling) com a impressora Bambu Lab, que deposita filamento plástico fundido em camadas ultra-finas para construir o objeto.',
     options: [
       { label: 'Quais materiais são usados?', nextNodeId: 'faq-materials' },
       { label: 'Quanto tempo demora?', nextNodeId: 'faq-time' },

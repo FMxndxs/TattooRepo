@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: product.name,
-    description: product.description ?? `${product.name} — impressão 3D de alta qualidade com Bambu Lab A1.`,
+    description: product.description ?? `${product.name} — impressão 3D de alta qualidade com Bambu Lab.`,
     alternates: {
       canonical: `${siteUrl}/product/${slug}`,
     },

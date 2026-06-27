@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     absolute: 'Imagination 3D — Impressão 3D de alta qualidade',
   },
   description:
-    'Produtos únicos impressos com filamento de alta qualidade usando Bambu Lab A1. Decoração, utilitários, games, bonecos e projetos personalizados via WhatsApp.',
+    'Produtos únicos impressos com filamento de alta qualidade usando Bambu Lab. Decoração, utilitários, games, bonecos e projetos personalizados via WhatsApp.',
   alternates: {
     canonical: getSiteUrl(),
   },

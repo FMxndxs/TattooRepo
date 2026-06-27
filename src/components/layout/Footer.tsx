@@ -20,7 +20,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-zinc-500 text-sm leading-relaxed">
-              Impressão 3D de alta qualidade com Bambu Lab A1. Produtos únicos, cores variadas e projetos personalizados.
+              Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados.
             </p>
           </div>
 

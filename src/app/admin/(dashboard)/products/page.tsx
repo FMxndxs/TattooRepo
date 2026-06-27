@@ -4,19 +4,22 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/browser'
 import { ProductTable } from '@/components/admin/ProductTable'
 import { ColorManager } from '@/components/admin/ColorManager'
-import type { Product, Color } from '@/types'
+import { CategoryFilter } from '@/components/catalog/CategoryFilter'
+import type { Product, Color, Category } from '@/types'
 
 type Tab = 'products' | 'colors'
 
 export default function AdminProductsPage() {
   const [tab, setTab] = useState<Tab>('products')
   const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [colors, setColors] = useState<Color[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchAll = useCallback(async () => {
     const supabase = createClient()
-    const [{ data: prods }, { data: cols }] = await Promise.all([
+    const [{ data: prods }, { data: cols }, { data: cats }] = await Promise.all([
       supabase
         .from('products')
         .select('*, category:categories(*), images:product_images(*)')
@@ -25,9 +28,14 @@ export default function AdminProductsPage() {
         .from('colors')
         .select('*')
         .order('name', { ascending: true }),
+      supabase
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true }),
     ])
     setProducts((prods ?? []) as Product[])
     setColors((cols ?? []) as Color[])
+    setCategories((cats ?? []) as Category[])
     setLoading(false)
   }, [])
 
@@ -69,7 +77,23 @@ export default function AdminProductsPage() {
           ))}
         </div>
       ) : tab === 'products' ? (
-        <ProductTable products={products} onRefresh={fetchAll} />
+        <>
+          <div className="mb-4">
+            <CategoryFilter
+              categories={categories}
+              selected={selectedCategory}
+              onSelect={setSelectedCategory}
+            />
+          </div>
+          <ProductTable
+            products={
+              selectedCategory === null
+                ? products
+                : products.filter((p) => p.category?.slug === selectedCategory)
+            }
+            onRefresh={fetchAll}
+          />
+        </>
       ) : (
         <ColorManager colors={colors} onRefresh={fetchAll} />
       )}

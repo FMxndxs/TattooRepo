@@ -91,7 +91,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               marginTop: 8,
             }}
           >
-            Impressão 3D com Bambu Lab A1
+            Impressão 3D com Bambu Lab
           </div>
         </div>
 

@@ -19,7 +19,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
         title: cat.name,
         description:
           cat.description ??
-          `Produtos de ${cat.name} impressos em 3D com Bambu Lab A1. Alta qualidade, cores variadas.`,
+          `Produtos de ${cat.name} impressos em 3D com Bambu Lab. Alta qualidade, cores variadas.`,
         alternates: { canonical: `${siteUrl}/catalog?categoria=${categoria}` },
         openGraph: { type: 'website' },
       }
