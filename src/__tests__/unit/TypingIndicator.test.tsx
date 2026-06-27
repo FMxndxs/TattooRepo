@@ -1,10 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { TypingIndicator } from '@/components/chatbot/TypingIndicator'
 
-jest.mock('motion/react', () => ({
-  ...jest.requireActual('motion/react'),
-  useReducedMotion: () => false,
-}))
+// Variável de fechamento controlada por cada teste
+let _reducedMotion = false
 
 jest.mock('motion/react', () => ({
   motion: {
@@ -12,10 +10,15 @@ jest.mock('motion/react', () => ({
     span: ({ children, ...props }: React.HTMLAttributes<HTMLSpanElement>) => <span {...props}>{children}</span>,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useReducedMotion: () => false,
+  // Lê a variável no momento da chamada, não na criação do mock
+  useReducedMotion: () => _reducedMotion,
 }))
 
 describe('TypingIndicator', () => {
+  beforeEach(() => {
+    _reducedMotion = false
+  })
+
   it('renderiza o aria-label de acessibilidade', () => {
     render(<TypingIndicator />)
     expect(screen.getByLabelText('Nozzle está digitando')).toBeInTheDocument()
@@ -28,17 +31,8 @@ describe('TypingIndicator', () => {
   })
 
   it('com reduced motion, exibe texto alternativo', () => {
-    jest.resetModules()
-    jest.doMock('motion/react', () => ({
-      motion: {
-        div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
-        span: ({ children, ...props }: React.HTMLAttributes<HTMLSpanElement>) => <span {...props}>{children}</span>,
-      },
-      AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-      useReducedMotion: () => true,
-    }))
-    const { TypingIndicator: TI } = require('@/components/chatbot/TypingIndicator')
-    render(<TI />)
+    _reducedMotion = true
+    render(<TypingIndicator />)
     expect(screen.getByText(/Nozzle está digitando/i)).toBeInTheDocument()
   })
 })
