@@ -24,6 +24,9 @@ export const DEFAULT_FREIGHT_CONFIG: FreightConfig = {
 
 /** Distância em km entre dois pontos geográficos (linha reta). */
 export function haversineKm(a: Coords, b: Coords): number {
+  if (!isFinite(a.lat) || !isFinite(a.lng) || !isFinite(b.lat) || !isFinite(b.lng)) {
+    throw new Error('haversineKm: coordenadas inválidas (NaN ou Infinity)')
+  }
   const R = 6371
   const toRad = (deg: number) => (deg * Math.PI) / 180
   const dLat = toRad(b.lat - a.lat)
@@ -50,7 +53,7 @@ export function quoteFreight(
 ): DeliveryQuote {
   const { hqCoords, perKm, radiusKm } = config
 
-  if (!clientCoords) {
+  if (!clientCoords || !isFinite(clientCoords.lat) || !isFinite(clientCoords.lng)) {
     return { distanceKm: null, withinRadius: false, freight: null, mode: 'unknown', perKm, radiusKm, address }
   }
 

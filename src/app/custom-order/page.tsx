@@ -28,6 +28,7 @@ export default function CustomOrderPage() {
           customer_name: customerName,
           customer_phone: customerPhone,
           description: data.description,
+          color_name: data.color_name ?? null,  // L5: salva a cor escolhida
           reference_url: data.reference_url ?? null,
           reference_image_url: data.image_url ?? null,
         })

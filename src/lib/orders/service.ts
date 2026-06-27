@@ -59,8 +59,9 @@ export async function advanceOrderStatus(
 
   // custom_orders não têm fulfillment_type; o ciclo de produção é linear
   const fulfillment = orderType === 'normal' ? current.fulfillment_type : null
+  const smOrderType = orderType === 'custom' ? 'custom' : 'normal'
 
-  if (!canTransition(current.status, nextStatus, fulfillment)) {
+  if (!canTransition(current.status, nextStatus, fulfillment, smOrderType)) {
     return {
       success: false,
       error: `Transição inválida: ${current.status} → ${nextStatus}`,

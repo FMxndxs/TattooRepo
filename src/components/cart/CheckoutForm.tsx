@@ -41,6 +41,8 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, onFulfillmentChange, l
   const [selectedFulfillment, setSelectedFulfillment] = useState<FulfillmentType | null>(null)
   const [loadingFreight, setLoadingFreight] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // AbortController para cancelar lookups em voo ao digitar rapidamente
+  const abortRef = useRef<AbortController | null>(null)
 
   function propagateQuote(q: DeliveryQuote | null) {
     setQuote(q)
@@ -68,9 +70,14 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, onFulfillmentChange, l
 
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(async () => {
+      // Cancela o request anterior caso ainda esteja em voo
+      if (abortRef.current) abortRef.current.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
+
       setLoadingFreight(true)
       try {
-        const res = await fetch(`/api/freight?cep=${digits}`)
+        const res = await fetch(`/api/freight?cep=${digits}`, { signal: controller.signal })
         if (!res.ok) throw new Error()
         const data: DeliveryQuote = await res.json()
         propagateQuote(data)
@@ -79,7 +86,9 @@ export function CheckoutForm({ onSubmit, onDeliveryQuote, onFulfillmentChange, l
           if (data.address.neighborhood) setValue('neighborhood', data.address.neighborhood, { shouldValidate: true })
           if (data.address.city)         setValue('city',         data.address.city,         { shouldValidate: true })
         }
-      } catch {
+      } catch (err) {
+        // AbortError = usuário digitou mais rápido — não limpar o quote atual
+        if (err instanceof Error && err.name === 'AbortError') return
         propagateQuote(null)
       } finally {
         setLoadingFreight(false)

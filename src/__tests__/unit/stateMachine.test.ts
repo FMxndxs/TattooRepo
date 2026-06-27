@@ -236,3 +236,57 @@ describe('ORDER_STATUS_OPTIONS', () => {
     expect(ORDER_STATUS_OPTIONS).not.toContain('rejected')
   })
 })
+
+// ─── nextStatuses/canTransition — custom orders (L1 fix) ─────────────────────
+
+describe('nextStatuses — orderType custom', () => {
+  it('pending (custom) → reviewing | cancelled', () => {
+    const next = nextStatuses('pending', null, 'custom')
+    expect(next).toContain('reviewing')
+    expect(next).toContain('cancelled')
+    expect(next).not.toContain('confirmed')
+    expect(next).toHaveLength(2)
+  })
+
+  it('pending (normal, padrão) → confirmed | cancelled (inalterado)', () => {
+    const next = nextStatuses('pending')
+    expect(next).toContain('confirmed')
+    expect(next).not.toContain('reviewing')
+    expect(next).toHaveLength(2)
+  })
+
+  it('pending (normal explícito) → confirmed | cancelled', () => {
+    const next = nextStatuses('pending', null, 'normal')
+    expect(next).toContain('confirmed')
+    expect(next).not.toContain('reviewing')
+  })
+
+  it('outros estados de custom_order não são afetados por orderType', () => {
+    expect(nextStatuses('reviewing', null, 'custom')).toEqual(
+      expect.arrayContaining(['quoted', 'cancelled']),
+    )
+    expect(nextStatuses('accepted', null, 'custom')).toEqual(
+      expect.arrayContaining(['in_production', 'cancelled']),
+    )
+  })
+})
+
+describe('canTransition — orderType custom', () => {
+  it('pending → reviewing é válido para custom_order', () => {
+    expect(canTransition('pending', 'reviewing', null, 'custom')).toBe(true)
+  })
+
+  it('pending → confirmed é inválido para custom_order', () => {
+    expect(canTransition('pending', 'confirmed', null, 'custom')).toBe(false)
+  })
+
+  it('pending → reviewing é inválido para normal order', () => {
+    expect(canTransition('pending', 'reviewing', null, 'normal')).toBe(false)
+    expect(canTransition('pending', 'reviewing')).toBe(false) // padrão normal
+  })
+
+  it('pendind → cancelled válido para ambos', () => {
+    expect(canTransition('pending', 'cancelled', null, 'custom')).toBe(true)
+    expect(canTransition('pending', 'cancelled', null, 'normal')).toBe(true)
+  })
+})

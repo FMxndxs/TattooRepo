@@ -63,6 +63,7 @@ export function isTerminal(status: string): boolean {
 // No estado `ready`, o fulfillment determina o próximo estado de progressão
 // (ver nextStatuses). O estado `cancelled` é acessível de qualquer não-terminal.
 //
+// Transições base compartilhadas entre normal e custom_orders
 const BASE_TRANSITIONS: Record<string, string[]> = {
   // Normal order lifecycle
   pending:          ['confirmed', 'cancelled'],
@@ -84,21 +85,34 @@ const BASE_TRANSITIONS: Record<string, string[]> = {
   rejected:         [],                              // terminal
 }
 
+// Substituições de transição para custom_orders
+// (sobrescrevem BASE_TRANSITIONS quando orderType === 'custom')
+const CUSTOM_TRANSITIONS: Record<string, string[]> = {
+  // custom_orders nunca entram em 'confirmed'; vão diretamente para o ciclo de orçamento
+  pending: ['reviewing', 'cancelled'],
+}
+
 /**
- * Retorna a lista de próximos estados válidos dado o status atual e
- * (opcionalmente) o fulfillment_type do pedido.
+ * Retorna a lista de próximos estados válidos dado o status atual,
+ * o fulfillment_type e o tipo de pedido.
  *
  * O fulfillment_type só é relevante quando o status for `ready`:
  *  - delivery  → out_for_delivery
  *  - shipping  → shipped
  *  - pickup    → delivered (sem etapa intermediária)
  *  - null/undefined → todos os três (exibe todas as opções)
+ *
+ * O orderType altera as transições de `pending`:
+ *  - 'normal'  → confirmed | cancelled
+ *  - 'custom'  → reviewing | cancelled (ciclo de orçamento)
  */
 export function nextStatuses(
   status: string,
   fulfillment?: FulfillmentType | null,
+  orderType: 'normal' | 'custom' = 'normal',
 ): string[] {
-  const base = BASE_TRANSITIONS[status] ?? []
+  const overrides = orderType === 'custom' ? CUSTOM_TRANSITIONS : {}
+  const base = (overrides[status] ?? BASE_TRANSITIONS[status]) ?? []
 
   if (status !== 'ready') return base
 
@@ -115,14 +129,15 @@ export function nextStatuses(
 
 /**
  * Retorna true se a transição de `from` para `to` é permitida dado o
- * fulfillment_type.
+ * fulfillment_type e o tipo de pedido.
  */
 export function canTransition(
   from: string,
   to: string,
   fulfillment?: FulfillmentType | null,
+  orderType: 'normal' | 'custom' = 'normal',
 ): boolean {
-  return nextStatuses(from, fulfillment).includes(to)
+  return nextStatuses(from, fulfillment, orderType).includes(to)
 }
 
 // ─── Opções para o select de admin ───────────────────────────────────────────

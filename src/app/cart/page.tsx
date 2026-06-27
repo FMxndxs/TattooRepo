@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ShoppingCart, ArrowLeft } from 'lucide-react'
+import { ShoppingCart, ArrowLeft, AlertCircle } from 'lucide-react'
 import { useCartStore } from '@/lib/store/cartStore'
 import { useAuth } from '@/lib/context/AuthContext'
 import { useAuthModalStore } from '@/lib/store/authModalStore'
@@ -10,7 +10,7 @@ import { CartItem } from '@/components/cart/CartItem'
 import { CartSummary } from '@/components/cart/CartSummary'
 import { CheckoutForm } from '@/components/cart/CheckoutForm'
 import { buildWhatsAppUrl } from '@/lib/utils/whatsapp'
-import { createOrder } from '@/lib/supabase/clientQueries'
+import { createOrderAction } from '@/app/actions/cart'
 import type { CustomerInfo, DeliveryQuote, FulfillmentType } from '@/types'
 
 export default function CartPage() {
@@ -18,6 +18,7 @@ export default function CartPage() {
   const { isAuthenticated, user } = useAuth()
   const openModal = useAuthModalStore((s) => s.openModal)
   const [loading, setLoading] = useState(false)
+  const [orderError, setOrderError] = useState<string | null>(null)
   const [deliveryQuote, setDeliveryQuote] = useState<DeliveryQuote | null>(null)
   const [fulfillmentType, setFulfillmentType] = useState<FulfillmentType | null>(null)
 
@@ -28,32 +29,43 @@ export default function CartPage() {
     }
 
     setLoading(true)
+    setOrderError(null)
 
-    // Frete só se aplica quando cliente optou pela entrega (não na retirada)
+    // Frete só se aplica quando cliente optou pela entrega
     const freight = fulfillmentType === 'delivery' ? (deliveryQuote?.freight ?? null) : null
-    const grandTotal = total + (freight ?? 0)
 
-    try {
-      // Persiste o pedido no Supabase (falha silenciosa — WhatsApp ainda abre)
-      await createOrder({
-        userId: user.id,
-        items,
-        total: grandTotal,
-        freight,
-        fulfillmentType,
-        cep: customer.cep,
-        street: customer.street,
-        streetNumber: customer.number,
-        neighborhood: customer.neighborhood,
-        city: customer.city,
-        customerName: customer.name,
-        customerPhone: customer.phone,
-      })
-    } catch {
-      // Silent fail — WhatsApp still opens
+    // Serializa os itens para o server action (sem objetos aninhados desnecessários)
+    const itemInputs = items.map((item) => ({
+      productId: item.product.id,
+      colorId: item.selected_color?.id ?? null,
+      sizeId: item.selected_size?.id ?? null,
+      quantity: item.quantity,
+      productName: item.product.name,
+      colorName: item.selected_color?.name ?? null,
+      sizeLabel: item.selected_size?.label ?? null,
+    }))
+
+    const result = await createOrderAction({
+      items: itemInputs,
+      customerName: customer.name,
+      customerPhone: customer.phone,
+      fulfillmentType,
+      freight,
+      cep: customer.cep,
+      street: customer.street,
+      streetNumber: customer.number,
+      neighborhood: customer.neighborhood,
+      city: customer.city,
+    })
+
+    if ('error' in result) {
+      setOrderError(result.error)
+      setLoading(false)
+      return  // carrinho preservado — cliente pode tentar novamente
     }
 
-    const url = buildWhatsAppUrl({ customer, items, total, deliveryQuote })
+    // Sucesso: abre WhatsApp com total validado pelo servidor, limpa o carrinho
+    const url = buildWhatsAppUrl({ customer, items, total: result.serverTotal, deliveryQuote })
     window.open(url, '_blank')
     clearCart()
     setLoading(false)
@@ -102,6 +114,15 @@ export default function CartPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           <CartSummary itemCount={itemCount} total={total} deliveryQuote={deliveryQuote} />
+
+          {/* Erro de criação de pedido */}
+          {orderError && (
+            <div role="alert" className="flex items-start gap-3 bg-red-950/60 border border-red-700/60 rounded-2xl p-4">
+              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <p className="text-red-300 text-sm">{orderError}</p>
+            </div>
+          )}
+
           <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6">
             <h3 className="text-white font-bold mb-4">Dados para entrega</h3>
             <CheckoutForm
