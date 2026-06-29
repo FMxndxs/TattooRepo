@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@imagination3d',
   },
+  verification: {
+    google: 'C6qOG_a6ExDr_vfDEEpRiaLkhdp-Bgw6zY7HqDIBJ5s',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
