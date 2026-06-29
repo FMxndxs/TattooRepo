@@ -53,6 +53,45 @@ export interface BreadcrumbItem {
   url: string
 }
 
+export function localBusinessSchema() {
+  const url = getSiteUrl()
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Imagination 3D',
+    url,
+    logo: `${url}/logo.png`,
+    image: `${url}/logo.png`,
+    description:
+      'Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados entregues em São Paulo.',
+    telephone: '+55-11-98952-5014',
+    priceRange: 'R$',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'São Paulo',
+      addressRegion: 'SP',
+      addressCountry: 'BR',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: -23.5505,
+      longitude: -46.6333,
+    },
+    areaServed: {
+      '@type': 'City',
+      name: 'São Paulo',
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Catálogo de Impressão 3D',
+      url: `${url}/catalog`,
+    },
+    sameAs: [
+      `https://wa.me/5511989525014`,
+    ],
+  }
+}
+
 export function breadcrumbSchema(items: BreadcrumbItem[]) {
   return {
     '@context': 'https://schema.org',
