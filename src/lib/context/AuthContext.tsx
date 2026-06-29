@@ -57,12 +57,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     // Listen for auth changes
+    // IMPORTANT: callback must NOT be async and must NOT await any Supabase call.
+    // onAuthStateChange holds a Navigator Lock; awaiting supabase.* inside it
+    // would request the same lock → deadlock. Kick off fetchProfile with void
+    // so it runs outside the lock after the callback returns.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         const currentUser = session?.user ?? null
         setUser(currentUser)
         if (currentUser) {
-          await fetchProfile(currentUser.id)
+          void fetchProfile(currentUser.id)
         } else {
           setProfile(null)
         }
@@ -118,7 +122,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase])
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut()
+    // scope: 'local' clears the local session immediately without a network
+    // round-trip, avoiding UI freezes on slow connections or expired tokens.
+    await supabase.auth.signOut({ scope: 'local' })
   }, [supabase])
 
   const resetPassword = useCallback(async (email: string) => {

@@ -8,7 +8,7 @@ import {
   Layers, BarChart2, SendHorizontal, Menu, X,
 } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import { createClient } from '@/lib/supabase/browser'
+import { useAuth } from '@/lib/context/AuthContext'
 
 // ─── Navegação ────────────────────────────────────────────────────────────────
 
@@ -35,12 +35,14 @@ function SidebarContent({
 }) {
   const pathname = usePathname()
   const router = useRouter()
+  const { signOut } = useAuth()
 
   async function handleLogout() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/')
-    router.refresh()
+    await signOut()
+    // replace() instead of push() so the admin page is removed from history;
+    // no router.refresh() needed — the auth state change from signOut already
+    // triggers a re-render and the middleware blocks /admin for signed-out users.
+    router.replace('/')
   }
 
   return (
