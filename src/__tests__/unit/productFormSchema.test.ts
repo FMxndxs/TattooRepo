@@ -42,4 +42,32 @@ describe('productSchema', () => {
   it('aceita filament_grams nulo', () => {
     expect(() => productSchema.parse({ ...valid, filament_grams: null })).not.toThrow()
   })
+
+  // makerworld_url
+  it('aceita produto sem makerworld_url', () => {
+    expect(() => productSchema.parse(valid)).not.toThrow()
+  })
+
+  it('aceita makerworld_url como string vazia', () => {
+    expect(() => productSchema.parse({ ...valid, makerworld_url: '' })).not.toThrow()
+  })
+
+  it('aceita makerworld_url como null', () => {
+    expect(() => productSchema.parse({ ...valid, makerworld_url: null })).not.toThrow()
+  })
+
+  it('aceita makerworld_url com URL valida do MakerWorld', () => {
+    expect(() =>
+      productSchema.parse({
+        ...valid,
+        makerworld_url: 'https://makerworld.com/en/models/123456',
+      })
+    ).not.toThrow()
+  })
+
+  it('rejeita makerworld_url com texto que nao e URL', () => {
+    expect(() =>
+      productSchema.parse({ ...valid, makerworld_url: 'nao-e-uma-url' })
+    ).toThrow()
+  })
 })

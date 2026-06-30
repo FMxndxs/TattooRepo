@@ -32,7 +32,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
 
   return (
     <form
-      onSubmit={handleSubmit((data) => onSubmit({ ...data, image_url: uploadedUrl }))}
+      onSubmit={handleSubmit((data) => onSubmit({ ...data, image_url: uploadedUrl ?? null }))}
       noValidate
       className="space-y-5"
     >

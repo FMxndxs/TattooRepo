@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,12 +9,14 @@ import { StockToggle } from './StockToggle'
 import { calculatePrice, formatPrintTime } from '@/lib/utils/priceCalculator'
 import { slugify } from '@/lib/utils/formatters'
 import { formatBRL } from '@/lib/utils/formatters'
+import { ImageUpload } from '@/components/custom-order/ImageUpload'
+import { useImageUpload } from '@/hooks/useImageUpload'
 import type { Category, Product } from '@/types'
 
 interface ProductFormProps {
   product?: Product
   categories: Category[]
-  onSubmit: (data: ProductFormData) => Promise<void>
+  onSubmit: (data: ProductFormData, imageUrl: string | null | undefined) => Promise<void>
   loading?: boolean
 }
 
@@ -40,6 +42,7 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
           is_featured: product.is_featured,
           allows_custom_color: product.allows_custom_color,
           allows_custom_size: product.allows_custom_size,
+          makerworld_url: product.makerworld_url ?? '',
         }
       : { is_available: true, is_featured: false, allows_custom_color: true, allows_custom_size: false },
   })
@@ -57,8 +60,21 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
 
   const suggestedPrice = calculatePrice({ filamentGrams, printTimeMinutes, marginPercent: 150 })
 
+  // foto principal existente (modo edição)
+  const existingImageUrl =
+    product?.images?.find((i) => i.is_primary)?.url ?? product?.images?.[0]?.url
+
+  const { uploading, preview, uploadedUrl, error: imageError, handleFile } = useImageUpload({
+    bucket: 'products',
+    initialUrl: existingImageUrl,
+  })
+
+  function handleFormSubmit(data: ProductFormData) {
+    return onSubmit(data, uploadedUrl)
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Nome */}
         <div>
@@ -162,6 +178,37 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
         />
       </div>
 
+      {/* Link MakerWorld */}
+      <div>
+        <label className="block text-white text-sm font-medium mb-1.5">
+          Link MakerWorld / MakerLab
+          <span className="ml-2 text-zinc-500 font-normal text-xs">(opcional)</span>
+        </label>
+        <input
+          {...register('makerworld_url')}
+          type="url"
+          placeholder="https://makerworld.com/en/models/..."
+          className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+        />
+        {errors.makerworld_url && (
+          <p className="text-red-400 text-xs mt-1">{errors.makerworld_url.message}</p>
+        )}
+      </div>
+
+      {/* Foto principal */}
+      <div>
+        <label className="block text-white text-sm font-medium mb-1.5">
+          Foto principal
+          <span className="ml-2 text-zinc-500 font-normal text-xs">(opcional)</span>
+        </label>
+        <ImageUpload
+          preview={preview}
+          uploading={uploading}
+          error={imageError}
+          onChange={handleFile}
+        />
+      </div>
+
       {/* Toggles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-zinc-800/50 rounded-2xl">
         <div>
@@ -188,11 +235,11 @@ export function ProductForm({ product, categories, onSubmit, loading = false }: 
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || uploading}
         className="w-full bg-brand-700 hover:bg-brand-500 disabled:opacity-50 text-white font-bold py-4 rounded-full transition-colors"
       >
-        {loading
-          ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Salvando...</span>
+        {loading || uploading
+          ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> {uploading ? 'Enviando imagem...' : 'Salvando...'}</span>
           : product ? 'Salvar alterações' : 'Criar produto'}
       </button>
     </form>

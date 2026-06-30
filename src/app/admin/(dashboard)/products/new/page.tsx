@@ -20,22 +20,38 @@ export default function NewProductPage() {
     })
   }, [])
 
-  async function handleSubmit(data: ProductFormData) {
+  async function handleSubmit(data: ProductFormData, imageUrl: string | null | undefined) {
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.from('products').insert({
-      name: data.name,
-      slug: data.slug,
-      description: data.description,
-      price: data.price,
-      category_id: data.category_id || null,
-      print_time_minutes: data.print_time_minutes || null,
-      filament_grams: data.filament_grams || null,
-      is_available: data.is_available,
-      is_featured: data.is_featured,
-      allows_custom_color: data.allows_custom_color,
-      allows_custom_size: data.allows_custom_size,
-    })
+
+    const { data: inserted, error } = await supabase
+      .from('products')
+      .insert({
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        price: data.price,
+        category_id: data.category_id || null,
+        print_time_minutes: data.print_time_minutes || null,
+        filament_grams: data.filament_grams || null,
+        is_available: data.is_available,
+        is_featured: data.is_featured,
+        allows_custom_color: data.allows_custom_color,
+        allows_custom_size: data.allows_custom_size,
+        makerworld_url: data.makerworld_url || null,
+      })
+      .select('id')
+      .single()
+
+    if (!error && inserted && imageUrl) {
+      await supabase.from('product_images').insert({
+        product_id: inserted.id,
+        url: imageUrl,
+        is_primary: true,
+        sort_order: 0,
+      })
+    }
+
     setLoading(false)
     if (!error) router.push('/admin/products')
   }

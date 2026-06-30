@@ -15,6 +15,13 @@ export const productSchema = z.object({
   is_featured: z.boolean().default(false),
   allows_custom_color: z.boolean().default(true),
   allows_custom_size: z.boolean().default(false),
+  makerworld_url: z
+    .string()
+    .trim()
+    .url('URL inválida')
+    .or(z.literal(''))
+    .nullable()
+    .optional(),
 })
 
 export type ProductFormData = z.infer<typeof productSchema>

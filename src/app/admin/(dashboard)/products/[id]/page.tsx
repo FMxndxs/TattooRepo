@@ -27,9 +27,10 @@ export default function EditProductPage() {
     })
   }, [id])
 
-  async function handleSubmit(data: ProductFormData) {
+  async function handleSubmit(data: ProductFormData, imageUrl: string | null | undefined) {
     setLoading(true)
     const supabase = createClient()
+
     await supabase.from('products').update({
       name: data.name,
       slug: data.slug,
@@ -42,7 +43,24 @@ export default function EditProductPage() {
       is_featured: data.is_featured,
       allows_custom_color: data.allows_custom_color,
       allows_custom_size: data.allows_custom_size,
+      makerworld_url: data.makerworld_url || null,
     }).eq('id', id)
+
+    // imageUrl === undefined → não mexe nas imagens
+    // imageUrl === null     → remove todas as imagens do produto
+    // imageUrl === string   → substitui pela nova foto principal
+    if (imageUrl !== undefined) {
+      await supabase.from('product_images').delete().eq('product_id', id)
+      if (imageUrl) {
+        await supabase.from('product_images').insert({
+          product_id: id,
+          url: imageUrl,
+          is_primary: true,
+          sort_order: 0,
+        })
+      }
+    }
+
     setLoading(false)
     router.push('/admin/products')
   }
