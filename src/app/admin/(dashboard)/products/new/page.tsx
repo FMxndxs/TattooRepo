@@ -41,7 +41,7 @@ export default function NewProductPage() {
         makerworld_url: data.makerworld_url || null,
       })
       .select('id')
-      .single()
+      .single() 
 
     if (!error && inserted && imageUrl) {
       await supabase.from('product_images').insert({
