@@ -173,7 +173,7 @@ export async function createOrderAction(
     p_notes:          input.notes ?? null,
     p_customer_name:  input.customerName,
     p_customer_phone: input.customerPhone,
-    p_items:          JSON.stringify(itemsJson),
+    p_items:          itemsJson,
   })
 
   if (rpcError || !orderId) {
