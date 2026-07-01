@@ -18,6 +18,7 @@ import {
 import { FULFILLMENT_META } from '@/lib/orders/stateMachine'
 import { formatBRL } from '@/lib/utils/formatters'
 import { buildOrderConfirmationUrl } from '@/lib/utils/whatsapp'
+import { advanceOrderStatusAction } from '@/app/actions/orders'
 import type { FulfillmentType } from '@/types'
 
 type TabValue = 'all' | 'normal' | 'custom'
@@ -45,6 +46,8 @@ export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [confirmingWaId, setConfirmingWaId] = useState<string | null>(null)
+  const [confirmWaError, setConfirmWaError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
 
   async function handleDelete(order: AdminOrderRow) {
@@ -64,6 +67,30 @@ export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
     }
 
     setOrders((prev) => prev.filter((o) => o.id !== order.id))
+  }
+
+  async function handleConfirmWa(order: AdminOrderRow) {
+    // Abre o WhatsApp dentro do gesto do clique (antes do await) para evitar bloqueio de popup
+    const url = buildOrderConfirmationUrl({
+      customerPhone: order.customer_phone,
+      orderCode: order.order_code!,
+      customerName: order.customer_name !== '—' ? order.customer_name : undefined,
+    })
+    window.open(url, '_blank', 'noopener,noreferrer')
+
+    setConfirmingWaId(order.id)
+    setConfirmWaError(null)
+    const result = await advanceOrderStatusAction(order.id, 'confirmed', order.type as OrderType)
+    setConfirmingWaId(null)
+
+    if (!result.success) {
+      setConfirmWaError(order.id)
+      return
+    }
+    // Atualiza estado local: badge muda para "Confirmado" e o botão some (status !== 'pending')
+    setOrders((prev) =>
+      prev.map((o) => (o.id === order.id ? { ...o, status: 'confirmed' } : o)),
+    )
   }
 
   function resetPage() { setPage(1) }
@@ -270,22 +297,22 @@ export function OrdersPanel({ orders: initialOrders }: OrdersPanelProps) {
                   )}
 
                   <div className="ml-auto flex items-center gap-2">
-                    {/* Botão de confirmação WhatsApp (apenas pedidos no estado pending) */}
+                    {/* Botão de confirmação WhatsApp — abre WA e muda status para 'confirmed' */}
                     {order.order_code && order.status === 'pending' && (
-                      <a
-                        href={buildOrderConfirmationUrl({
-                          customerPhone: order.customer_phone,
-                          orderCode: order.order_code,
-                          customerName: order.customer_name !== '—' ? order.customer_name : undefined,
-                        })}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Confirmar pedido via WhatsApp"
-                        className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-green-600/15 text-green-400 hover:bg-green-600/25 text-xs font-medium transition-colors"
-                      >
-                        <Check className="w-3 h-3" />
-                        Confirmar WA
-                      </a>
+                      <div className="flex flex-col items-end gap-0.5">
+                        <button
+                          onClick={() => handleConfirmWa(order)}
+                          disabled={confirmingWaId === order.id}
+                          title="Confirmar pedido via WhatsApp"
+                          className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-green-600/15 text-green-400 hover:bg-green-600/25 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Check className="w-3 h-3" />
+                          {confirmingWaId === order.id ? 'Confirmando…' : 'Confirmar WA'}
+                        </button>
+                        {confirmWaError === order.id && (
+                          <span className="text-red-400 text-xs">Erro ao confirmar</span>
+                        )}
+                      </div>
                     )}
                     <OrderStatusSelect
                       orderId={order.id}
