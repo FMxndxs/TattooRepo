@@ -13,7 +13,7 @@ import type { ToastType } from '@/lib/context/ToastContext'
 
 // ─── Mapeamento de tipo → estilo + ícone ──────────────────────────────────────
 
-const ICON_MAP: Record<ToastType, React.ElementType> = {
+const ICON_MAP: Record<ToastType, React.ComponentType<{ className?: string }>> = {
   success: CheckCircle2,
   error: XCircle,
   info: Info,
