@@ -1,14 +1,21 @@
 'use client'
 
 import Link from 'next/link'
-import { Sparkles, ArrowRight, Zap, Palette, Package, Star } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
+import { Sparkles, ArrowRight, ChevronDown, Palette, Package, Star } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
-import { FilamentBackdrop } from '@/components/ui/FilamentBackdrop'
 import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
 import { ProductGrid } from '@/components/catalog/ProductGrid'
 import type { Product } from '@/types'
+
+// Cena 3D é client-only (three.js não roda no servidor) — chunk isolado,
+// não bloqueia o first paint do texto/CTAs do hero.
+const Hero3DPrinter = dynamic(
+  () => import('@/components/ui/hero3d/Hero3DPrinter').then((mod) => mod.Hero3DPrinter),
+  { ssr: false }
+)
 
 const reviews = [
   {
@@ -31,22 +38,49 @@ const reviews = [
   },
 ]
 
-function NozzleWarmBadge({ children }: { children: React.ReactNode }) {
+/** Convite sutil para rolar — some assim que o texto foco é revelado. */
+function ScrollCue({ visible }: { visible: boolean }) {
   const reduced = useReducedMotion()
 
   return (
     <motion.div
-      className="inline-flex items-center gap-2 bg-brand-700/15 border border-brand-500/35 text-brand-300 text-xs font-semibold px-4 py-2 rounded-full mb-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-      animate={reduced ? undefined : { scale: [1, 1.032, 1] }}
-      transition={{ duration: 2.65, repeat: Infinity, ease: 'easeInOut' }}
+      className="absolute inset-x-0 bottom-6 flex justify-center text-brand-300/80"
+      aria-hidden
+      initial={false}
+      animate={{ opacity: visible ? 1 : 0 }}
+      transition={{ duration: 0.4 }}
     >
-      {children}
+      <motion.div
+        animate={reduced ? undefined : { y: [0, 8, 0] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <ChevronDown className="w-6 h-6" />
+      </motion.div>
     </motion.div>
   )
 }
 
 export function HomeClient() {
   const [featured, setFeatured] = useState<Product[]>([])
+  const [revealed, setRevealed] = useState(false)
+  const reduced = useReducedMotion()
+  const textSectionRef = useRef<HTMLDivElement>(null)
+
+  // Texto foco sobe quando a 1ª peça termina de imprimir OU quando o visitante rola
+  // até essa seção — o que vier primeiro (ver Hero3DPrinter/usePrintLoop).
+  useEffect(() => {
+    const node = textSectionRef.current
+    if (!node || typeof IntersectionObserver === 'undefined') return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setRevealed(true)
+      },
+      { threshold: 0.3 }
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     import('@/lib/supabase/browser').then(async ({ createClient }) => {
@@ -92,33 +126,25 @@ export function HomeClient() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-zinc-950 pt-10 pb-16 sm:pt-16 sm:pb-24">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-700/20 via-brand-900/10 to-transparent" />
-        <FilamentBackdrop />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <LayerReveal delay={0}>
-            <NozzleWarmBadge>
-              <Zap className="w-3.5 h-3.5" aria-hidden />
-              Bambu Lab — Qualidade profissional
-            </NozzleWarmBadge>
-          </LayerReveal>
+      {/* Hero — a impressora 3D em time-lapse domina a primeira tela */}
+      <section className="relative overflow-hidden bg-zinc-950 h-[78svh]">
+        <Hero3DPrinter onFirstPrintComplete={() => setRevealed(true)} />
+        {/* Transição suave para a seção de texto logo abaixo */}
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-zinc-950 pointer-events-none" />
+        <ScrollCue visible={!revealed} />
+      </section>
 
-          <LayerReveal delay={0.08}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
-              Impressão 3D que<br />
-              <span className="text-brand-300">transforma ideias</span><br />
-              em realidade
+      {/* Texto foco — sobe assim que a 1ª peça fica pronta (ou ao rolar até aqui) */}
+      <section ref={textSectionRef} className="relative bg-zinc-950 pt-2 pb-16 sm:pt-4 sm:pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={reduced ? false : { opacity: 0, y: 40 }}
+            animate={reduced || revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-8">
+              Impressão 3D que <span className="text-brand-300">transforma ideias</span> em realidade
             </h1>
-          </LayerReveal>
-
-          <LayerReveal delay={0.16}>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto mb-8">
-              Produtos únicos impressos com filamento de alta qualidade. Escolha entre nossas cores, personalize o tamanho ou traga sua própria ideia.
-            </p>
-          </LayerReveal>
-
-          <LayerReveal delay={0.24}>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <PrintCtaLink href="/catalog">
                 Ver catálogo <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
@@ -128,7 +154,7 @@ export function HomeClient() {
                 Projeto personalizado
               </PrintCtaLink>
             </div>
-          </LayerReveal>
+          </motion.div>
         </div>
       </section>
 

@@ -13,6 +13,17 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // react-three-fiber é imperativo por design: `useFrame` existe justamente para
+    // mutar objetos three.js (câmera, materiais, refs) a cada frame sem re-render do
+    // React. As regras do React Compiler (react-hooks/refs, react-hooks/immutability)
+    // não reconhecem esse padrão — são falsos positivos aqui, não um code smell real.
+    files: ["src/components/ui/hero3d/**/*.{ts,tsx}"],
+    rules: {
+      "react-hooks/refs": "off",
+      "react-hooks/immutability": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

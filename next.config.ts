@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // three.js publica em ESM/CJS misto — precisa ser transpilado pelo Next (requisito do R3F)
+  transpilePackages: ['three'],
+
   // ─── Security headers ────────────────────────────────────────────────────────
   // Aplicados em todas as rotas. CSP detalhado fica pendente para a fase de deploy
   // (requer nonces para Next.js inline scripts).
