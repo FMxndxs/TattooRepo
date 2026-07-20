@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Hero3DPrinter } from '@/components/ui/hero3d/Hero3DPrinter'
 
 // jsdom não suporta WebGL — mockamos o Canvas do R3F para não tentar criar
 // um contexto de renderização real. A cena interna (PrinterScene) não precisa
-// rodar em teste unitário; validamos só a casca (poster, container, a11y).
+// rodar em teste unitário; validamos só a casca (poster, container, a11y, botão de pausa).
 jest.mock('@react-three/fiber', () => ({
   Canvas: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="r3f-canvas">{children}</div>
@@ -47,5 +47,17 @@ describe('Hero3DPrinter', () => {
     const onFirstPrintComplete = jest.fn()
     render(<Hero3DPrinter onFirstPrintComplete={onFirstPrintComplete} />)
     expect(screen.getByTestId('r3f-canvas')).toBeInTheDocument()
+  })
+
+  it('renderiza um botão de pausa acessível, fora do container aria-hidden', () => {
+    render(<Hero3DPrinter />)
+    expect(screen.getByRole('button', { name: /pausar animação/i })).toBeInTheDocument()
+  })
+
+  it('alterna o rótulo do botão de pausa ao clicar', () => {
+    render(<Hero3DPrinter />)
+    const button = screen.getByRole('button', { name: /pausar animação/i })
+    fireEvent.click(button)
+    expect(screen.getByRole('button', { name: /retomar animação/i })).toBeInTheDocument()
   })
 })

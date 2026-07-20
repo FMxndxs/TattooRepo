@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Sparkles, ArrowRight, ChevronDown, Palette, Package, Star } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
 import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
@@ -16,6 +16,14 @@ const Hero3DPrinter = dynamic(
   () => import('@/components/ui/hero3d/Hero3DPrinter').then((mod) => mod.Hero3DPrinter),
   { ssr: false }
 )
+
+// Reveal do título "extrude" de baixo pra cima, mesma direção/qualidade de
+// movimento da peça sendo "criada" no hero 3D — ver usePrintLoop.ts.
+const HEADLINE_EASE = [0.22, 1, 0.36, 1] as const
+
+// Segurança: se o bundle 3D falhar/demorar, revela o título mesmo assim depois
+// desse prazo (bem maior que o ciclo natural de ~9s) em vez de ficar escondido pra sempre.
+const REVEAL_FALLBACK_MS = 12000
 
 const reviews = [
   {
@@ -60,27 +68,67 @@ function ScrollCue({ visible }: { visible: boolean }) {
   )
 }
 
+/** Uma linha do título com máscara "clip-up": o texto extrude de baixo pra cima. */
+function HeadlineLine({
+  children,
+  revealed,
+  reduced,
+  delay,
+  className = '',
+}: {
+  children: React.ReactNode
+  revealed: boolean
+  reduced: boolean | null
+  delay: number
+  className?: string
+}) {
+  return (
+    <span className="block overflow-hidden">
+      <motion.span
+        className={`block ${className}`}
+        initial={reduced ? false : { y: '100%' }}
+        animate={reduced || revealed ? { y: 0 } : { y: '100%' }}
+        transition={{ duration: 0.6, delay: reduced ? 0 : delay, ease: HEADLINE_EASE }}
+      >
+        {children}
+      </motion.span>
+    </span>
+  )
+}
+
+/** Sweep sutil que "assina" a linha em destaque a cada ciclo concluído (key={pulseKey} força o replay). */
+function AccentSweep({ reduced }: { reduced: boolean | null }) {
+  if (reduced) return null
+  return (
+    <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <motion.span
+        className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+        initial={{ x: '-120%' }}
+        animate={{ x: '220%' }}
+        transition={{ duration: 0.9, ease: HEADLINE_EASE }}
+      />
+    </span>
+  )
+}
+
 export function HomeClient() {
   const [featured, setFeatured] = useState<Product[]>([])
   const [revealed, setRevealed] = useState(false)
+  const [pulseKey, setPulseKey] = useState(0)
   const reduced = useReducedMotion()
-  const textSectionRef = useRef<HTMLDivElement>(null)
 
-  // Texto foco sobe quando a 1ª peça termina de imprimir OU quando o visitante rola
-  // até essa seção — o que vier primeiro (ver Hero3DPrinter/usePrintLoop).
+  // Texto foco sobe quando a peça está prestes a terminar de imprimir (overlap
+  // deliberado, ver usePrintLoop.ts) — com um prazo de segurança caso o bundle
+  // 3D falhe ou demore (ver Hero3DPrinter.tsx / Hero3DErrorBoundary).
   useEffect(() => {
-    const node = textSectionRef.current
-    if (!node || typeof IntersectionObserver === 'undefined') return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setRevealed(true)
-      },
-      { threshold: 0.3 }
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
+    const timeout = setTimeout(() => setRevealed(true), REVEAL_FALLBACK_MS)
+    return () => clearTimeout(timeout)
   }, [])
+
+  const handleBuildNearComplete = () => {
+    setRevealed(true)
+    setPulseKey((k) => k + 1)
+  }
 
   useEffect(() => {
     import('@/lib/supabase/browser').then(async ({ createClient }) => {
@@ -126,26 +174,39 @@ export function HomeClient() {
 
   return (
     <div>
-      {/* Hero — a impressora 3D em time-lapse domina a primeira tela */}
+      {/* Hero — a peça se "criando" em time-lapse domina a primeira tela, título sobreposto */}
       <section className="relative overflow-hidden bg-zinc-950 h-[78svh]">
-        <Hero3DPrinter onFirstPrintComplete={() => setRevealed(true)} />
-        {/* Transição suave para a seção de texto logo abaixo */}
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-zinc-950 pointer-events-none" />
-        <ScrollCue visible={!revealed} />
-      </section>
+        <Hero3DPrinter
+          onFirstPrintComplete={() => setRevealed(true)}
+          onBuildNearComplete={handleBuildNearComplete}
+        />
 
-      {/* Texto foco — sobe assim que a 1ª peça fica pronta (ou ao rolar até aqui) */}
-      <section ref={textSectionRef} className="relative bg-zinc-950 pt-2 pb-16 sm:pt-4 sm:pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={reduced ? false : { opacity: 0, y: 40 }}
-            animate={reduced || revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
+        {/* Proteção de contraste atrás do título sobreposto */}
+        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-transparent pointer-events-none" />
+
+        <div className="absolute inset-x-0 bottom-10 sm:bottom-14 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-8">
-              Impressão 3D que <span className="text-brand-300">transforma ideias</span> em realidade
+              <HeadlineLine revealed={revealed} reduced={reduced} delay={0}>
+                Impressão 3D que
+              </HeadlineLine>
+              <span className="relative inline-block">
+                <HeadlineLine revealed={revealed} reduced={reduced} delay={0.1} className="text-brand-300">
+                  transforma ideias
+                </HeadlineLine>
+                <AccentSweep key={pulseKey} reduced={reduced} />
+              </span>
+              <HeadlineLine revealed={revealed} reduced={reduced} delay={0.2}>
+                em realidade
+              </HeadlineLine>
             </h1>
-            <div className="flex flex-wrap items-center justify-center gap-4">
+
+            <motion.div
+              initial={reduced ? false : { opacity: 0, y: 20 }}
+              animate={reduced || revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: reduced ? 0 : 0.45, ease: HEADLINE_EASE }}
+              className="flex flex-wrap items-center justify-center gap-4"
+            >
               <PrintCtaLink href="/catalog">
                 Ver catálogo <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
               </PrintCtaLink>
@@ -153,9 +214,11 @@ export function HomeClient() {
                 <Sparkles className="w-4 h-4 shrink-0 text-brand-300" aria-hidden />
                 Projeto personalizado
               </PrintCtaLink>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
+
+        <ScrollCue visible={!revealed} />
       </section>
 
       {/* Features */}

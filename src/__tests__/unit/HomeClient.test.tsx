@@ -43,6 +43,13 @@ jest.mock('motion/react', () => ({
         {children}
       </div>
     ),
+    // O título do hero agora revela linha a linha via `motion.span` (clip-up) —
+    // mesmo padrão de mock do `motion.div` acima, só que pra span.
+    span: ({ children, animate, ...props }: React.HTMLAttributes<HTMLSpanElement> & { animate?: unknown }) => (
+      <span data-animate={JSON.stringify(animate)} {...props}>
+        {children}
+      </span>
+    ),
     // PrintCtaLink faz `motion.create(Link)` — repassa só as props "normais",
     // descartando as motion-only (whileHover/whileTap/transition) que o <a> não entende.
     create: (Component: React.ElementType) => (props: Record<string, unknown>) => {
@@ -58,34 +65,45 @@ jest.mock('motion/react', () => ({
   useInView: () => true,
 }))
 
+/** As 3 linhas do título ("clip-up") ficam dentro do <h1>; o AccentSweep também
+ *  usa motion.span mas anima `x`, não `y` — filtramos só as linhas de verdade. */
+function getHeadlineLineAnimates(heading: HTMLElement) {
+  return Array.from(heading.querySelectorAll('[data-animate]'))
+    .map((el) => JSON.parse(el.getAttribute('data-animate') || 'null'))
+    .filter((value): value is { y: number | string } => !!value && typeof value === 'object' && 'y' in value)
+}
+
 describe('HomeClient — reveal do texto foco do hero', () => {
   beforeEach(() => {
     _reducedMotion = false
   })
 
-  it('nasce com o texto foco oculto (opacity 0) enquanto não é revelado', () => {
+  it('nasce com as linhas do título ocultas (fora da tela) enquanto não é revelado', () => {
     render(<HomeClient />)
     const heading = screen.getByRole('heading', { level: 1 })
-    const animatedWrapper = heading.parentElement
-    expect(animatedWrapper).toHaveAttribute('data-animate', JSON.stringify({ opacity: 0, y: 40 }))
+    const lineAnimates = getHeadlineLineAnimates(heading)
+    expect(lineAnimates.length).toBeGreaterThan(0)
+    lineAnimates.forEach((value) => expect(value).toEqual({ y: '100%' }))
   })
 
-  it('revela o texto foco quando a 1ª impressão termina', () => {
+  it('revela as linhas do título quando a 1ª impressão termina', () => {
     render(<HomeClient />)
     fireEvent.click(screen.getByTestId('mock-first-print-complete'))
 
     const heading = screen.getByRole('heading', { level: 1 })
-    const animatedWrapper = heading.parentElement
-    expect(animatedWrapper).toHaveAttribute('data-animate', JSON.stringify({ opacity: 1, y: 0 }))
+    const lineAnimates = getHeadlineLineAnimates(heading)
+    expect(lineAnimates.length).toBeGreaterThan(0)
+    lineAnimates.forEach((value) => expect(value).toEqual({ y: 0 }))
   })
 
-  it('com prefers-reduced-motion, o texto foco já nasce visível', () => {
+  it('com prefers-reduced-motion, as linhas do título já nascem visíveis', () => {
     _reducedMotion = true
     render(<HomeClient />)
 
     const heading = screen.getByRole('heading', { level: 1 })
-    const animatedWrapper = heading.parentElement
-    expect(animatedWrapper).toHaveAttribute('data-animate', JSON.stringify({ opacity: 1, y: 0 }))
+    const lineAnimates = getHeadlineLineAnimates(heading)
+    expect(lineAnimates.length).toBeGreaterThan(0)
+    lineAnimates.forEach((value) => expect(value).toEqual({ y: 0 }))
   })
 
   it('mantém os 2 CTAs do hero (catálogo e projeto personalizado)', () => {

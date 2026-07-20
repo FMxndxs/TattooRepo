@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Bash(npx jest *)"
+      "Bash(npx jest *)",
+      "PowerShell($p = \"C:\\\\Users\\\\felps\\\\.claude\\\\plans\"; if \\(-not \\(Test-Path $p\\)\\) { New-Item -ItemType Directory -Force $p | Out-Null }; \"ok\")"
     ]
   }
 }
