@@ -14,6 +14,19 @@ export interface ServiceResult<T = undefined> {
 const HOLD_MINUTES = 20
 
 /**
+ * Cancela holds pending_payment expirados. A constraint de exclusão do banco
+ * não pode checar `hold_expires_at > now()` (índice exige função IMMUTABLE),
+ * então isso libera o slot antes de qualquer insert/update que dependa dele.
+ */
+async function expireStaleHolds(client: SupabaseClient): Promise<void> {
+  await client
+    .from('bookings')
+    .update({ status: 'cancelled' })
+    .eq('status', 'pending_payment')
+    .lt('hold_expires_at', new Date().toISOString())
+}
+
+/**
  * Cria um agendamento pendente + gera o Pix do sinal.
  * A constraint `bookings_no_overlap` (banco) é a defesa final contra corrida
  * entre dois clientes escolhendo o mesmo slot ao mesmo tempo.
@@ -36,6 +49,8 @@ export async function createBooking(
     .eq('is_active', true)
     .maybeSingle()
   if (serviceErr || !service) return { success: false, error: 'Serviço não encontrado' }
+
+  await expireStaleHolds(client)
 
   const startsAt = new Date(params.starts_at)
   const endsAt = new Date(startsAt.getTime() + service.duration_min * 60_000)
@@ -164,6 +179,8 @@ export async function rescheduleBookingByToken(
   if (!canReschedule(booking.starts_at, reschedulesUsed, policy)) {
     return { success: false, error: 'Fora do prazo ou limite de remarcações da política do estúdio' }
   }
+
+  await expireStaleHolds(client)
 
   const durationMin = booking.service?.duration_min ?? 60
   const newEndsAt = new Date(new Date(newStartsAt).getTime() + durationMin * 60_000).toISOString()

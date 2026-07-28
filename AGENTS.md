@@ -1,35 +1,37 @@
-# Imagination 3D — Orientação para agentes (Cursor / Claude)
+# Kadu Freitas Tattoo — Orientação para agentes (Cursor / Claude)
 
 ## Fonte de verdade
 
-Detalhes completos do projeto estão em **`CLAUDE.md`** (arquitetura, pastas, WhatsApp, DB, convenções). Use este arquivo como índice rápido; não duplique páginas inteiras do `CLAUDE.md` sem necessidade.
+Detalhes completos do projeto estão em **`CLAUDE.md`** (domínio de agendamento, arquitetura, pastas, WhatsApp, DB, convenções). Use este arquivo como índice rápido; não duplique páginas inteiras do `CLAUDE.md` sem necessidade.
 
 ## Stack (resumo)
 
 - Next.js 16 (App Router), TypeScript, Tailwind v4 (`@theme inline` em `src/app/globals.css`)
-- Supabase (projeto `oflozudwutxgvwyvygll`) — `createClient()` de `@/lib/supabase/browser` (client) ou `server` (RSC)
-- Zustand (`cartStore`), RHF + Zod, Jest + Testing Library, **Motion** (`import from 'motion/react'`)
-- WhatsApp pedidos: **5511989525014**
+- Supabase — `createClient()` de `@/lib/supabase/browser` (client) ou `server` (RSC), `admin.ts` (service role)
+- Zustand (`authModalStore`), RHF + Zod, Jest + Testing Library, **Motion** (`import from 'motion/react'`)
+- Mercado Pago (Pix, sem SDK — `src/lib/payments/mercadopago.ts`) + Google Calendar (espelho — `src/lib/calendar/google.ts`)
+- WhatsApp: **5511989525014**
+
+## Domínio: agendamento, não e-commerce
+
+Fluxo real: cliente escolhe serviço → agenda horário em `/agendar` → paga sinal via Pix → booking `pending_payment` vira `confirmed` no webhook do Mercado Pago → evento espelhado no Google Calendar. Cliente gerencia (cancela/remarca) via `/agendamento/[token]`.
+
+Fonte da verdade da agenda é o **banco** (tabela `bookings`), não o Google Calendar. Detalhes do ciclo de vida em `src/lib/booking/stateMachine.ts`.
 
 ## Regras que evitam regressão
 
 1. **Paleta:** usar **`brand-*`**; nunca **`orange-*`**.
 2. **`next/image` com `fill`:** sempre informar **`sizes`** (performance).
-3. **Filtro de categoria no Supabase:** **não** usar `.eq('category.slug', …)` no `from('products')` — o PostgREST não filtra assim. Resolver `categories.slug` → `id` e usar **`.eq('category_id', id)`** (vide `src/app/catalog/page.tsx` e `src/lib/supabase/queries.ts`).
-4. **Migrations vs seed:** o seed `docs/database/seed/001_products.sql` usa **slugs curtos** (ex. `suporte-plantas-hexagonal`); scripts 007–009 usavam slugs com `de/` diferentes e podiam **não atualizar URLs**. Correção consolidada: **`docs/database/migrations/010_fix_image_urls_seed_slugs.sql`**.
-5. **`prefers-reduced-motion`:** animações devem degradar (vide `useReducedMotion()` em Motion e regras em `globals.css`).
+3. **Anti double-booking:** não confiar em checagem de overlap só na aplicação — a constraint `EXCLUDE USING gist` em `bookings` (migration `100_tattoo_domain.sql`) é a garantia real. Holds `pending_payment` expiram sozinhos (`hold_expires_at`, 20min) e já são ignorados no cálculo de slots.
+4. **`prefers-reduced-motion`:** animações devem degradar (`useReducedMotion()` em Motion e regras em `globals.css`).
+5. **`whatsapp.ts` tem lixo do domínio antigo** (mensagem "Imagination 3D", payload com `cep`/`freight`) — não copiar esse texto sem revisar antes de usar em fluxos de booking.
 
-## UI — tema “impressão 3D”
+## UI
 
 - **MotionPrimitives:** `LayerReveal`, `StaggerGroup`, `PrintLineHover` (`src/components/ui/MotionPrimitives.tsx`)
-- **Extras:** `PrintCtaLink`, `PrintLayerSkeleton` / `PrintLayerSkeletonGrid`, `FilamentBackdrop` (`src/components/ui/`)
-- **Body:** classe `print-buildplate-bg` no layout; CTAs e header usam `PrintCtaLink` onde aplicável
-- **ProductCard:** client component — tilt suave + `PrintLineHover` na imagem
-
-## Next.js 16
-
-Há aviso no topo histórico sobre diferenças de API; em dúvida, conferir docs do pacote ou `next.config`.
+- **Extras:** `PrintCtaLink`, `PrintLayerSkeleton`, `FilamentBackdrop` (`src/components/ui/`) — reaproveitados visualmente, sem relação funcional com impressão 3D
+- **Reduced motion:** todos os primitives acima já tratam
 
 ## TDD
 
-Preferir Red → Green → Blue; manter `npm test` e `npm run build` verdes antes de entregar.
+Preferir Red → Green → Blue; manter `npm test` e `npx tsc --noEmit` verdes antes de entregar. Estado atual: 34 suites / 325 testes passando.

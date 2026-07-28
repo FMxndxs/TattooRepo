@@ -66,15 +66,18 @@ create index bookings_starts_at_idx on bookings (starts_at);
 create index bookings_manage_token_idx on bookings (manage_token);
 
 -- Anti double-booking: nenhum par de bookings ATIVOS pode sobrepor no tempo.
--- Ativo = confirmed, done, ou pending_payment ainda não expirado.
--- ponytail: hold expirado é ignorado via WHERE parcial; um job/limpeza opcional
--- pode marcar 'cancelled', mas o cálculo de slots já desconsidera expirados.
+-- Postgres exige função IMMUTABLE no predicado de um índice — now() é STABLE,
+-- então a constraint não pode checar expiração de hold diretamente.
+-- ponytail: em vez disso, holds pending_payment expirados são varridos para
+-- 'cancelled' em createBooking/rescheduleBookingByToken (src/lib/booking/service.ts)
+-- antes de qualquer insert/update que dependa de slot livre. get_available_slots
+-- também ignora holds expirados na leitura. Upgrade se o volume de bookings
+-- crescer muito: mover a varredura para um cron/edge function.
 alter table bookings add constraint bookings_no_overlap
   exclude using gist (
     tstzrange(starts_at, ends_at) with &&
   ) where (
-    status in ('confirmed','done')
-    or (status = 'pending_payment' and hold_expires_at > now())
+    status in ('confirmed','done','pending_payment')
   );
 
 -- ─── PROMOÇÕES ───────────────────────────────────────────────
@@ -101,13 +104,14 @@ create table portfolio_items (
 );
 
 -- ─── SETTINGS extra (política de cancelamento) ───────────────
--- Reaproveita a tabela settings do base se existir; senão cria pares chave/valor.
-create table if not exists settings (
+-- Nome próprio (app_settings) porque `settings` já existe da fase e-commerce
+-- (config de frete, schema incompatível — colunas fixas, não key/value).
+create table if not exists app_settings (
   key text primary key,
   value jsonb not null,
   updated_at timestamptz default now()
 );
-insert into settings (key, value) values
+insert into app_settings (key, value) values
   ('cancellation_policy', '{"refundable_hours_before": 72, "reschedule_hours_before": 48, "max_reschedules": 1}')
   on conflict (key) do nothing;
 
@@ -125,7 +129,7 @@ alter table time_off          enable row level security;
 alter table bookings          enable row level security;
 alter table promotions        enable row level security;
 alter table portfolio_items   enable row level security;
-alter table settings          enable row level security;
+alter table app_settings      enable row level security;
 
 -- Leitura pública do que o site mostra
 create policy "public read services"    on services        for select using (is_active = true);
@@ -145,7 +149,7 @@ create policy "admin all time_off"     on time_off          for all using (auth.
 create policy "admin all bookings"     on bookings          for all using (auth.role() = 'authenticated');
 create policy "admin all promotions"   on promotions        for all using (auth.role() = 'authenticated');
 create policy "admin all portfolio"    on portfolio_items   for all using (auth.role() = 'authenticated');
-create policy "admin all settings"     on settings          for all using (auth.role() = 'authenticated');
+create policy "admin all app_settings" on app_settings      for all using (auth.role() = 'authenticated');
 
 -- ============================================================
 -- RPC: slots disponíveis para um serviço num intervalo de datas
