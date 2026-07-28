@@ -32,84 +32,12 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Animações */
-@keyframes extrusion-scan {
-  0% { transform: translateX(-140%); opacity: 0; }
-  35% { opacity: 1; }
-  100% { transform: translateX(140%); opacity: 0.2; }
-}
-
-@keyframes nozzle-glow-scan {
-  0%, 100% { opacity: 0.4; transform: translateX(-20%); }
-  50% { opacity: 0.95; transform: translateX(20%); }
-}
-
-.filament-grid {
-  background-image: repeating-linear-gradient(
-    180deg,
-    transparent 0px,
-    transparent 9px,
-    rgba(182, 131, 255, 0.09) 9px,
-    rgba(182, 131, 255, 0.09) 10px
-  );
-}
-
-.filament-sweep-gradient {
-  background:
-    radial-gradient(ellipse 80% 42% at 50% -5%, rgba(182, 131, 255, 0.22), transparent 65%),
-    radial-gradient(ellipse 60% 50% at 80% 30%, rgba(106, 43, 168, 0.12), transparent 55%);
-  mix-blend-mode: plus-lighter;
-}
-
-.print-extrusion-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.print-extrusion-shimmer::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(
-    100deg,
-    transparent 35%,
-    rgba(214, 184, 255, 0.18) 50%,
-    transparent 68%
-  );
-  animation: extrusion-scan 1.85s ease-in-out infinite;
-}
-
-.print-skel-area {
-  --layer-count: 16;
-}
-
-.print-skel-layers {
-  position: absolute;
-  inset-inline: 8%;
-  inset-block: 14% 8%;
-  background-image: repeating-linear-gradient(
-    180deg,
-    transparent 0 7px,
-    rgba(147, 51, 234, 0.16) 7px,
-    rgba(147, 51, 234, 0.16) 8px,
-    transparent 8px 15px
-  );
-  opacity: 0.55;
-  mask-image: linear-gradient(to bottom, transparent, black 8%, black 94%, transparent);
-}
-
-.print-skel-hotline {
-  animation: nozzle-glow-scan 3.8s ease-in-out infinite;
-  box-shadow: 0 0 12px rgba(182, 131, 255, 0.45);
-}
-
 /* Shimmer através do botão/link CTA ao passar o mouse */
-.print-cta-sheen {
+.cta-sheen {
   position: relative;
 }
 
-.print-cta-filament {
+.cta-sheen-fill {
   pointer-events: none;
   position: absolute;
   inset: 0;
@@ -123,48 +51,20 @@ body {
   transition: transform 0.01s;
 }
 
-.print-cta-sheen:hover .print-cta-filament,
-.print-cta-sheen:focus-visible .print-cta-filament {
+.cta-sheen:hover .cta-sheen-fill,
+.cta-sheen:focus-visible .cta-sheen-fill {
   transform: translateX(115%);
   transition: transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Page-wide: respiro sutil atrás do conteúdo (mesa de impressão) */
-.print-header-glow {
+/* Page-wide: respiro sutil atrás do header */
+.header-glow {
   box-shadow: inset 0 -1px 0 rgba(182, 131, 255, 0.12);
 }
 
-.print-buildplate-bg {
-  background-image:
-    radial-gradient(ellipse 120% 80% at 50% -35%, rgba(67, 19, 112, 0.35), transparent 58%),
-    repeating-linear-gradient(
-      182deg,
-      transparent 0 11px,
-      rgba(148, 123, 199, 0.03) 11px,
-      rgba(148, 123, 199, 0.03) 12px,
-      transparent 12px 22px
-    );
-  background-attachment: fixed;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .filament-grid,
-  .print-extrusion-shimmer::after,
-  .print-skel-hotline {
-    animation: none !important;
-  }
-
-  .print-cta-filament {
+  .cta-sheen-fill {
     display: none;
-  }
-
-  .filament-sweep-gradient {
-    animation: none !important;
-  }
-
-  .print-line-muted-motion {
-    transition-duration: 140ms !important;
-    transition-delay: 0ms !important;
   }
 }
 

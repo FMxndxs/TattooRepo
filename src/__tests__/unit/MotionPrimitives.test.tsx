@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { LayerReveal, StaggerGroup, PrintLineHover } from '@/components/ui/MotionPrimitives'
+import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
 
 describe('MotionPrimitives', () => {
   describe('LayerReveal', () => {
@@ -26,26 +26,6 @@ describe('MotionPrimitives', () => {
       expect(screen.getByText('Item 1')).toBeInTheDocument()
       expect(screen.getByText('Item 2')).toBeInTheDocument()
       expect(screen.getByText('Item 3')).toBeInTheDocument()
-    })
-  })
-
-  describe('PrintLineHover', () => {
-    it('renderiza children e elemento de varredura', () => {
-      render(
-        <PrintLineHover>
-          <img alt="produto" src="/test.jpg" />
-        </PrintLineHover>
-      )
-      expect(screen.getByAltText('produto')).toBeInTheDocument()
-    })
-
-    it('tem data-testid="print-line" para a linha de varredura', () => {
-      render(
-        <PrintLineHover>
-          <span>content</span>
-        </PrintLineHover>
-      )
-      expect(screen.getByTestId('print-line')).toBeInTheDocument()
     })
   })
 })

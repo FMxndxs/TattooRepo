@@ -3,9 +3,9 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
-import { Sparkles, ChevronDown, User, LogOut, Layers, LogIn, Package, LayoutDashboard } from 'lucide-react'
+import { Sparkles, ChevronDown, User, LogOut, Layers, LogIn, LayoutDashboard } from 'lucide-react'
 import { useAuth } from '@/lib/context/AuthContext'
-import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
+import { CtaLink } from '@/components/ui/CtaLink'
 import { useAuthModalStore } from '@/lib/store/authModalStore'
 
 export function UserMenu() {
@@ -53,13 +53,13 @@ export function UserMenu() {
           <LogIn className="w-3.5 h-3.5 shrink-0" />
           <span className="hidden sm:inline">Entrar</span>
         </motion.button>
-        <PrintCtaLink
+        <CtaLink
           href="/custom-order"
           className="hidden md:inline-flex !py-2 !px-4 !text-sm !font-semibold"
         >
           <Sparkles className="w-4 h-4 shrink-0" aria-hidden />
           Pedir agora
-        </PrintCtaLink>
+        </CtaLink>
       </>
     )
   }
@@ -144,14 +144,6 @@ export function UserMenu() {
               >
                 <User className="w-4 h-4 shrink-0" />
                 Meu Perfil
-              </Link>
-              <Link
-                href="/meus-pedidos"
-                onClick={() => setDropdownOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2.5 text-zinc-300 hover:text-white hover:bg-zinc-800 text-sm transition-colors"
-              >
-                <Package className="w-4 h-4 shrink-0" />
-                Meus Pedidos
               </Link>
               <Link
                 href="/custom-order"

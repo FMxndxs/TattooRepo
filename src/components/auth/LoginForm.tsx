@@ -91,9 +91,9 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="relative w-full overflow-hidden flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-500 disabled:opacity-60 text-white font-bold py-3.5 rounded-full transition-colors text-sm print-cta-sheen mt-2"
+        className="relative w-full overflow-hidden flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-500 disabled:opacity-60 text-white font-bold py-3.5 rounded-full transition-colors text-sm cta-sheen mt-2"
       >
-        <span className="print-cta-filament opacity-75" aria-hidden />
+        <span className="cta-sheen-fill opacity-75" aria-hidden />
         <span className="relative z-10 flex items-center gap-2">
           {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
           {isSubmitting ? 'Entrando...' : 'Entrar'}

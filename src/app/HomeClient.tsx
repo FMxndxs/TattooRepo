@@ -4,7 +4,7 @@ import { Sparkles, ArrowRight, ChevronDown, Palette, Package, Star } from 'lucid
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
-import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
+import { CtaLink } from '@/components/ui/CtaLink'
 
 // Reveal do título "extrude" de baixo pra cima, mesma direção/qualidade de
 // movimento da peça sendo "criada" no hero 3D — ver usePrintLoop.ts.
@@ -145,13 +145,13 @@ export function HomeClient() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-wrap items-center justify-center gap-4"
           >
-            <PrintCtaLink href="/agendar">
+            <CtaLink href="/agendar">
               Agendar Agora <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
-            </PrintCtaLink>
-            <PrintCtaLink href="/portfolio" variant="secondary">
+            </CtaLink>
+            <CtaLink href="/portfolio" variant="secondary">
               <Sparkles className="w-4 h-4 shrink-0 text-brand-300" aria-hidden />
               Ver Portfólio
-            </PrintCtaLink>
+            </CtaLink>
           </motion.div>
         </div>
       </section>
@@ -190,10 +190,10 @@ export function HomeClient() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4 shrink-0">
-              <PrintCtaLink href="/portfolio">Ver Flashes</PrintCtaLink>
-              <PrintCtaLink href="/agendar" variant="secondary">
+              <CtaLink href="/portfolio">Ver Flashes</CtaLink>
+              <CtaLink href="/agendar" variant="secondary">
                 Agendar <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
-              </PrintCtaLink>
+              </CtaLink>
             </div>
           </div>
         </div>
@@ -243,13 +243,13 @@ export function HomeClient() {
             <h2 className="text-3xl font-bold text-white mb-4">Pronto para sua próxima tatuagem?</h2>
             <p className="text-zinc-400 mb-8">Agende seu horário ou solicite um orçamento para design personalizado.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <PrintCtaLink href="/agendar" className="!px-8 !py-4 text-lg">
+              <CtaLink href="/agendar" className="!px-8 !py-4 text-lg">
                 Agendar Horário
-              </PrintCtaLink>
-              <PrintCtaLink href="/custom-order" className="!px-8 !py-4 text-lg" variant="secondary">
+              </CtaLink>
+              <CtaLink href="/custom-order" className="!px-8 !py-4 text-lg" variant="secondary">
                 <Sparkles className="w-5 h-5 shrink-0" aria-hidden />
                 Design Personalizado
-              </PrintCtaLink>
+              </CtaLink>
             </div>
           </LayerReveal>
         </div>

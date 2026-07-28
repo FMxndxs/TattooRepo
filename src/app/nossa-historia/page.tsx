@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
-import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
+import { CtaLink } from '@/components/ui/CtaLink'
 import { Sparkles, Heart, Zap, Users, Target, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -181,13 +181,13 @@ export default function NossaHistoriaPage() {
             <h2 className="text-3xl font-bold text-white mb-4">Pronto para eternizar sua história?</h2>
             <p className="text-zinc-400 mb-8">Explore nossos trabalhos anteriores ou traga sua própria ideia — estamos prontos para criar sua tatuagem.</p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <PrintCtaLink href="/portfolio">
+              <CtaLink href="/portfolio">
                 Ver portfólio <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
-              </PrintCtaLink>
-              <PrintCtaLink href="/custom-order" variant="secondary">
+              </CtaLink>
+              <CtaLink href="/custom-order" variant="secondary">
                 <Sparkles className="w-4 h-4 shrink-0 text-brand-300" aria-hidden />
                 Projeto personalizado
-              </PrintCtaLink>
+              </CtaLink>
             </div>
           </LayerReveal>
         </div>

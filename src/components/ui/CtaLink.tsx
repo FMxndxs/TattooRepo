@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'motion/react'
 
 type Variant = 'primary' | 'secondary' | 'ghost'
 
-interface PrintCtaLinkProps {
+interface CtaLinkProps {
   href: string
   variant?: Variant
   children: React.ReactNode
@@ -24,20 +24,20 @@ const variantClass: Record<Variant, string> = {
 }
 
 /**
- * CTAs com shimmer de “extrusão” no hover, lift e tap — tema impressão 3D.
+ * CTAs com shimmer no hover, lift e tap.
  */
-export function PrintCtaLink({ href, variant = 'primary', children, className = '' }: PrintCtaLinkProps) {
+export function CtaLink({ href, variant = 'primary', children, className = '' }: CtaLinkProps) {
   const reduced = useReducedMotion()
 
   return (
     <MotionLink
       href={href}
-      className={`relative inline-flex items-center justify-center gap-2 overflow-hidden transition-colors duration-200 ${variantClass[variant]} print-cta-sheen rounded-full ${className}`}
+      className={`relative inline-flex items-center justify-center gap-2 overflow-hidden transition-colors duration-200 ${variantClass[variant]} cta-sheen rounded-full ${className}`}
       whileHover={reduced ? undefined : { y: -3 }}
       whileTap={reduced ? undefined : { scale: 0.975 }}
       transition={{ type: 'spring', stiffness: 420, damping: 28 }}
     >
-      <span className="print-cta-filament" aria-hidden />
+      <span className="cta-sheen-fill" aria-hidden />
       <span className="relative z-10 flex items-center gap-2">{children}</span>
     </MotionLink>
   )

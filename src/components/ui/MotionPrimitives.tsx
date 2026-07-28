@@ -64,34 +64,3 @@ export function StaggerGroup({ children, className, staggerDelay = 0.1 }: Stagge
     </div>
   )
 }
-
-interface PrintLineHoverProps {
-  children: React.ReactNode
-  className?: string
-}
-
-export function PrintLineHover({ children, className }: PrintLineHoverProps) {
-  /* Duas “camadas” de extrusão com hover no grupo inteiro — CSS só, previsível e leve */
-  return (
-    <div className={`group/printlh relative overflow-hidden ${className ?? ''}`}>
-      {children}
-      <div
-        data-testid="print-line"
-        aria-hidden
-        className="print-line-muted-motion pointer-events-none absolute inset-x-[6%] top-[41%] z-[5] h-[2px] origin-center scale-x-0 opacity-0 transition-[transform,opacity] duration-[480ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/printlh:scale-x-100 group-hover/printlh:opacity-100"
-        style={{
-          background:
-            'linear-gradient(90deg, transparent 0%, rgba(192,142,255,0.96) 50%, transparent 100%)',
-        }}
-      />
-      <div
-        aria-hidden
-        className="print-line-muted-motion pointer-events-none absolute inset-x-[17%] top-[58%] z-[5] h-[2px] origin-center scale-x-0 opacity-0 transition-[transform,opacity] duration-[420ms] [transition-delay:90ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/printlh:scale-x-100 group-hover/printlh:opacity-95"
-        style={{
-          background:
-            'linear-gradient(90deg, transparent 0%, rgba(206,164,255,0.92) 50%, transparent 100%)',
-        }}
-      />
-    </div>
-  )
-}
