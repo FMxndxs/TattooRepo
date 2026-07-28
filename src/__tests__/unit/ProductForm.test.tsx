@@ -14,7 +14,7 @@ jest.mock('@/hooks/useImageUpload', () => ({
 
 const noop = async () => {}
 const categories = [
-  { id: 'cat-1', name: 'Decoração', slug: 'decoracao', created_at: '' },
+  { id: 'cat-1', name: 'Decoração', slug: 'decoracao', description: null, icon: null, created_at: '' },
 ]
 
 describe('ProductForm', () => {

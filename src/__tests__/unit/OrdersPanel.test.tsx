@@ -2,6 +2,12 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { OrdersPanel } from '@/components/admin/OrdersPanel'
 import type { AdminOrderRow } from '@/lib/admin/orders'
 
+// Mock server actions
+jest.mock('@/app/actions/orders', () => ({
+  advanceOrderStatusAction: jest.fn().mockResolvedValue({ success: true }),
+  cancelOrderAction: jest.fn().mockResolvedValue({ success: true }),
+}))
+
 // OrderStatusSelect makes async Supabase calls — mock it
 jest.mock('@/components/admin/OrderStatusSelect', () => ({
   OrderStatusSelect: ({ currentStatus }: { currentStatus: string }) => (

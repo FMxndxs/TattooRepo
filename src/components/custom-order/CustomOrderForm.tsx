@@ -8,7 +8,18 @@ import { customOrderSchema, type CustomOrderFormData, type CustomOrderFormInput 
 import { ImageUpload } from './ImageUpload'
 import { useImageUpload } from '@/hooks/useImageUpload'
 
-const COLORS = ['Preto', 'Branco', 'Cinza', 'Vermelho', 'Azul', 'Verde', 'Amarelo', 'Laranja', 'Rosa', 'Roxo']
+const STYLES = [
+  'Realismo',
+  'Blackwork',
+  'Fineline',
+  'Tribal',
+  'Geométrico',
+  'Watercolor',
+  'Lettering',
+  'Minimalista',
+  'Pontilhismo',
+  'Outro',
+]
 
 interface CustomOrderFormProps {
   onSubmit: (data: CustomOrderFormData & { image_url: string | null }) => void
@@ -47,12 +58,12 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
       {/* Descrição */}
       <div>
         <label htmlFor="description" className="block text-white text-sm font-medium mb-1.5">
-          Descrição do projeto
+          Descreva sua ideia
         </label>
         <textarea
           id="description"
           rows={4}
-          placeholder="Descreva o que você quer imprimir: tamanho, finalidade, detalhes importantes..."
+          placeholder="Conte sobre a tatuagem que deseja: tema, significado, tamanho aproximado, local do corpo, detalhes importantes..."
           {...register('description')}
           className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors resize-none"
         />
@@ -61,16 +72,18 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
         )}
       </div>
 
-      {/* Cor */}
+      {/* Estilo */}
       <div>
-        <label htmlFor="color_name" className="block text-white text-sm font-medium mb-1.5">Cor desejada</label>
+        <label htmlFor="color_name" className="block text-white text-sm font-medium mb-1.5">
+          Estilo preferido
+        </label>
         <select
           id="color_name"
           {...register('color_name')}
           className="w-full bg-zinc-800 border border-zinc-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
         >
-          <option value="">Selecione uma cor</option>
-          {COLORS.map((c) => <option key={c} value={c}>{c}</option>)}
+          <option value="">Selecione um estilo</option>
+          {STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
         {errors.color_name && (
           <p role="alert" className="text-red-400 text-xs mt-1">{errors.color_name.message}</p>
@@ -80,11 +93,11 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
       {/* URL de referência */}
       <div>
         <label htmlFor="reference_url" className="block text-white text-sm font-medium mb-1.5">
-          Link de referência <span className="text-zinc-500 font-normal">(opcional)</span>
+          Link com referências <span className="text-zinc-500 font-normal">(opcional)</span>
         </label>
         <input
           id="reference_url"
-          placeholder="https://makerworld.com/..."
+          placeholder="https://pinterest.com/... ou https://instagram.com/..."
           {...register('reference_url')}
           className="w-full bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-500 transition-colors"
         />
@@ -96,7 +109,7 @@ export function CustomOrderForm({ onSubmit, loading = false }: CustomOrderFormPr
       {/* Upload de imagem */}
       <div>
         <label className="block text-white text-sm font-medium mb-1.5">
-          Imagem de referência <span className="text-zinc-500 font-normal">(opcional)</span>
+          Insira imagem(ns) de inspiração <span className="text-zinc-500 font-normal">(opcional)</span>
         </label>
         <ImageUpload
           preview={preview}

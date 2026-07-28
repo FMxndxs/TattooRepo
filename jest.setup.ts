@@ -1,5 +1,12 @@
 import '@testing-library/jest-dom'
 
+// TextEncoder/TextDecoder are needed for Next.js server functions
+if (typeof global.TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util')
+  global.TextEncoder = TextEncoder
+  global.TextDecoder = TextDecoder
+}
+
 // Mock IntersectionObserver (not available in JSDOM — needed by Motion's useInView)
 global.IntersectionObserver = class IntersectionObserver {
   constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}

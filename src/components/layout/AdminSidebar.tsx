@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   Package, LayoutGrid, MessageSquare, LogOut, Home, Settings,
-  Layers, BarChart2, SendHorizontal, Menu, X,
+  Menu, X, Sparkles, Image, Calendar, Wrench, Clock,
 } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useAuth } from '@/lib/context/AuthContext'
@@ -13,13 +13,15 @@ import { useAuth } from '@/lib/context/AuthContext'
 // ─── Navegação ────────────────────────────────────────────────────────────────
 
 const navItems = [
-  { href: '/admin',           label: 'Visão Geral',   icon: LayoutGrid,     exact: true },
-  { href: '/admin/products',  label: 'Produtos',      icon: Package },
-  { href: '/admin/orders',    label: 'Pedidos',       icon: MessageSquare },
-  { href: '/admin/producao',  label: 'Produção',      icon: Layers },
-  { href: '/admin/despacho',  label: 'Despacho',      icon: SendHorizontal },
-  { href: '/admin/relatorios',label: 'Relatórios',    icon: BarChart2 },
-  { href: '/admin/settings',  label: 'Configurações', icon: Settings },
+  { href: '/admin',               label: 'Visão Geral',      icon: LayoutGrid,     exact: true },
+  { href: '/admin/products',      label: 'Flashes',          icon: Package },
+  { href: '/admin/orders',        label: 'Orçamentos',       icon: MessageSquare },
+  { href: '/admin/agenda',        label: 'Agenda',           icon: Calendar },
+  { href: '/admin/services',      label: 'Serviços',         icon: Wrench },
+  { href: '/admin/disponibilidade', label: 'Disponibilidade', icon: Clock },
+  { href: '/admin/promocoes',     label: 'Promoções',        icon: Sparkles },
+  { href: '/admin/portfolio',     label: 'Portfólio',        icon: Image },
+  { href: '/admin/settings',      label: 'Configurações',    icon: Settings },
 ]
 
 // ─── Conteúdo reutilizado em desktop e mobile ─────────────────────────────────

@@ -5,17 +5,18 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import {
-  Menu, X, Sparkles, LayoutDashboard, User, Package, LogIn, LogOut, Layers,
+  Menu, X, Sparkles, LayoutDashboard, User, LogIn, LogOut, Layers, Package,
 } from 'lucide-react'
-import { CartIcon } from './CartIcon'
 import { UserMenu } from './UserMenu'
 import { useAuth } from '@/lib/context/AuthContext'
 import { useAuthModalStore } from '@/lib/store/authModalStore'
 
 const navLinks = [
-  { href: '/catalog', label: 'Catálogo' },
+  { href: '/catalog', label: 'Flashes' },
+  { href: '/portfolio', label: 'Portfólio' },
+  { href: '/promocoes', label: 'Promoções' },
   { href: '/custom-order', label: 'Personalizado' },
-  { href: '/nossa-historia', label: 'Nossa História' },
+  { href: '/agendar', label: 'Agendar' },
 ]
 
 export function Header() {
@@ -40,15 +41,15 @@ export function Header() {
             >
               <Link href="/" className="flex items-center gap-2.5 group">
                 <Image
-                  src="/logo.png"
-                  alt="Imagination 3D"
+                  src="/logo-kadu.png"
+                  alt="Kadu Freitas Tattoo"
                   width={38}
                   height={38}
-                  className="[filter:drop-shadow(0_0_6px_rgba(182,131,255,0.18))] transition-[filter] duration-200 group-hover:[filter:drop-shadow(0_0_12px_rgba(182,131,255,0.45))]"
+                  className="[filter:drop-shadow(0_0_6px_rgba(182,131,255,0.18))] transition-[filter] duration-200 group-hover:[filter:drop-shadow(0_0_12px_rgba(182,131,255,0.45))] rounded-full"
                   priority
                 />
                 <span className="font-bold text-white text-lg sm:text-xl tracking-tight">
-                  Imagination <span className="text-brand-300">3D</span>
+                  Kadu <span className="text-brand-300">Tattoo</span>
                 </span>
               </Link>
             </motion.div>
@@ -68,7 +69,6 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              <CartIcon />
               {/* Desktop user menu */}
               <UserMenu />
               {/* Mobile hamburger */}

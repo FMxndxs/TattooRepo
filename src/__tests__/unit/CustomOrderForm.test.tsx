@@ -26,18 +26,11 @@ jest.mock('@/hooks/useImageUpload', () => ({
 }))
 
 describe('CustomOrderForm', () => {
-  it('renderiza campos de descricao, cor e referencia', () => {
+  it('renderiza campos de descricao, estilo e referencia', () => {
     render(<CustomOrderForm onSubmit={() => {}} />)
-    expect(screen.getByLabelText(/descri/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/link de referência/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/cor/i)).toBeInTheDocument()
-  })
-
-  it('nao renderiza campos de nome e telefone', () => {
-    render(<CustomOrderForm onSubmit={() => {}} />)
-    // Nome e telefone vêm do perfil, não há labels de input para eles
-    expect(screen.queryByLabelText(/^nome$/i)).not.toBeInTheDocument()
-    expect(screen.queryByLabelText(/^telefone$/i)).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/descreva sua ideia/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/link com referências/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/estilo preferido/i)).toBeInTheDocument()
   })
 
   it('exibe dados do perfil do usuario', () => {
@@ -55,7 +48,7 @@ describe('CustomOrderForm', () => {
 
   it('exibe erro se descricao for muito curta', async () => {
     render(<CustomOrderForm onSubmit={() => {}} />)
-    fireEvent.change(screen.getByLabelText(/descri/i), { target: { value: 'curto' } })
+    fireEvent.change(screen.getByLabelText(/descreva sua ideia/i), { target: { value: 'curto' } })
     fireEvent.click(screen.getByRole('button', { name: /enviar/i }))
     await waitFor(() => {
       expect(screen.getByText(/20 caracteres/i)).toBeInTheDocument()
@@ -64,7 +57,7 @@ describe('CustomOrderForm', () => {
 
   it('exibe erro se URL de referencia for invalida', async () => {
     render(<CustomOrderForm onSubmit={() => {}} />)
-    fireEvent.change(screen.getByLabelText(/link de referência/i), { target: { value: 'nao-e-url' } })
+    fireEvent.change(screen.getByLabelText(/link com referências/i), { target: { value: 'nao-e-url' } })
     fireEvent.click(screen.getByRole('button', { name: /enviar/i }))
     await waitFor(() => {
       expect(screen.getByText(/url inválida/i)).toBeInTheDocument()
@@ -75,19 +68,19 @@ describe('CustomOrderForm', () => {
     const onSubmit = jest.fn()
     render(<CustomOrderForm onSubmit={onSubmit} />)
 
-    fireEvent.change(screen.getByLabelText(/descri/i), {
-      target: { value: 'Quero imprimir um suporte de parede para meu roteador' },
+    fireEvent.change(screen.getByLabelText(/descreva sua ideia/i), {
+      target: { value: 'Quero uma tatuagem de um dragão realista no ombro' },
     })
-    fireEvent.change(screen.getByLabelText(/link de referência/i), { target: { value: '' } })
-    fireEvent.change(screen.getByLabelText(/cor/i), { target: { value: 'Preto' } })
+    fireEvent.change(screen.getByLabelText(/link com referências/i), { target: { value: '' } })
+    fireEvent.change(screen.getByLabelText(/estilo preferido/i), { target: { value: 'Realismo' } })
 
     fireEvent.click(screen.getByRole('button', { name: /enviar/i }))
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
-          description: 'Quero imprimir um suporte de parede para meu roteador',
-          color_name: 'Preto',
+          description: 'Quero uma tatuagem de um dragão realista no ombro',
+          color_name: 'Realismo',
         }),
       )
     })

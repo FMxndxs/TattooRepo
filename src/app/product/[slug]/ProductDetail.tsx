@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { AddToCartButton } from '@/components/catalog/AddToCartButton'
 import { PrintLineHover } from '@/components/ui/MotionPrimitives'
 import { formatBRL } from '@/lib/utils/formatters'
 import type { Product, Color } from '@/types'
@@ -93,12 +92,16 @@ export function ProductDetail({ product }: { product: Product }) {
             </div>
           )}
 
-          {/* Preço e CTA */}
+          {/* CTA */}
           <div className="mt-auto space-y-3">
-            <div className="text-3xl font-black text-brand-300">{formatBRL(product.price)}</div>
-            <AddToCartButton product={product} selectedColor={selectedColor} selectedSize={null} />
+            <Link
+              href="/agendar?service=flash"
+              className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-600 text-white font-semibold py-3 rounded-full transition-colors text-sm"
+            >
+              Reservar esta Flash
+            </Link>
             <a
-              href={`https://wa.me/5511989525014?text=${encodeURIComponent(`Olá! Tenho interesse no produto: ${product.name}`)}`}
+              href={`https://wa.me/5511989525014?text=${encodeURIComponent(`Olá! Tenho interesse nesta flash: ${product.name}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold py-3 rounded-full transition-colors text-sm"

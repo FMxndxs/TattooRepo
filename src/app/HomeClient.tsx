@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { Sparkles, ArrowRight, ChevronDown, Palette, Package, Star } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
@@ -9,13 +8,6 @@ import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
 import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
 import { ProductGrid } from '@/components/catalog/ProductGrid'
 import type { Product } from '@/types'
-
-// Cena 3D é client-only (three.js não roda no servidor) — chunk isolado,
-// não bloqueia o first paint do texto/CTAs do hero.
-const Hero3DPrinter = dynamic(
-  () => import('@/components/ui/hero3d/Hero3DPrinter').then((mod) => mod.Hero3DPrinter),
-  { ssr: false }
-)
 
 // Reveal do título "extrude" de baixo pra cima, mesma direção/qualidade de
 // movimento da peça sendo "criada" no hero 3D — ver usePrintLoop.ts.
@@ -27,22 +19,22 @@ const REVEAL_FALLBACK_MS = 12000
 
 const reviews = [
   {
-    name: 'Lucas Ferreira',
+    name: 'Carolina Silva',
     location: 'São Paulo, SP',
     rating: 5,
-    text: 'Pedi um suporte de mesa personalizado e fiquei impressionado com a qualidade. Chegou rápido, bem embalado e encaixou perfeitamente. Com certeza vou pedir mais.',
+    text: 'Fiz uma tatuagem de flash e ficou perfeita! Kadu é muito atencioso, ouuve minhas ideias e executou com precisão. Tenho planos de voltar para mais!',
   },
   {
-    name: 'Mariana Costa',
+    name: 'Felipe Santos',
     location: 'Campinas, SP',
     rating: 5,
-    text: 'Mandei a referência pelo WhatsApp e em poucos minutos já tinha orçamento. O atendimento é excelente e o produto ficou idêntico ao que eu queria.',
+    text: 'Pedi um orçamento para uma tatuagem personalizada e a resposta foi rápida. O design ficou exatamente como imaginei. Recomendo muito!',
   },
   {
-    name: 'Rafael Souza',
+    name: 'Beatriz Costa',
     location: 'Santo André, SP',
     rating: 5,
-    text: 'Comprei um organizador de escritório. A precisão dos encaixes é incrível — dá pra ver que é feito numa impressora de qualidade. Super recomendo.',
+    text: 'Experiência incrível do começo ao fim. A esterilização é impecável e o ambiente muito limpo e acolhedor. Voltarei em breve!',
   },
 ]
 
@@ -114,21 +106,13 @@ function AccentSweep({ reduced }: { reduced: boolean | null }) {
 export function HomeClient() {
   const [featured, setFeatured] = useState<Product[]>([])
   const [revealed, setRevealed] = useState(false)
-  const [pulseKey, setPulseKey] = useState(0)
   const reduced = useReducedMotion()
 
-  // Texto foco sobe quando a peça está prestes a terminar de imprimir (overlap
-  // deliberado, ver usePrintLoop.ts) — com um prazo de segurança caso o bundle
-  // 3D falhe ou demore (ver Hero3DPrinter.tsx / Hero3DErrorBoundary).
+  // Reveal do texto do hero após o hero ser renderizado
   useEffect(() => {
-    const timeout = setTimeout(() => setRevealed(true), REVEAL_FALLBACK_MS)
+    const timeout = setTimeout(() => setRevealed(true), 300)
     return () => clearTimeout(timeout)
   }, [])
-
-  const handleBuildNearComplete = () => {
-    setRevealed(true)
-    setPulseKey((k) => k + 1)
-  }
 
   useEffect(() => {
     import('@/lib/supabase/browser').then(async ({ createClient }) => {
@@ -174,51 +158,48 @@ export function HomeClient() {
 
   return (
     <div>
-      {/* Hero — a peça se "criando" em time-lapse domina a primeira tela, título sobreposto */}
-      <section className="relative overflow-hidden bg-zinc-950 h-[78svh]">
-        <Hero3DPrinter
-          onFirstPrintComplete={() => setRevealed(true)}
-          onBuildNearComplete={handleBuildNearComplete}
-        />
-
-        {/* Proteção de contraste atrás do título sobreposto */}
-        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-zinc-950 via-zinc-950/70 to-transparent pointer-events-none" />
-
-        <div className="absolute inset-x-0 bottom-10 sm:bottom-14 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-8">
-              <HeadlineLine revealed={revealed} reduced={reduced} delay={0}>
-                Impressão 3D que
-              </HeadlineLine>
-              <span className="relative inline-block">
-                <HeadlineLine revealed={revealed} reduced={reduced} delay={0.1} className="text-brand-300">
-                  transforma ideias
-                </HeadlineLine>
-                <AccentSweep key={pulseKey} reduced={reduced} />
-              </span>
-              <HeadlineLine revealed={revealed} reduced={reduced} delay={0.2}>
-                em realidade
-              </HeadlineLine>
-            </h1>
-
-            <motion.div
-              initial={reduced ? false : { opacity: 0, y: 20 }}
-              animate={reduced || revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.5, delay: reduced ? 0 : 0.45, ease: HEADLINE_EASE }}
-              className="flex flex-wrap items-center justify-center gap-4"
-            >
-              <PrintCtaLink href="/catalog">
-                Ver catálogo <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
-              </PrintCtaLink>
-              <PrintCtaLink href="/custom-order" variant="secondary">
-                <Sparkles className="w-4 h-4 shrink-0 text-brand-300" aria-hidden />
-                Projeto personalizado
-              </PrintCtaLink>
-            </motion.div>
-          </div>
+      {/* Hero — estúdio de tatuagem Kadu Freitas */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-zinc-950 via-zinc-950 to-brand-950 h-[70svh] flex items-center justify-center">
+        {/* Background decorativo com gradiente */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-700/20 rounded-full blur-3xl" aria-hidden />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-700/10 rounded-full blur-3xl" aria-hidden />
         </div>
 
-        <ScrollCue visible={!revealed} />
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <motion.h1
+            className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6"
+            initial={reduced ? false : { opacity: 0, y: 20 }}
+            animate={reduced || revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0 }}
+          >
+            Kadu Freitas Tattoo
+          </motion.h1>
+
+          <motion.p
+            className="text-lg sm:text-xl text-zinc-300 mb-8 max-w-2xl mx-auto"
+            initial={reduced ? false : { opacity: 0, y: 20 }}
+            animate={reduced || revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            Tatuagens customizadas que contam sua história. Flashes exclusivas e designs personalizados.
+          </motion.p>
+
+          <motion.div
+            initial={reduced ? false : { opacity: 0, y: 20 }}
+            animate={reduced || revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-wrap items-center justify-center gap-4"
+          >
+            <PrintCtaLink href="/agendar">
+              Agendar Agora <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
+            </PrintCtaLink>
+            <PrintCtaLink href="/portfolio" variant="secondary">
+              <Sparkles className="w-4 h-4 shrink-0 text-brand-300" aria-hidden />
+              Ver Portfólio
+            </PrintCtaLink>
+          </motion.div>
+        </div>
       </section>
 
       {/* Features */}
@@ -226,9 +207,9 @@ export function HomeClient() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <StaggerGroup className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { icon: Package, title: 'Alta qualidade', desc: 'Impressora Bambu Lab com precisão de 0,05 mm' },
-              { icon: Palette, title: 'Múltiplas cores', desc: 'Mais de 10 cores de filamento disponíveis' },
-              { icon: Sparkles, title: 'Personalização', desc: 'Traga sua ideia e a imprimimos para você' },
+              { icon: Package, title: 'Higiene Garantida', desc: 'Esterilização rigorosa e ambiente impecável' },
+              { icon: Palette, title: 'Estilos Diversos', desc: 'Realismo, blackwork, lettering, fineline e muito mais' },
+              { icon: Sparkles, title: 'Design Personalizado', desc: 'Crie sua ideia única com nosso orçamento customizado' },
             ].map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex gap-4 p-6 bg-zinc-900 rounded-2xl border border-zinc-800">
                 <div className="w-10 h-10 bg-brand-700/15 rounded-xl flex items-center justify-center shrink-0">
@@ -244,14 +225,14 @@ export function HomeClient() {
         </div>
       </section>
 
-      {/* Os queridinhos */}
+      {/* Flashes Exclusivas */}
       {featured.length > 0 && (
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-6 md:mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Os mais populares</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Flashes Exclusivas</h2>
               <Link href="/catalog" className="text-brand-300 hover:text-brand-200 text-sm font-medium flex items-center gap-1 shrink-0 ml-4">
-                Ver todos <ArrowRight className="w-4 h-4" />
+                Ver todas <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
             <ProductGrid products={featured} />
@@ -265,7 +246,7 @@ export function HomeClient() {
           <LayerReveal>
             <div className="text-center mb-10">
               <h2 className="text-2xl font-bold text-white mb-2">O que nossos clientes dizem</h2>
-              <p className="text-zinc-400 text-sm">Avaliações reais de quem já recebeu seus pedidos</p>
+              <p className="text-zinc-400 text-sm">Histórias reais de quem já foi tatuado por Kadu</p>
             </div>
           </LayerReveal>
 
@@ -300,12 +281,17 @@ export function HomeClient() {
       <section className="py-16 bg-zinc-950">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <LayerReveal>
-            <h2 className="text-3xl font-bold text-white mb-4">Tem uma ideia em mente?</h2>
-            <p className="text-zinc-400 mb-8">Envie sua referência e receba um orçamento via WhatsApp em minutos.</p>
-            <PrintCtaLink href="/custom-order" className="!px-8 !py-4 text-lg">
-              <Sparkles className="w-5 h-5 shrink-0" aria-hidden />
-              Solicitar orçamento
-            </PrintCtaLink>
+            <h2 className="text-3xl font-bold text-white mb-4">Pronto para sua próxima tatuagem?</h2>
+            <p className="text-zinc-400 mb-8">Agende seu horário ou solicite um orçamento para design personalizado.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <PrintCtaLink href="/agendar" className="!px-8 !py-4 text-lg">
+                Agendar Horário
+              </PrintCtaLink>
+              <PrintCtaLink href="/custom-order" className="!px-8 !py-4 text-lg" variant="secondary">
+                <Sparkles className="w-5 h-5 shrink-0" aria-hidden />
+                Design Personalizado
+              </PrintCtaLink>
+            </div>
           </LayerReveal>
         </div>
       </section>

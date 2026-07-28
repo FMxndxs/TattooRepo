@@ -1,7 +1,5 @@
 import { createClient } from './server'
 import type { Product, Category } from '@/types'
-import type { FreightConfig } from '@/lib/utils/freight'
-import { DEFAULT_FREIGHT_CONFIG } from '@/lib/utils/freight'
 
 export async function getCategories(): Promise<Category[]> {
   const supabase = await createClient()
@@ -120,33 +118,6 @@ export async function getMostClickedProducts(limit = 8): Promise<Product[]> {
   return products
 }
 
-/**
- * Lê os parâmetros de frete da tabela `settings` (linha única).
- * Retorna DEFAULT_FREIGHT_CONFIG como fallback seguro — o checkout não quebra
- * se a migration 023 ainda não foi executada no Supabase.
- */
-export async function getFreightConfig(): Promise<FreightConfig & { hq_cep?: string | null; hq_label?: string | null }> {
-  try {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-      .from('settings')
-      .select('hq_lat, hq_lng, hq_cep, hq_label, freight_per_km, delivery_radius_km')
-      .eq('id', 1)
-      .maybeSingle()
-
-    if (error || !data) return DEFAULT_FREIGHT_CONFIG
-
-    return {
-      hqCoords: { lat: Number(data.hq_lat), lng: Number(data.hq_lng) },
-      perKm: Number(data.freight_per_km),
-      radiusKm: Number(data.delivery_radius_km),
-      hq_cep: data.hq_cep ?? null,
-      hq_label: data.hq_label ?? null,
-    }
-  } catch {
-    return DEFAULT_FREIGHT_CONFIG
-  }
-}
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const supabase = await createClient()
