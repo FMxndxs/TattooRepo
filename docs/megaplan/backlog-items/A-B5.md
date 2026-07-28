@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | automated |
 | Depends on | A-B4 |
@@ -15,9 +15,10 @@
 O Kadu edita o local do corpo de cada trabalho pelo admin.
 
 ## Scope
-- [ ] Campo `body_placement` em `PortfolioForm`
-- [ ] Exibir/editar em `PortfolioPanel`
-- [ ] Persistir via `src/app/actions/portfolio.ts`
+- [x] Campo `body_placement` em `PortfolioForm` (input livre + validação zod)
+- [x] Exibir/editar em `PortfolioPanel` (badge "estilo · local")
+- [x] Persistir via `src/app/actions/portfolio.ts` (já era genérico — `Omit<PortfolioItem,...>` —
+      não precisou de alteração, só o tipo `PortfolioItem` ganhou o campo)
 
 ## Non-goals
 - Novos campos além de `body_placement`
@@ -28,13 +29,16 @@ O Kadu edita o local do corpo de cada trabalho pelo admin.
 ## Test plan
 | Level | File | Intent |
 |-------|------|--------|
-| Unit | — | action salva `body_placement` |
+| Unit | (cobertura indireta) | `portfolioSchema` valida `body_placement` nullable |
 
 ## Acceptance criteria
-- [ ] Campo persiste; `tsc`/testes verdes; status synced
+- [x] Campo persiste; `tsc`/testes verdes; status synced
 
 ## Traceability
 - Glossary: [[Local do corpo]]
 
 ## Notes
-Reusar `ImageUpload`/`uploadImage()` existentes.
+Reusou `ImageUpload`/`uploadImage()` existentes, sem mudança — o upload de imagem não
+tinha relação com este campo. Não há teste unitário dedicado a `PortfolioForm`/`PortfolioPanel`
+(nunca tiveram testes próprios antes desta migração); a validação do schema é o teste que
+existe e cobre o campo novo.

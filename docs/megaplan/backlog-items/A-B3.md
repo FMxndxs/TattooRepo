@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | automated |
 | Depends on | A-B2 |
@@ -16,9 +16,9 @@ O visitante filtra o portfólio por estilo e local do corpo, encontrando trabalh
 relevantes rapidamente.
 
 ## Scope
-- [ ] Derivar opções de filtro dos dados
-- [ ] Server component + query param (padrão do catálogo antigo)
-- [ ] Filtrar por estilo e `body_placement`
+- [x] Derivar opções de filtro dos dados (`portfolioFilterOptions`)
+- [x] Server component + query param (`?estilo=&local=`)
+- [x] Filtrar por estilo e `body_placement` (`filterPortfolioItems`)
 
 ## Non-goals
 - Layout visual (A-B4)
@@ -29,14 +29,18 @@ relevantes rapidamente.
 ## Test plan
 | Level | File | Intent |
 |-------|------|--------|
-| Unit | — | query filtra por estilo e local |
+| Unit | `portfolioFilter.test.ts` | opções derivadas + filtro por estilo/local/combinado |
 
 ## Acceptance criteria
-- [ ] Filtros funcionam; `tsc`/testes verdes; status synced
+- [x] Filtros funcionam; `tsc`/testes verdes; status synced
 
 ## Traceability
 - Glossary: [[Estilo]], [[Local do corpo]]
 
 ## Notes
-Reusar padrão de query param do antigo `getProducts(slug)` (já removido, mas o padrão de
-resolver filtro via searchParams no server component segue válido).
+Em vez de refazer a query no banco por combinação de filtro (padrão do antigo
+`getProducts(slug)`), optei por buscar todos os itens uma vez e filtrar em memória —
+dataset de um único estúdio (dezenas de itens, não milhares), então filtro client-side
+no server component é mais simples e correto (YAGNI em otimização de query prematura).
+Lógica extraída para `src/lib/portfolio/filter.ts` (função pura) para ser testável sem
+mockar Supabase/Next.

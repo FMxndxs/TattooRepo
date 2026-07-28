@@ -36,17 +36,17 @@ tatuagem, compilando e com testes verdes.
 ### Cycle A — Portfólio como núcleo (filtros + Instagram + imagens)
 **Objetivo:** portfólio filtrável e visualmente forte, populado com imagens Unsplash.
 **Exit criteria:**
-- [ ] `portfolio_items` tem `body_placement`; admin edita o campo
-- [ ] `/portfolio` filtra por estilo e local do corpo, layout tipo Instagram
-- [ ] Seed com 12–16 trabalhos (imagens Unsplash verificadas)
+- [x] `portfolio_items` tem `body_placement`; admin edita o campo
+- [x] `/portfolio` filtra por estilo e local do corpo, layout tipo Instagram
+- [x] Seed com 14 trabalhos (imagens Unsplash verificadas — free license, não-premium)
 
 | ID | Título | Status |
 |----|--------|--------|
-| A-B1 | Migration `102_portfolio_placement.sql`: coluna `body_placement text` em `portfolio_items` + índice | pending |
-| A-B2 | Seed `seed/003_portfolio.sql`: 12–16 trabalhos com `image_url` Unsplash (`images.unsplash.com/photo-<id>?w=800&q=80`), estilos e locais variados | pending |
-| A-B3 | Filtros por estilo + local do corpo em `/portfolio` (derivar opções dos dados; server component + query param, padrão do catálogo antigo) | pending |
-| A-B4 | Layout galeria estilo Instagram (masonry/grid, hover com título+estilo) + link pro Instagram real do estúdio | pending |
-| A-B5 | Campo `body_placement` em `PortfolioForm`/`PortfolioPanel` + action `portfolio.ts` | pending |
+| A-B1 | Migration `102_portfolio_placement.sql`: coluna `body_placement text` em `portfolio_items` + índice | done |
+| A-B2 | Seed `seed/003_portfolio.sql`: 12–16 trabalhos com `image_url` Unsplash (`images.unsplash.com/photo-<id>?w=800&q=80`), estilos e locais variados | done |
+| A-B3 | Filtros por estilo + local do corpo em `/portfolio` (derivar opções dos dados; server component + query param, padrão do catálogo antigo) | done |
+| A-B4 | Layout galeria estilo Instagram (masonry/grid, hover com título+estilo) + link pro Instagram real do estúdio | done |
+| A-B5 | Campo `body_placement` em `PortfolioForm`/`PortfolioPanel` + action `portfolio.ts` | done |
 
 ### Cycle B — Rebrand completo (zerar resíduos 3D)
 **Objetivo:** nenhum texto, classe, componente ou host remete a impressão 3D.

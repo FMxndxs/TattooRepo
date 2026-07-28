@@ -13,11 +13,11 @@ Rules:
 | 0-B3 | Remover admin de produtos + `catalog/*` + `Product*`/`ColorManager`/`StockToggle` + testes | 0 | done | [0-B3.md](backlog-items/0-B3.md) |
 | 0-B4 | Migration `101_drop_ecommerce.sql` + remover `priceCalculator`/queries produto/tipos 3D | 0 | done | [0-B4.md](backlog-items/0-B4.md) |
 | 0-B5 | Reduzir admin "Pedidos" → "Orçamentos" (`custom_orders`) | 0 | done | [0-B5.md](backlog-items/0-B5.md) |
-| A-B1 | Migration `102_portfolio_placement.sql`: coluna `body_placement` + índice | A | pending | [A-B1.md](backlog-items/A-B1.md) |
-| A-B2 | Seed `003_portfolio.sql`: 12–16 trabalhos com imagens Unsplash | A | pending | [A-B2.md](backlog-items/A-B2.md) |
-| A-B3 | Filtros por estilo + local do corpo em `/portfolio` | A | pending | [A-B3.md](backlog-items/A-B3.md) |
-| A-B4 | Layout galeria estilo Instagram + link pro Instagram do estúdio | A | pending | [A-B4.md](backlog-items/A-B4.md) |
-| A-B5 | Campo `body_placement` em `PortfolioForm`/`PortfolioPanel` + action | A | pending | [A-B5.md](backlog-items/A-B5.md) |
+| A-B1 | Migration `102_portfolio_placement.sql`: coluna `body_placement` + índice | A | done | [A-B1.md](backlog-items/A-B1.md) |
+| A-B2 | Seed `003_portfolio.sql`: 12–16 trabalhos com imagens Unsplash | A | done | [A-B2.md](backlog-items/A-B2.md) |
+| A-B3 | Filtros por estilo + local do corpo em `/portfolio` | A | done | [A-B3.md](backlog-items/A-B3.md) |
+| A-B4 | Layout galeria estilo Instagram + link pro Instagram do estúdio | A | done | [A-B4.md](backlog-items/A-B4.md) |
+| A-B5 | Campo `body_placement` em `PortfolioForm`/`PortfolioPanel` + action | A | done | [A-B5.md](backlog-items/A-B5.md) |
 | B-B1 | Branding textual → Kadu Freitas Tattoo (metadata, manifest, icons, dashboard) | B | pending | [B-B1.md](backlog-items/B-B1.md) |
 | B-B2 | `lib/seo/schema.ts` para estúdio + ajustar `seo-schema.test.ts` | B | pending | [B-B2.md](backlog-items/B-B2.md) |
 | B-B3 | `whatsapp.ts`: mensagens sem "Imagination 3D"/frete/CEP | B | pending | [B-B3.md](backlog-items/B-B3.md) |

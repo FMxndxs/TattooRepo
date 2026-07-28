@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | manual |
 | Depends on | A-B3 |
@@ -12,13 +12,13 @@
 | Last updated | 2026-07-28 |
 
 ## Outcome
-O portfólio ganha apelo visual (grade/masonry com hover mostrando título+estilo) e um
-caminho para o Instagram real do estúdio.
+O portfólio ganha apelo visual (grid denso com hover mostrando título+estilo+local) e um
+caminho para o Instagram do estúdio.
 
 ## Scope
-- [ ] Layout masonry/grid
-- [ ] Hover com título + estilo
-- [ ] Link pro Instagram real do estúdio
+- [x] Layout grid denso (2/3/4 colunas, aspect-square, gap mínimo — estética de feed)
+- [x] Hover com título + estilo + local do corpo
+- [x] Link pro Instagram do estúdio
 
 ## Non-goals
 - Nova lógica de filtro (A-B3)
@@ -32,10 +32,15 @@ caminho para o Instagram real do estúdio.
 | Manual | — | navegar `/portfolio`, ver hover e link |
 
 ## Acceptance criteria
-- [ ] Layout e link no ar; status synced
+- [x] Layout e link no ar; status synced
 
 ## Traceability
 - Glossary: [[Trabalho / Portfolio item]], [[Estilo]]
 
 ## Notes
-`next/image` com `fill` exige `sizes`.
+`sizes` adicionado em todo `next/image` com `fill` tocado (página pública + admin),
+conforme convenção do CLAUDE.md. **O link do Instagram
+(`https://instagram.com/kadufreitastattoo`) é placeholder** — marcado com comentário
+`ponytail:` no código — precisa ser trocado pelo perfil real do estúdio antes de
+divulgar o site (mesmo aviso do A-B2 para as fotos). Ícone usado é `Camera` (lucide-react
+v1 removeu ícones de marca como `Instagram`).
