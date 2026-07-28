@@ -1,13 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import { Sparkles, ArrowRight, ChevronDown, Palette, Package, Star } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { LayerReveal, StaggerGroup } from '@/components/ui/MotionPrimitives'
 import { PrintCtaLink } from '@/components/ui/PrintCtaLink'
-import { ProductGrid } from '@/components/catalog/ProductGrid'
-import type { Product } from '@/types'
 
 // Reveal do título "extrude" de baixo pra cima, mesma direção/qualidade de
 // movimento da peça sendo "criada" no hero 3D — ver usePrintLoop.ts.
@@ -104,7 +101,6 @@ function AccentSweep({ reduced }: { reduced: boolean | null }) {
 }
 
 export function HomeClient() {
-  const [featured, setFeatured] = useState<Product[]>([])
   const [revealed, setRevealed] = useState(false)
   const reduced = useReducedMotion()
 
@@ -112,48 +108,6 @@ export function HomeClient() {
   useEffect(() => {
     const timeout = setTimeout(() => setRevealed(true), 300)
     return () => clearTimeout(timeout)
-  }, [])
-
-  useEffect(() => {
-    import('@/lib/supabase/browser').then(async ({ createClient }) => {
-      const supabase = createClient()
-      type ClickRow = { product_id: string; click_count: number }
-      const SELECT = '*, category:categories(*), images:product_images(*), colors:product_colors(color:colors(*))'
-
-      const { data: clicks } = await supabase.rpc('get_most_clicked_products', { p_limit: 12 })
-      let products: Product[] = []
-
-      if (clicks && (clicks as ClickRow[]).length > 0) {
-        const ids = (clicks as ClickRow[]).map((c) => c.product_id)
-        const { data } = await supabase.from('products').select(SELECT).eq('is_available', true).in('id', ids)
-        if (data) {
-          const countMap = new Map((clicks as ClickRow[]).map((c) => [c.product_id, c.click_count]))
-          products = data
-            .map((p) => ({ ...p, colors: p.colors?.map((pc: { color: unknown }) => pc.color) ?? [] }) as Product)
-            .sort((a, b) => ((countMap.get(b.id) as number) ?? 0) - ((countMap.get(a.id) as number) ?? 0))
-        }
-      }
-
-      if (products.length < 12) {
-        const existingIds = new Set(products.map((p) => p.id))
-        const { data: fillData } = await supabase
-          .from('products')
-          .select(SELECT)
-          .eq('is_available', true)
-          .order('is_featured', { ascending: false })
-          .order('created_at', { ascending: false })
-          .limit(12)
-        if (fillData) {
-          const extras = fillData
-            .filter((p) => !existingIds.has(p.id))
-            .slice(0, 12 - products.length)
-            .map((p) => ({ ...p, colors: p.colors?.map((pc: { color: unknown }) => pc.color) ?? [] }) as Product)
-          products = [...products, ...extras]
-        }
-      }
-
-      setFeatured(products)
-    })
   }, [])
 
   return (
@@ -226,19 +180,24 @@ export function HomeClient() {
       </section>
 
       {/* Flashes Exclusivas */}
-      {featured.length > 0 && (
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-6 md:mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Flashes Exclusivas</h2>
-              <Link href="/catalog" className="text-brand-300 hover:text-brand-200 text-sm font-medium flex items-center gap-1 shrink-0 ml-4">
-                Ver todas <ArrowRight className="w-4 h-4" />
-              </Link>
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 bg-zinc-900 rounded-2xl border border-zinc-800 p-8 md:p-10">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Flashes Exclusivas</h2>
+              <p className="text-zinc-400 text-sm max-w-md">
+                Desenhos prontos para tatuar — escolha o seu no portfólio e agende sua sessão.
+              </p>
             </div>
-            <ProductGrid products={featured} />
+            <div className="flex flex-wrap items-center gap-4 shrink-0">
+              <PrintCtaLink href="/portfolio">Ver Flashes</PrintCtaLink>
+              <PrintCtaLink href="/agendar" variant="secondary">
+                Agendar <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
+              </PrintCtaLink>
+            </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Avaliações */}
       <section className="py-16 bg-zinc-900/50">

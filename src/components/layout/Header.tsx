@@ -5,14 +5,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import {
-  Menu, X, Sparkles, LayoutDashboard, User, LogIn, LogOut, Layers, Package,
+  Menu, X, Sparkles, LayoutDashboard, User, LogIn, LogOut, Layers,
 } from 'lucide-react'
 import { UserMenu } from './UserMenu'
 import { useAuth } from '@/lib/context/AuthContext'
 import { useAuthModalStore } from '@/lib/store/authModalStore'
 
 const navLinks = [
-  { href: '/catalog', label: 'Flashes' },
+  { href: '/agendar?service=flash', label: 'Flashes' },
   { href: '/portfolio', label: 'Portfólio' },
   { href: '/promocoes', label: 'Promoções' },
   { href: '/custom-order', label: 'Personalizado' },
@@ -175,14 +175,6 @@ export function Header() {
                     >
                       <User className="w-4 h-4 shrink-0" />
                       Meu Perfil
-                    </Link>
-                    <Link
-                      href="/meus-pedidos"
-                      onClick={closeMobile}
-                      className="flex items-center gap-3 px-3 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-zinc-800/70 text-sm transition-colors"
-                    >
-                      <Package className="w-4 h-4 shrink-0" />
-                      Meus Pedidos
                     </Link>
                     <button
                       type="button"

@@ -1,25 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { HomeClient } from '@/app/HomeClient'
 
-// Evita a chamada real ao Supabase no useEffect de produtos em destaque.
-jest.mock('@/lib/supabase/browser', () => ({
-  createClient: () => ({
-    rpc: () => Promise.resolve({ data: [] }),
-    from: () => ({
-      select: () => ({
-        eq: () => ({
-          in: () => Promise.resolve({ data: [] }),
-          order: () => ({
-            order: () => ({
-              limit: () => Promise.resolve({ data: [] }),
-            }),
-          }),
-        }),
-      }),
-    }),
-  }),
-}))
-
 let _reducedMotion = false
 
 jest.mock('motion/react', () => {
@@ -62,12 +43,8 @@ describe('HomeClient', () => {
     expect(screen.getByRole('link', { name: /ver portfólio/i })).toHaveAttribute('href', '/portfolio')
   })
 
-  it('possui link para catálogo de flashes', () => {
+  it('possui CTA para ver flashes no portfólio', () => {
     render(<HomeClient />)
-    // Link que leva ao catálogo está na seção de flashes
-    const catalogLink = screen.queryByRole('link', { name: /ver todas/i })
-    if (catalogLink) {
-      expect(catalogLink).toHaveAttribute('href', '/catalog')
-    }
+    expect(screen.getByRole('link', { name: /ver flashes/i })).toHaveAttribute('href', '/portfolio')
   })
 })

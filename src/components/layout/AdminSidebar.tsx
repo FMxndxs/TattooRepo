@@ -14,7 +14,6 @@ import { useAuth } from '@/lib/context/AuthContext'
 
 const navItems = [
   { href: '/admin',               label: 'Visão Geral',      icon: LayoutGrid,     exact: true },
-  { href: '/admin/products',      label: 'Flashes',          icon: Package },
   { href: '/admin/orders',        label: 'Orçamentos',       icon: MessageSquare },
   { href: '/admin/agenda',        label: 'Agenda',           icon: Calendar },
   { href: '/admin/services',      label: 'Serviços',         icon: Wrench },

@@ -1,11 +1,10 @@
 import type { MetadataRoute } from 'next'
-import { getProducts, getCategories } from '@/lib/supabase/queries'
 import { getSiteUrl } from '@/lib/seo/schema'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = getSiteUrl()
 
-  const staticRoutes: MetadataRoute.Sitemap = [
+  return [
     {
       url: siteUrl,
       lastModified: new Date(),
@@ -13,16 +12,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${siteUrl}/catalog`,
+      url: `${siteUrl}/portfolio`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${siteUrl}/nossa-historia`,
+      url: `${siteUrl}/promocoes`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${siteUrl}/agendar`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.5,
+      priority: 0.9,
     },
     {
       url: `${siteUrl}/custom-order`,
@@ -30,35 +35,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
-  ]
-
-  // Entradas por categoria (/catalog?categoria=slug)
-  let categoryRoutes: MetadataRoute.Sitemap = []
-  try {
-    const categories = await getCategories()
-    categoryRoutes = categories.map((cat) => ({
-      url: `${siteUrl}/catalog?categoria=${cat.slug}`,
+    {
+      url: `${siteUrl}/nossa-historia`,
       lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }))
-  } catch {
-    // não bloqueia o sitemap se falhar
-  }
-
-  // Entradas por produto (/product/slug)
-  let productRoutes: MetadataRoute.Sitemap = []
-  try {
-    const products = await getProducts()
-    productRoutes = products.map((product) => ({
-      url: `${siteUrl}/product/${product.slug}`,
-      lastModified: new Date(product.updated_at),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }))
-  } catch {
-    // não bloqueia o sitemap se falhar
-  }
-
-  return [...staticRoutes, ...categoryRoutes, ...productRoutes]
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+  ]
 }
