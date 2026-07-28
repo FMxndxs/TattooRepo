@@ -11,7 +11,7 @@ jest.mock('@/app/actions/orders', () => ({
 // OrderStatusSelect makes async Supabase calls — mock it
 jest.mock('@/components/admin/OrderStatusSelect', () => ({
   OrderStatusSelect: ({ currentStatus }: { currentStatus: string }) => (
-    <select defaultValue={currentStatus} aria-label="Status do pedido">
+    <select defaultValue={currentStatus} aria-label="Status do orçamento">
       <option value={currentStatus}>{currentStatus}</option>
     </select>
   ),
@@ -19,18 +19,7 @@ jest.mock('@/components/admin/OrderStatusSelect', () => ({
 
 const orders: AdminOrderRow[] = [
   {
-    id: 'o1',
-    type: 'normal',
-    customer_name: 'Carlos Lima',
-    customer_phone: '(11) 93333-3333',
-    status: 'pending',
-    created_at: '2026-05-10T10:00:00Z',
-    summary: '2× Vaso Hexagonal',
-    total: 99.9,
-  },
-  {
     id: 'c1',
-    type: 'custom',
     customer_name: 'Ana Silva',
     customer_phone: '(11) 91111-1111',
     status: 'pending',
@@ -38,43 +27,35 @@ const orders: AdminOrderRow[] = [
     summary: 'Caixa com logotipo',
   },
   {
-    id: 'o2',
-    type: 'normal',
+    id: 'c2',
+    customer_name: 'Carlos Lima',
+    customer_phone: '(11) 93333-3333',
+    status: 'reviewing',
+    created_at: '2026-05-10T10:00:00Z',
+    summary: 'Fênix em blackwork no antebraço',
+  },
+  {
+    id: 'c3',
     customer_name: 'Ana Silva',
     customer_phone: '(11) 91111-1111',
-    status: 'completed',
+    status: 'accepted',
     created_at: '2026-05-12T10:00:00Z',
-    summary: '1× Suporte de Mesa',
-    total: 39.9,
+    summary: 'Lettering nas costelas',
   },
 ]
 
 describe('OrdersPanel', () => {
-  it('renders all orders in "Todos" tab by default', () => {
+  it('renders all orders by default', () => {
     render(<OrdersPanel orders={orders} />)
-    expect(screen.getByText('2× Vaso Hexagonal')).toBeInTheDocument()
     expect(screen.getByText('Caixa com logotipo')).toBeInTheDocument()
-    expect(screen.getByText('1× Suporte de Mesa')).toBeInTheDocument()
-  })
-
-  it('shows only normal orders in "Normais" tab', () => {
-    render(<OrdersPanel orders={orders} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Normais' }))
-    expect(screen.getByText('2× Vaso Hexagonal')).toBeInTheDocument()
-    expect(screen.queryByText('Caixa com logotipo')).not.toBeInTheDocument()
-  })
-
-  it('shows only custom orders in "Customizados" tab', () => {
-    render(<OrdersPanel orders={orders} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Customizados' }))
-    expect(screen.getByText('Caixa com logotipo')).toBeInTheDocument()
-    expect(screen.queryByText('2× Vaso Hexagonal')).not.toBeInTheDocument()
+    expect(screen.getByText('Fênix em blackwork no antebraço')).toBeInTheDocument()
+    expect(screen.getByText('Lettering nas costelas')).toBeInTheDocument()
   })
 
   it('filters by customer name search', () => {
     render(<OrdersPanel orders={orders} />)
     fireEvent.change(screen.getByPlaceholderText(/buscar/i), { target: { value: 'Carlos' } })
-    expect(screen.getByText('2× Vaso Hexagonal')).toBeInTheDocument()
+    expect(screen.getByText('Fênix em blackwork no antebraço')).toBeInTheDocument()
     expect(screen.queryByText('Caixa com logotipo')).not.toBeInTheDocument()
   })
 
@@ -91,6 +72,6 @@ describe('OrdersPanel', () => {
   it('shows empty state when no orders match filter', () => {
     render(<OrdersPanel orders={orders} />)
     fireEvent.change(screen.getByPlaceholderText(/buscar/i), { target: { value: 'zzznobody' } })
-    expect(screen.getByText('Nenhum pedido encontrado.')).toBeInTheDocument()
+    expect(screen.getByText('Nenhum orçamento encontrado.')).toBeInTheDocument()
   })
 })

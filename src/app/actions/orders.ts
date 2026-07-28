@@ -14,11 +14,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import {
-  advanceOrderStatus,
-  cancelOrder,
-} from '@/lib/orders/service'
-import type { OrderType } from '@/lib/admin/orders'
+import { advanceOrderStatus, cancelOrder } from '@/lib/orders/service'
 
 // ─── Helper de autorização ────────────────────────────────────────────────────
 
@@ -45,18 +41,14 @@ function revalidateOrders() {
 
 // ─── Server Actions ───────────────────────────────────────────────────────────
 
-/**
- * Avança o status de um orçamento (custom_order) para `nextStatus`.
- * Valida a transição antes de executar.
- */
+/** Avança o status de um orçamento (custom_order) para `nextStatus`. */
 export async function advanceOrderStatusAction(
   orderId: string,
   nextStatus: string,
-  orderType: OrderType = 'custom',
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const client = await assertAdmin()
-    const result = await advanceOrderStatus(client, orderId, nextStatus, orderType)
+    const result = await advanceOrderStatus(client, orderId, nextStatus)
     if (result.success) revalidateOrders()
     return result
   } catch (err) {
@@ -64,16 +56,13 @@ export async function advanceOrderStatusAction(
   }
 }
 
-/**
- * Cancela um orçamento (qualquer estado não-terminal → cancelled).
- */
+/** Cancela um orçamento (qualquer estado não-terminal → cancelled). */
 export async function cancelOrderAction(
   orderId: string,
-  orderType: OrderType = 'custom',
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const client = await assertAdmin()
-    const result = await cancelOrder(client, orderId, orderType)
+    const result = await cancelOrder(client, orderId)
     if (result.success) revalidateOrders()
     return result
   } catch (err) {

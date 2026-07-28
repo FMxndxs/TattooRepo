@@ -85,4 +85,20 @@ DROP TABLE IF EXISTS public.categories           CASCADE;
 -- 5. Enum de status de orders (014) fica órfão após o drop
 DROP TYPE IF EXISTS order_status CASCADE;
 
+-- 6. custom_orders: aperta o CHECK de status ao ciclo de orçamento puro.
+--    Um estúdio de tatuagem não tem etapa de produção/despacho — depois de
+--    "accepted" o cliente agenda a sessão em /agendar (rastreado em bookings).
+--    Qualquer linha com status de produção legado é migrada para 'accepted'
+--    (a etapa de cotação já estava concluída nesses casos).
+UPDATE public.custom_orders
+   SET status = 'accepted'
+ WHERE status IN ('in_production', 'finishing', 'ready', 'out_for_delivery', 'shipped', 'delivered', 'completed', 'confirmed');
+
+ALTER TABLE public.custom_orders
+  DROP CONSTRAINT IF EXISTS custom_orders_status_check;
+
+ALTER TABLE public.custom_orders
+  ADD CONSTRAINT custom_orders_status_check
+  CHECK (status IN ('pending', 'reviewing', 'quoted', 'accepted', 'rejected', 'cancelled'));
+
 COMMIT;
