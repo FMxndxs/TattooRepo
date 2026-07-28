@@ -18,13 +18,13 @@ Rules:
 | A-B3 | Filtros por estilo + local do corpo em `/portfolio` | A | done | [A-B3.md](backlog-items/A-B3.md) |
 | A-B4 | Layout galeria estilo Instagram + link pro Instagram do estúdio | A | done | [A-B4.md](backlog-items/A-B4.md) |
 | A-B5 | Campo `body_placement` em `PortfolioForm`/`PortfolioPanel` + action | A | done | [A-B5.md](backlog-items/A-B5.md) |
-| B-B1 | Branding textual → Kadu Freitas Tattoo (metadata, manifest, icons, dashboard) | B | pending | [B-B1.md](backlog-items/B-B1.md) |
-| B-B2 | `lib/seo/schema.ts` para estúdio + ajustar `seo-schema.test.ts` | B | pending | [B-B2.md](backlog-items/B-B2.md) |
-| B-B3 | `whatsapp.ts`: mensagens sem "Imagination 3D"/frete/CEP | B | pending | [B-B3.md](backlog-items/B-B3.md) |
-| B-B4 | `Footer.tsx` + `AuthModal.tsx` + comentário `Modal.tsx` | B | pending | [B-B4.md](backlog-items/B-B4.md) |
-| B-B5 | Reescrever `nossa-historia/page.tsx` para a história do estúdio | B | pending | [B-B5.md](backlog-items/B-B5.md) |
-| B-B6 | Renomear componentes/classes tema 3D → tema tattoo | B | pending | [B-B6.md](backlog-items/B-B6.md) |
-| B-B7 | `next.config.ts`: remover host makerworld; renomear chave sessionId | B | pending | [B-B7.md](backlog-items/B-B7.md) |
+| B-B1 | Branding textual → Kadu Freitas Tattoo (metadata, manifest, icons, dashboard) | B | done | [B-B1.md](backlog-items/B-B1.md) |
+| B-B2 | `lib/seo/schema.ts` para estúdio + ajustar `seo-schema.test.ts` | B | done | [B-B2.md](backlog-items/B-B2.md) |
+| B-B3 | `whatsapp.ts`: mensagens sem "Imagination 3D"/frete/CEP | B | done | [B-B3.md](backlog-items/B-B3.md) |
+| B-B4 | `Footer.tsx` + `AuthModal.tsx` + comentário `Modal.tsx` | B | done | [B-B4.md](backlog-items/B-B4.md) |
+| B-B5 | Reescrever `nossa-historia/page.tsx` para a história do estúdio | B | done | [B-B5.md](backlog-items/B-B5.md) |
+| B-B6 | Renomear componentes/classes tema 3D → tema tattoo | B | done | [B-B6.md](backlog-items/B-B6.md) |
+| B-B7 | `next.config.ts`: remover host makerworld; renomear chave sessionId | B | done | [B-B7.md](backlog-items/B-B7.md) |
 | C-B1 | Página `/cuidados` (aftercare) + nav + sitemap + FAQPage JSON-LD | C | pending | [C-B1.md](backlog-items/C-B1.md) |
 | D-B1 | `docs/setup-pagamento-calendario.md`: guia Mercado Pago + Google Calendar | D | pending | [D-B1.md](backlog-items/D-B1.md) |
 | D-B2 | Ligar `StudioSettingsForm` ao `app_settings` via action | D | pending | [D-B2.md](backlog-items/D-B2.md) |

@@ -51,19 +51,19 @@ tatuagem, compilando e com testes verdes.
 ### Cycle B — Rebrand completo (zerar resíduos 3D)
 **Objetivo:** nenhum texto, classe, componente ou host remete a impressão 3D.
 **Exit criteria:**
-- [ ] Grep por `Imagination|Bambu|MakerWorld|filament|impress|print-|3D` em `src/` só
+- [x] Grep por `Imagination|Bambu|MakerWorld|filament|impress|print-|3D` em `src/` só
       retorna ocorrências intencionais (ou zero)
-- [ ] `seo-schema.test` e `MotionPrimitives.test` atualizados e verdes
+- [x] `seo-schema.test` e `MotionPrimitives.test` atualizados e verdes
 
 | ID | Título | Status |
 |----|--------|--------|
-| B-B1 | Branding textual → Kadu Freitas Tattoo: `app/page.tsx` metadata, `manifest.ts`, `apple-icon.tsx`, `opengraph-image.tsx`, `admin/(dashboard)/page.tsx` | pending |
-| B-B2 | `lib/seo/schema.ts` (organization/localBusiness) para estúdio + ajustar `seo-schema.test.ts` L47 | pending |
-| B-B3 | `lib/utils/whatsapp.ts`: mensagens sem "Imagination 3D"/frete/CEP; adequar ao contexto de orçamento/agendamento | pending |
-| B-B4 | `Footer.tsx` (logo, textos, Instagram real, remover links de carrinho/catálogo) + `AuthModal.tsx` + comentário em `Modal.tsx` | pending |
-| B-B5 | Reescrever `app/nossa-historia/page.tsx` para a história do estúdio | pending |
-| B-B6 | Renomear componentes/classes de tema 3D → tema tattoo: `PrintCtaLink`→`CtaLink`, `PrintLayerSkeleton`, `FilamentBackdrop`, `PrintLineHover` (+ `data-testid`), classes `print-*`/`filament-*` em `globals.css` e consumidores; ajustar `MotionPrimitives.test` | pending |
-| B-B7 | `next.config.ts`: remover host `makerworld.bblmw.com`; renomear chave `imagination3d_session_id` em `sessionId.ts`+teste | pending |
+| B-B1 | Branding textual → Kadu Freitas Tattoo: `app/page.tsx` metadata, `manifest.ts`, `apple-icon.tsx`, `opengraph-image.tsx`, `admin/(dashboard)/page.tsx` | done |
+| B-B2 | `lib/seo/schema.ts` (organization/localBusiness) para estúdio + ajustar `seo-schema.test.ts` L47 | done |
+| B-B3 | `lib/utils/whatsapp.ts`: mensagens sem "Imagination 3D"/frete/CEP; adequar ao contexto de orçamento/agendamento | done |
+| B-B4 | `Footer.tsx` (logo, textos, Instagram real, remover links de carrinho/catálogo) + `AuthModal.tsx` + comentário em `Modal.tsx` | done |
+| B-B5 | Reescrever `app/nossa-historia/page.tsx` para a história do estúdio | done |
+| B-B6 | Renomear componentes/classes de tema 3D → tema tattoo: `PrintCtaLink`→`CtaLink`, `PrintLayerSkeleton`, `FilamentBackdrop`, `PrintLineHover` (+ `data-testid`), classes `print-*`/`filament-*` em `globals.css` e consumidores; ajustar `MotionPrimitives.test` | done |
+| B-B7 | `next.config.ts`: remover host `makerworld.bblmw.com`; renomear chave `imagination3d_session_id` em `sessionId.ts`+teste | done |
 
 ### Cycle C — Conteúdo & SEO (cuidados pós-tattoo)
 **Objetivo:** página de valor que também rende SEO orgânico.

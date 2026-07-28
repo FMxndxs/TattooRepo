@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | automated |
 | Depends on | Cycle A |
@@ -16,10 +16,11 @@ Todos os metadados e o dashboard exibem "Kadu Freitas Tattoo", sem resquício
 "Imagination 3D".
 
 ## Scope
-- [ ] `app/page.tsx` metadata
-- [ ] `manifest.ts`, `apple-icon.tsx`, `opengraph-image.tsx`
-- [ ] `admin/(dashboard)/page.tsx` (subtítulo "Bem-vindo ao painel da Kadu Freitas Tattoo"
-      já corrigido em 0-B2; revisar se sobrou algo)
+- [x] `app/page.tsx` metadata (title/description)
+- [x] `manifest.ts` (name/short_name/description)
+- [x] `apple-icon.tsx` (iniciais "I"/"3D" → "K"/"F")
+- [x] `opengraph-image.tsx` (alt, brand label, headline, tagline)
+- [x] `admin/(dashboard)/page.tsx` (já estava correto de uma mudança anterior)
 
 ## Non-goals
 - SEO schema (B-B2)
@@ -33,10 +34,10 @@ Todos os metadados e o dashboard exibem "Kadu Freitas Tattoo", sem resquício
 | Manual | — | metadados e dashboard sem "3D" |
 
 ## Acceptance criteria
-- [ ] Branding trocado; status synced
+- [x] Branding trocado; status synced
 
 ## Traceability
 - Related: B-B2..B-B7
 
 ## Notes
-—
+Nenhum drift.

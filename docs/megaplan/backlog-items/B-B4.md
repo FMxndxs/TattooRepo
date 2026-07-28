@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | automated |
 | Depends on | B-B3 |
@@ -16,10 +16,10 @@ Footer e modais refletem o estúdio (logo, textos, Instagram real) sem links de
 carrinho/catálogo.
 
 ## Scope
-- [ ] `Footer.tsx`: logo (`/logo-kadu.png`, já usado no Header), textos, Instagram real;
-      remover links de carrinho/catálogo remanescentes
-- [ ] `AuthModal.tsx`: textos do estúdio
-- [ ] Comentário em `Modal.tsx` ("3D print decoration")
+- [x] `Footer.tsx`: logo `/logo-kadu.png`, textos, Instagram placeholder atualizado,
+      links de navegação corrigidos (`/portfolio` em vez de `/catalog`, sem carrinho)
+- [x] `AuthModal.tsx`: texto do rodapé "Imagination 3D" → "Kadu Freitas Tattoo"
+- [x] `Modal.tsx`: comentário "3D print decoration" reescrito
 
 ## Non-goals
 - Reescrever nossa-historia (B-B5)
@@ -33,10 +33,11 @@ carrinho/catálogo.
 | Manual | — | footer/modais sem "3D" |
 
 ## Acceptance criteria
-- [ ] Textos trocados; status synced
+- [x] Textos trocados; status synced
 
 ## Traceability
 - Related: B-B5
 
 ## Notes
-—
+Instagram (`https://instagram.com/kadufreitastattoo`) é placeholder, mesmo aviso do A-B2/A-B4
+— trocar pelo perfil real antes de divulgar.

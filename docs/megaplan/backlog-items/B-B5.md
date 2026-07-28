@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | manual |
 | Depends on | B-B4 |
@@ -15,7 +15,7 @@
 A página "Nossa história" conta a trajetória do estúdio Kadu Freitas Tattoo.
 
 ## Scope
-- [ ] Reescrever `app/nossa-historia/page.tsx`
+- [x] Reescrever `app/nossa-historia/page.tsx` (mesma estrutura/layout, conteúdo novo)
 
 ## Non-goals
 - Mudanças de layout global
@@ -29,10 +29,12 @@ A página "Nossa história" conta a trajetória do estúdio Kadu Freitas Tattoo.
 | Manual | — | conteúdo do estúdio, sem "3D" |
 
 ## Acceptance criteria
-- [ ] Página reescrita; status synced
+- [x] Página reescrita; status synced
 
 ## Traceability
-- Related: avisar que fotos reais devem substituir placeholders Unsplash do portfólio
+- Related: fotos reais devem substituir placeholders Unsplash do portfólio (mesmo aviso
+  do A-B2)
 
 ## Notes
-Deixar claro que Kadu deve subir as fotos reais antes de divulgar (mesma ressalva do A-B2).
+Timeline usa marcos genéricos ("Início", "Consolidação", "Hoje") em vez de anos/fatos
+específicos fabricados — evita afirmar uma história factual que não existe.

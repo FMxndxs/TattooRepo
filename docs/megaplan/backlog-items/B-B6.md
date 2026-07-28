@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | automated |
 | Depends on | B-B5 |
@@ -15,10 +15,17 @@
 Componentes e classes CSS não carregam mais o tema de impressão 3D.
 
 ## Scope
-- [ ] `PrintCtaLink` → `CtaLink`
-- [ ] Renomear `PrintLayerSkeleton`, `FilamentBackdrop`, `PrintLineHover` (+ `data-testid`)
-- [ ] Classes `print-*`/`filament-*` em `globals.css` e consumidores
-- [ ] Ajustar `MotionPrimitives.test`
+- [x] `PrintCtaLink` → `CtaLink` (único componente do tema com consumidor real:
+      HomeClient, nossa-historia, UserMenu)
+- [x] `PrintLayerSkeleton`, `FilamentBackdrop`, `PrintLineHover` — **deletados** em vez de
+      renomeados (zero consumidores reais desde que catalog/product/meus-pedidos saíram
+      no Cycle 0; renomear dead code não fazia sentido — deletion over addition)
+- [x] Classes `print-*`/`filament-*` em `globals.css`: renomeadas as vivas
+      (`print-cta-sheen`→`cta-sheen`, `print-cta-filament`→`cta-sheen-fill`,
+      `print-header-glow`→`header-glow`); removidas as mortas (`filament-grid`,
+      `filament-sweep-gradient`, `@keyframes extrusion-scan`/`nozzle-glow-scan`,
+      `print-skel-*`, `print-extrusion-shimmer`, `print-buildplate-bg`, `print-line-muted-motion`)
+- [x] `MotionPrimitives.test.tsx` ajustado (removido describe de `PrintLineHover`)
 
 ## Non-goals
 - Redesign visual profundo
@@ -29,14 +36,18 @@ Componentes e classes CSS não carregam mais o tema de impressão 3D.
 ## Test plan
 | Level | File | Intent |
 |-------|------|--------|
-| Unit | `MotionPrimitives.test` | novos nomes/testids |
+| Unit | `MotionPrimitives.test.tsx` | sem referência a `PrintLineHover`/testid `print-line` |
 
 ## Acceptance criteria
-- [ ] Testes verdes; status synced
+- [x] Testes verdes; status synced
 
 ## Traceability
-- Related: renomear tem efeito em cascata (Header, Modal, CTAs, skeletons) — grep dirigido
+- Related: renomear teve efeito em cascata — grep dirigido, tsc/test/build a cada passo
 
 ## Notes
-Rodar testes a cada passo (testid `print-line`). `FilamentBackdrop` pode estar órfão
-(sem consumidor em `src/`) — confirmar antes de decidir entre renomear ou remover.
+Bug encontrado e corrigido no processo (fora do escopo original, mas descoberto pelo grep
+dirigido): `UserMenu.tsx` (dropdown desktop, componente separado do menu mobile do
+`Header.tsx`) ainda linkava `/meus-pedidos`, rota removida no Cycle 0 (0-B2) — só o link
+do menu mobile tinha sido corrigido antes. Corrigido aqui.
+`print-buildplate-bg` nunca chegou a ser aplicado em `layout.tsx` (contrário ao que o
+CLAUDE.md antigo dizia) — confirmado morto e removido sem substituto.

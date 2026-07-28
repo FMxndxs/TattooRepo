@@ -3,8 +3,8 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
-| Workflow step | — |
+| Status | done |
+| Workflow step | COMPLETE |
 | Owner | — |
 | Verification | automated |
 | Depends on | B-B2 |
@@ -16,7 +16,13 @@ As mensagens de WhatsApp falam de orçamento/agendamento de tatuagem, sem brandi
 campos de frete/CEP.
 
 ## Scope
-- [ ] Revisar mensagens em `lib/utils/whatsapp.ts`
+- [x] `buildWhatsAppMessage`/`buildWhatsAppUrl` (payload de carrinho com CEP/frete) removidas
+      — dead code, sem consumidor desde a remoção do catálogo (0-B4)
+- [x] `buildSupportMessage`/`buildSupportUrl` (chatbot) removidas — dead code
+- [x] `buildCustomOrderMessage`/`Url` reescritas: "Imagination 3D" → "Kadu Freitas Tattoo",
+      "Cor desejada" → "Estilo desejado"
+- [x] `buildOrderConfirmationMessage`/`Url` mantidas (ainda genéricas/válidas), sem
+      "Imagination 3D" nelas
 
 ## Non-goals
 - Trocar o número (segue `5511989525014`)
@@ -27,20 +33,18 @@ campos de frete/CEP.
 ## Test plan
 | Level | File | Intent |
 |-------|------|--------|
-| Unit | `whatsapp.test.ts` | mensagem sem "Imagination 3D"/frete |
+| Unit | `whatsapp.test.ts` | reescrito do zero para `buildCustomOrderMessage`/`Url` (as
+      funções que sobreviveram) |
 
 ## Acceptance criteria
-- [ ] Testes verdes; status synced
+- [x] Testes verdes; status synced
 
 ## Traceability
 - Glossary: [[Orçamento / Custom order]], [[Agendamento / Booking]]
 
 ## Notes
-Já resolvido em 0-B4/0-B5: `buildWhatsAppMessage`/`buildWhatsAppUrl` (payload de carrinho
-com CEP/frete) e `buildSupportMessage`/`buildSupportUrl` (chatbot morto) foram removidos —
-eram dead code sem consumidor. `buildCustomOrderMessage`/`Url` e
-`buildOrderConfirmationMessage`/`Url` já foram reescritos sem "Imagination 3D" (agora dizem
-"Kadu Freitas Tattoo" e "Estilo desejado" em vez de "Cor desejada"). Restou conferir se
-`buildOrderConfirmationMessage` ("Seu pedido... foi confirmado") ainda faz sentido dado que
-`OrdersPanel` não chama mais esse fluxo (removido em 0-B5) — decidir se mantém para uso
-futuro ou remove como dead code.
+Resolvido efetivamente durante 0-B4/0-B5, antes deste item existir no backlog — aqui só
+formaliza o status. `buildOrderConfirmationMessage`/`Url` não têm mais consumidor desde a
+simplificação do OrdersPanel em 0-B5 (o botão "Confirmar WA" foi removido); ficaram como
+dead code candidato — não removidas aqui por estarem fora do escopo textual deste item,
+mas vale revisar numa limpeza futura.
