@@ -22,7 +22,7 @@ describe('organizationSchema', () => {
 
   it('tem nome e url corretos', () => {
     const schema = organizationSchema()
-    expect(schema.name).toBe('Imagination 3D')
+    expect(schema.name).toBe('Kadu Freitas Tattoo')
     expect(schema.url).toBe(getSiteUrl())
   })
 

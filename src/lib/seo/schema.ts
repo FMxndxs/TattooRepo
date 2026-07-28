@@ -7,11 +7,11 @@ export function organizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Imagination 3D',
+    name: 'Kadu Freitas Tattoo',
     url,
     logo: `${url}/logo.png`,
     description:
-      'Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados.',
+      'Estúdio de tatuagem em São Paulo. Tatuagens customizadas, flashes exclusivas e orçamento personalizado.',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
@@ -31,12 +31,12 @@ export function localBusinessSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'Imagination 3D',
+    name: 'Kadu Freitas Tattoo',
     url,
     logo: `${url}/logo.png`,
     image: `${url}/logo.png`,
     description:
-      'Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados entregues em São Paulo.',
+      'Estúdio de tatuagem em São Paulo. Sessões agendadas online com sinal via Pix, portfólio de trabalhos e orçamento personalizado.',
     telephone: '+55-11-98952-5014',
     priceRange: 'R$',
     address: {

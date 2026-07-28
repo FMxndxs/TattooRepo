@@ -34,7 +34,7 @@ export default function AppleIcon() {
               lineHeight: 1,
             }}
           >
-            I
+            K
           </span>
           <span
             style={{
@@ -46,7 +46,7 @@ export default function AppleIcon() {
               marginTop: -4,
             }}
           >
-            3D
+            F
           </span>
         </div>
       </div>

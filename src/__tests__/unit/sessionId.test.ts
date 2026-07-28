@@ -1,6 +1,6 @@
 import { getOrCreateSessionId } from '@/lib/analytics/sessionId'
 
-const SESSION_KEY = 'imagination3d_session_id'
+const SESSION_KEY = 'kadu_tattoo_session_id'
 
 describe('getOrCreateSessionId', () => {
   beforeEach(() => {

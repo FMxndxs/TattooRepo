@@ -5,10 +5,10 @@ import { organizationSchema, localBusinessSchema, getSiteUrl } from '@/lib/seo/s
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Imagination 3D — Impressão 3D de alta qualidade',
+    absolute: 'Kadu Freitas Tattoo — Estúdio de tatuagem em São Paulo',
   },
   description:
-    'Produtos únicos impressos com filamento de alta qualidade usando Bambu Lab. Decoração, utilitários, games, bonecos e projetos personalizados via WhatsApp.',
+    'Tatuagens customizadas com estilo único. Conheça nosso portfólio, agende sua sessão online e transforme suas ideias em arte permanente.',
   alternates: {
     canonical: getSiteUrl(),
   },

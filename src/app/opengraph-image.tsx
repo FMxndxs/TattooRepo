@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Imagination 3D — Impressão 3D de alta qualidade'
+export const alt = 'Kadu Freitas Tattoo — Portfólio de tatuagens customizadas'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -41,7 +41,7 @@ export default function Image() {
             textTransform: 'uppercase',
           }}
         >
-          Imagination 3D
+          Kadu Freitas Tattoo
         </div>
 
         {/* Main headline */}
@@ -59,9 +59,9 @@ export default function Image() {
             gap: 0,
           }}
         >
-          <span>Impressão 3D que</span>
-          <span style={{ color: '#b683ff' }}>transforma ideias</span>
-          <span>em realidade</span>
+          <span>Tatuagens que</span>
+          <span style={{ color: '#b683ff' }}>expressam sua arte</span>
+          <span>com estilo único</span>
         </div>
 
         {/* Tagline */}
@@ -73,7 +73,7 @@ export default function Image() {
             marginTop: 8,
           }}
         >
-          Bambu Lab · Alta qualidade · Personalizado para você
+          Portfólio · Agendamento online · Customizado para você
         </div>
       </div>
     ),

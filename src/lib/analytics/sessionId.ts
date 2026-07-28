@@ -1,4 +1,4 @@
-const SESSION_KEY = 'imagination3d_session_id'
+const SESSION_KEY = 'kadu_tattoo_session_id'
 
 export function getOrCreateSessionId(): string {
   if (typeof window === 'undefined') return ''

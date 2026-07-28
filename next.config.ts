@@ -47,10 +47,6 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'fastly.picsum.photos',
       },
-      {
-        protocol: 'https',
-        hostname: 'makerworld.bblmw.com',
-      },
     ],
     formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,

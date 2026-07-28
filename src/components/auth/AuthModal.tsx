@@ -108,7 +108,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
         className="mt-5 text-center text-foreground-subtle text-xs flex items-center gap-2 justify-center"
       >
         <div className="h-px flex-1 bg-border" />
-        Imagination 3D
+        Kadu Freitas Tattoo
         <div className="h-px flex-1 bg-border" />
       </div>
     </Modal>

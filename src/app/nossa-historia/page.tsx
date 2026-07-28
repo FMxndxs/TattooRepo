@@ -7,7 +7,7 @@ import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Nossa História',
-  description: 'Conheça a história, os princípios e a visão por trás da Imagination 3D — impressão 3D de alta qualidade com Bambu Lab.',
+  description: 'Conheça a história, os princípios e a visão por trás do Kadu Freitas Tattoo — tatuagem de qualidade, higiene e autenticidade.',
   alternates: { canonical: '/nossa-historia' },
   openGraph: { type: 'website' },
 }
@@ -15,41 +15,41 @@ export const metadata: Metadata = {
 const values = [
   {
     icon: Heart,
-    title: 'Paixão pelo que fazemos',
-    desc: 'Cada peça impressa carrega dedicação. Não fazemos produção em massa — cada projeto é tratado como único.',
+    title: 'Paixão pela arte',
+    desc: 'Cada tatuagem é uma obra. Não fazemos produção em série — cada cliente traz uma história, e nós a transformamos em arte permanente.',
   },
   {
     icon: Zap,
-    title: 'Tecnologia de ponta',
-    desc: 'A Bambu Lab é uma das impressoras mais precisas do mercado. Escolhemos o melhor equipamento para entregarmos o melhor resultado.',
+    title: 'Higiene e esterilização',
+    desc: 'Equipamentos esterilizados, materiais descartáveis e protocolos rigorosos. A saúde e segurança do nosso cliente vêm em primeiro lugar.',
   },
   {
     icon: Users,
-    title: 'Próximos do cliente',
-    desc: 'Orçamento, dúvidas, acompanhamento — tudo pelo WhatsApp, sem burocracia. Você fala diretamente com quem faz.',
+    title: 'Atendimento personalizado',
+    desc: 'Orçamento, dúvidas, acompanhamento — tudo pelo WhatsApp, sem burocracia. Você conversa direto com quem vai fazer sua tatuagem.',
   },
   {
     icon: Target,
-    title: 'Qualidade sem concessões',
-    desc: 'Filamentos selecionados, calibração constante e inspeção manual em cada peça. Não enviamos o que não nos orgulhamos.',
+    title: 'Autenticidade do traço',
+    desc: 'Linhas precisas, cores vibrantes e design respeitoso. Cada detalhe é executado com maestria. Não tatuamos o que não nos orgulhamos.',
   },
 ]
 
 const milestones = [
   {
-    year: '2023',
-    title: 'O primeiro projeto',
-    desc: 'Tudo começou com uma impressora, um quarto e a vontade de transformar arquivos digitais em objetos reais. O primeiro pedido foi de um amigo — um suporte de headset personalizado. A entrega foi perfeita, o entusiasmo, maior ainda.',
+    year: 'Início',
+    title: 'A paixão que virou profissão',
+    desc: 'Tudo começou com a paixão do Kadu pela tatuagem. Um estúdio simples, uma agulha, tinta de qualidade e a vontade de criar arte que durasse para a vida toda. Os primeiros clientes eram amigos, mas a qualidade e o atendimento personalizado logo conquistaram muito mais.',
   },
   {
-    year: '2024',
-    title: 'Bambu Lab',
-    desc: 'Com o crescimento dos pedidos, chegou o momento de investir no melhor: a Bambu Lab. Precisão de 0,05 mm, velocidade e confiabilidade levaram a qualidade das peças a outro nível.',
+    year: 'Consolidação',
+    title: 'Elevando o padrão',
+    desc: 'Com a crescente demanda, investimos em equipamentos de última geração, protocolos de higiene ainda mais rigorosos e um ambiente acolhedor para cada cliente. A reputação se consolidou: Kadu Freitas Tattoo tornou-se sinônimo de qualidade e confiança.',
   },
   {
-    year: '2025',
-    title: 'Imagination 3D nasce oficialmente',
-    desc: 'O que era um hobby virou um catálogo com dezenas de produtos e cores disponíveis e a possibilidade de qualquer pessoa trazer sua própria ideia para a realidade.',
+    year: 'Hoje',
+    title: 'Referência em tatuagem',
+    desc: 'Agora somos um estúdio maduro, com uma cartela de designs próprios e a abertura total para projetos personalizados. A comunidade cresceu, mas mantemos o que nos define: respeito pela arte, cuidado com cada cliente e o compromisso com a excelência.',
   },
 ]
 
@@ -69,14 +69,14 @@ export default function NossaHistoriaPage() {
 
           <LayerReveal delay={0.08}>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-6">
-              Da ideia à realidade —<br />
+              Da paixão à tinta —<br />
               <span className="text-brand-300">nossa trajetória</span>
             </h1>
           </LayerReveal>
 
           <LayerReveal delay={0.16}>
             <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-              A Imagination 3D nasceu da crença de que impressão 3D de qualidade deveria ser acessível a qualquer pessoa. Aqui está como chegamos até aqui.
+              Kadu Freitas Tattoo nasceu da crença de que tatuagem de qualidade, feita com higiene e respeito, deveria ser acessível a qualquer pessoa. Aqui está como chegamos até aqui.
             </p>
           </LayerReveal>
         </div>
@@ -88,9 +88,9 @@ export default function NossaHistoriaPage() {
           <LayerReveal>
             <div className="flex flex-col items-center gap-4">
               <div className="w-20 h-20 rounded-3xl bg-brand-700/20 border border-brand-700/40 flex items-center justify-center shadow-[0_0_40px_-8px_rgba(67,19,112,0.5)]">
-                <Image src="/logo.png" alt="Imagination 3D" width={52} height={52} />
+                <Image src="/logo.png" alt="Kadu Freitas Tattoo" width={52} height={52} />
               </div>
-              <p className="text-zinc-500 text-sm">Imagination 3D — São Paulo, Brasil</p>
+              <p className="text-zinc-500 text-sm">Kadu Freitas Tattoo — São Paulo, Brasil</p>
             </div>
           </LayerReveal>
         </div>
@@ -137,7 +137,7 @@ export default function NossaHistoriaPage() {
           <LayerReveal>
             <div className="text-center mb-12">
               <h2 className="text-2xl font-bold text-white mb-3">O que nos move</h2>
-              <p className="text-zinc-400 max-w-xl mx-auto">Esses são os princípios que guiam cada decisão — do filamento que escolhemos ao atendimento que oferecemos.</p>
+              <p className="text-zinc-400 max-w-xl mx-auto">Esses são os princípios que guiam cada decisão — da tinta que escolhemos ao respeito que oferecemos a cada cliente.</p>
             </div>
           </LayerReveal>
 
@@ -167,7 +167,7 @@ export default function NossaHistoriaPage() {
               </div>
               <h2 className="text-xl font-bold text-white mb-4">Nossa visão</h2>
               <p className="text-zinc-400 leading-relaxed text-lg">
-                Ser a referência em impressão 3D personalizada no Brasil — não pelo volume, mas pela qualidade e pela proximidade com cada cliente. Acreditamos que toda ideia merece existir no mundo físico.
+                Ser a referência em tatuagem de qualidade no Brasil — não pelo volume, mas pela excelência no traço, higiene rigorosa e proximidade genuína com cada cliente. Acreditamos que toda história de vida merece ser marcada com arte.
               </p>
             </div>
           </LayerReveal>
@@ -178,11 +178,11 @@ export default function NossaHistoriaPage() {
       <section className="py-16 bg-zinc-900/50">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <LayerReveal>
-            <h2 className="text-3xl font-bold text-white mb-4">Pronto para criar algo único?</h2>
-            <p className="text-zinc-400 mb-8">Explore o catálogo ou traga sua própria ideia — estamos prontos para imprimir.</p>
+            <h2 className="text-3xl font-bold text-white mb-4">Pronto para eternizar sua história?</h2>
+            <p className="text-zinc-400 mb-8">Explore nossos trabalhos anteriores ou traga sua própria ideia — estamos prontos para criar sua tatuagem.</p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <PrintCtaLink href="/catalog">
-                Ver catálogo <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
+              <PrintCtaLink href="/portfolio">
+                Ver portfólio <ArrowRight className="w-4 h-4 shrink-0" aria-hidden />
               </PrintCtaLink>
               <PrintCtaLink href="/custom-order" variant="secondary">
                 <Sparkles className="w-4 h-4 shrink-0 text-brand-300" aria-hidden />

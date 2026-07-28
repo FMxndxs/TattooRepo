@@ -10,17 +10,17 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Image
-                src="/logo.png"
-                alt="Imagination 3D"
+                src="/logo-kadu.png"
+                alt="Kadu Freitas Tattoo"
                 width={28}
                 height={28}
               />
               <span className="font-bold text-white">
-                Imagination <span className="text-brand-300">3D</span>
+                Kadu Freitas <span className="text-brand-300">Tattoo</span>
               </span>
             </div>
             <p className="text-zinc-500 text-sm leading-relaxed">
-              Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados.
+              Tatuagens customizadas e flashes exclusivas em São Paulo.
             </p>
           </div>
 
@@ -29,9 +29,9 @@ export function Footer() {
             <h4 className="text-white font-semibold text-sm mb-4">Navegação</h4>
             <ul className="space-y-2">
               {[
-                { href: '/catalog', label: 'Catálogo' },
-                { href: '/custom-order', label: 'Pedido Personalizado' },
-                { href: '/cart', label: 'Carrinho' },
+                { href: '/portfolio', label: 'Portfólio' },
+                { href: '/custom-order', label: 'Personalizado' },
+                { href: '/agendar', label: 'Agendar' },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link href={href} className="text-zinc-400 hover:text-white text-sm transition-colors">
@@ -59,7 +59,7 @@ export function Footer() {
                 WhatsApp
               </a>
               <a
-                href="https://www.instagram.com/imagination_.3d?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                href="https://instagram.com/kadufreitastattoo"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-zinc-400 hover:text-pink-400 text-sm transition-colors"
@@ -77,7 +77,7 @@ export function Footer() {
 
         <div className="border-t border-zinc-800 mt-8 pt-8 text-center">
           <p className="text-zinc-600 text-xs">
-            © {new Date().getFullYear()} Imagination 3D. Todos os direitos reservados.
+            © {new Date().getFullYear()} Kadu Freitas Tattoo. Todos os direitos reservados.
           </p>
         </div>
       </div>

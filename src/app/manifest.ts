@@ -2,10 +2,10 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Imagination 3D',
-    short_name: 'Imagination 3D',
+    name: 'Kadu Freitas Tattoo',
+    short_name: 'Kadu Freitas',
     description:
-      'Impressão 3D de alta qualidade com Bambu Lab. Produtos únicos, cores variadas e projetos personalizados.',
+      'Estúdio de tatuagem em São Paulo. Portfólio exclusivo, agendamento online e tatuagens customizadas com estilo único.',
     start_url: '/',
     display: 'standalone',
     background_color: '#09090b',

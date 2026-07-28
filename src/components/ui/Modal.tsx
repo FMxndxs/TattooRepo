@@ -87,7 +87,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             exit={reduced ? { opacity: 0 } : { opacity: 0, y: 12, scaleY: 0.96 }}
             transition={{ duration: reduced ? 0.08 : 0.32, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* 3D print decoration — top scan line */}
+            {/* decoração — linha de scan no topo */}
             <div
               aria-hidden
               className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-brand-500/70 to-transparent"
