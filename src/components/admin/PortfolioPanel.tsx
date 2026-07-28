@@ -90,6 +90,7 @@ export function PortfolioPanel({ items: initialItems }: PortfolioPanelProps) {
                 src={item.image_url}
                 alt={item.title || 'Portfolio item'}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover"
               />
               {/* Overlay on hover */}
@@ -117,8 +118,10 @@ export function PortfolioPanel({ items: initialItems }: PortfolioPanelProps) {
               {item.title && (
                 <h3 className="text-sm font-semibold text-white truncate">{item.title}</h3>
               )}
-              {item.style && (
-                <p className="text-xs text-zinc-400 mt-1">{item.style}</p>
+              {(item.style || item.body_placement) && (
+                <p className="text-xs text-zinc-400 mt-1">
+                  {[item.style, item.body_placement].filter(Boolean).join(' · ')}
+                </p>
               )}
             </div>
           </div>

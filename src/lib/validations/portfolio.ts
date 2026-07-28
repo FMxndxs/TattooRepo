@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const portfolioSchema = z.object({
   title: z.string().nullable(),
   style: z.string().nullable(),
+  body_placement: z.string().nullable(),
   sort_order: z.number().int(),
 })
 

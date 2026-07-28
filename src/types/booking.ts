@@ -75,6 +75,7 @@ export interface PortfolioItem {
   title: string | null
   image_url: string
   style: string | null
+  body_placement: string | null
   sort_order: number
 }
 

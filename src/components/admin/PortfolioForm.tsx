@@ -34,6 +34,7 @@ export function PortfolioForm({ item, onSuccess, onCancel }: PortfolioFormProps)
     defaultValues: {
       title: item?.title ?? null,
       style: item?.style ?? null,
+      body_placement: item?.body_placement ?? null,
       sort_order: item?.sort_order ?? 0,
     },
   })
@@ -143,6 +144,20 @@ export function PortfolioForm({ item, onSuccess, onCancel }: PortfolioFormProps)
           className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition-colors"
         />
         {errors.style && <p className="text-red-400 text-xs mt-1">{errors.style.message}</p>}
+      </div>
+
+      {/* Local do corpo */}
+      <div>
+        <label className="block text-sm font-medium text-zinc-300 mb-2">
+          Local do corpo
+        </label>
+        <input
+          type="text"
+          placeholder="Ex: braço, antebraço, perna, costas, mão, peito (opcional)"
+          {...register('body_placement')}
+          className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition-colors"
+        />
+        {errors.body_placement && <p className="text-red-400 text-xs mt-1">{errors.body_placement.message}</p>}
       </div>
 
       {/* Errors */}
