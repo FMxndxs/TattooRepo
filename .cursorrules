@@ -1,43 +1,54 @@
 # Imagination 3D — Cursor Rules
+# Memória do projeto: ver também CLAUDE.md e AGENTS.md
 
 ## Stack
-- Next.js 15 App Router (TypeScript)
-- Tailwind CSS para estilizacao
-- Supabase para banco de dados e autenticacao
-- Zustand para estado global
-- React Hook Form + Zod para formularios
-- Jest + Testing Library para testes
+- Next.js 16 (App Router) + TypeScript estrito
+- Tailwind CSS v4 — tokens via @theme inline em `src/app/globals.css`
+- Supabase — projeto: oflozudwutxgvwyvygll
+- Zustand (carrinho), React Hook Form + Zod
+- Jest + Testing Library (~104 testes)
+- Motion 12: `import { … } from 'motion/react'`
 
-## Convencoes
-- Sempre usar TypeScript estrito
-- Componentes em PascalCase
-- Hooks sempre com prefixo `use`
-- Server Components por padrao, Client Component apenas quando necessario (`'use client'`)
-- Nunca usar `any` no TypeScript
+## Cores — NUNCA usar orange-*
+- Primária `#431370` → `bg-brand-700`, hover `hover:bg-brand-500`, acentos `text-brand-300`, `shadow-brand-glow`
 
-## TDD Obrigatorio
-Antes de implementar qualquer feature:
-1. RED: Escrever o teste que falha
-2. GREEN: Implementar o minimo
-3. BLUE: Refatorar
+## Supabase — filtro por categoria
+- Em `products`, **não** confiar em `.eq('category.slug', slug)` com embed `category:categories(*)`.
+- Buscar id em `categories` pelo slug e filtrar **`category_id`** (catálogo cliente + `queries.ts`).
 
-## Supabase
-- Usar `createBrowserClient` para componentes client-side
-- Usar `createServerClient` para Server Components e Route Handlers
-- Nunca expor a SUPABASE_SERVICE_ROLE_KEY no cliente
+## Banco / imagens
+- Seed `001_products.sql` usa **slugs específicos**; migrations 007–009 podem ter divergido → rodar **`010_fix_image_urls_seed_slugs.sql`** se imagens ficarem em placeholder.
+- Hosts de imagem externos: placehold.co, images.unsplash.com, picsum.photos, domínios Supabase storage (conforme `next.config`).
+
+## next/image
+- Com **`fill`**, sempre passar **`sizes`** coerente com o layout (grid vs detalhe vs thumb).
+
+## UI tema 3D (FDM)
+- `MotionPrimitives.tsx`: `LayerReveal`, `StaggerGroup`, `PrintLineHover` (duas linhas no hover, grupo `group/printlh`)
+- `PrintCtaLink.tsx`, `PrintLayerSkeleton.tsx`, `FilamentBackdrop.tsx`
+- `globals.css`: `filament-grid`, `print-buildplate-bg`, `print-cta-filament`, keyframes `filament-rise`, `extrusion-scan`, etc.
+- **`useReducedMotion()`** onde houver loop ou tilt; CSS: bloco `@media (prefers-reduced-motion: reduce)` em globals
+
+## Componentes-chave
+- `ProductCard.tsx` — `'use client'`; tilt + PrintLineHover; sombra “volume”
+- `CategoryFilter.tsx` — pills com motion (tap/hover)
+- `AddToCartButton.tsx` — motion + sheen `print-cta-sheen`
+- `Header.tsx` — `PrintCtaLink` no CTA; logo com micro motion
+- `catalog/page.tsx` — loading: `PrintLayerSkeletonGrid`
+
+## Supabase clients
+- Client: `@/lib/supabase/browser` · Server: `@/lib/supabase/server`
+- Nunca expor `SUPABASE_SERVICE_ROLE_KEY` no cliente
+
+## Auth / rotas admin
+- Guard em `src/proxy.ts` (Next 16 — função `proxy`, não middleware)
+
+## Convenções
+- `'use client'` só quando necessário
+- Sem `any`; PascalCase em componentes; commits `feat:`, `fix:`, `test:`, …
 
 ## WhatsApp
-- Numero: 5511989525014
-- Funcao geradora em: src/lib/utils/whatsapp.ts
+- `5511989525014` · `src/lib/utils/whatsapp.ts`
 
-## Commits
-Formato: `tipo: descricao curta`
-Tipos: feat, fix, test, refactor, docs, chore
-
-## Branches por Fase
-- phase/1-foundation
-- phase/2-catalog
-- phase/3-cart
-- phase/4-custom-order
-- phase/5-admin
-- phase/6-deploy
+## Env
+- `NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_SITE_URL`

@@ -1,0 +1,185 @@
+import 'server-only'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent } from '@/lib/calendar/google'
+import { createPixPayment, getPayment } from '@/lib/payments/mercadopago'
+import { canTransition, canReschedule, isRefundable } from '@/lib/booking/stateMachine'
+import type { Booking, CancellationPolicy } from '@/types/booking'
+
+export interface ServiceResult<T = undefined> {
+  success: boolean
+  error?: string
+  data?: T
+}
+
+const HOLD_MINUTES = 20
+
+/**
+ * Cria um agendamento pendente + gera o Pix do sinal.
+ * A constraint `bookings_no_overlap` (banco) é a defesa final contra corrida
+ * entre dois clientes escolhendo o mesmo slot ao mesmo tempo.
+ */
+export async function createBooking(
+  client: SupabaseClient,
+  params: {
+    service_id: string
+    starts_at: string
+    customer_name: string
+    customer_phone: string
+    customer_email: string
+    notes?: string
+  },
+): Promise<ServiceResult<{ booking: Booking; pix: { qr_code: string | null; qr_code_base64: string | null } }>> {
+  const { data: service, error: serviceErr } = await client
+    .from('services')
+    .select('*')
+    .eq('id', params.service_id)
+    .eq('is_active', true)
+    .maybeSingle()
+  if (serviceErr || !service) return { success: false, error: 'Serviço não encontrado' }
+
+  const startsAt = new Date(params.starts_at)
+  const endsAt = new Date(startsAt.getTime() + service.duration_min * 60_000)
+  const holdExpiresAt = new Date(Date.now() + HOLD_MINUTES * 60_000)
+
+  const { data: booking, error: insertErr } = await client
+    .from('bookings')
+    .insert({
+      service_id: service.id,
+      starts_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+      customer_name: params.customer_name,
+      customer_phone: params.customer_phone,
+      customer_email: params.customer_email,
+      notes: params.notes ?? null,
+      status: 'pending_payment',
+      deposit_amount: service.deposit_amount,
+      hold_expires_at: holdExpiresAt.toISOString(),
+    })
+    .select('*')
+    .single()
+
+  if (insertErr) {
+    // exclusion_violation = horário acabou de ser ocupado por outra reserva
+    if (insertErr.code === '23P01') return { success: false, error: 'Este horário acabou de ser reservado. Escolha outro.' }
+    return { success: false, error: insertErr.message }
+  }
+
+  // Sem sinal (ex: orçamento personalizado) — confirma direto, sem Pix.
+  if (Number(service.deposit_amount) <= 0) {
+    await client.from('bookings').update({ status: 'confirmed', hold_expires_at: null }).eq('id', booking.id)
+    return { success: true, data: { booking: { ...booking, status: 'confirmed' }, pix: { qr_code: null, qr_code_base64: null } } }
+  }
+
+  try {
+    const pix = await createPixPayment({
+      bookingId: booking.id,
+      amount: Number(service.deposit_amount),
+      description: `Sinal — ${service.name}`,
+      payerEmail: params.customer_email,
+      payerFirstName: params.customer_name.split(' ')[0],
+      idempotencyKey: booking.id,
+    })
+    await client.from('bookings').update({ mp_payment_id: String(pix.id) }).eq('id', booking.id)
+    return {
+      success: true,
+      data: { booking, pix: { qr_code: pix.qr_code, qr_code_base64: pix.qr_code_base64 } },
+    }
+  } catch (err) {
+    // Falhou ao criar o Pix — desfaz o hold do slot.
+    await client.from('bookings').delete().eq('id', booking.id)
+    return { success: false, error: err instanceof Error ? err.message : 'Erro ao gerar Pix' }
+  }
+}
+
+/**
+ * Confirma um agendamento a partir de um pagamento aprovado (chamado pelo webhook).
+ * Idempotente: se já estiver confirmed, não faz nada.
+ */
+export async function confirmBookingFromPayment(
+  client: SupabaseClient,
+  mpPaymentId: string,
+): Promise<ServiceResult> {
+  const { data: booking, error } = await client
+    .from('bookings')
+    .select('*, service:services(*)')
+    .eq('mp_payment_id', mpPaymentId)
+    .maybeSingle()
+  if (error || !booking) return { success: false, error: 'Agendamento não encontrado para este pagamento' }
+  if (booking.status === 'confirmed') return { success: true } // idempotente
+
+  if (!canTransition(booking.status, 'confirmed')) {
+    return { success: false, error: `Transição inválida: ${booking.status} → confirmed` }
+  }
+
+  const eventId = await createCalendarEvent({
+    summary: `${booking.service?.name ?? 'Sessão'} — ${booking.customer_name}`,
+    description: `Tel: ${booking.customer_phone}${booking.notes ? `\nObs: ${booking.notes}` : ''}`,
+    startsAt: booking.starts_at,
+    endsAt: booking.ends_at,
+  })
+
+  const { error: updateErr } = await client
+    .from('bookings')
+    .update({ status: 'confirmed', hold_expires_at: null, gcal_event_id: eventId })
+    .eq('id', booking.id)
+  if (updateErr) return { success: false, error: updateErr.message }
+
+  return { success: true }
+}
+
+async function getPolicy(client: SupabaseClient): Promise<CancellationPolicy> {
+  const { data } = await client.from('settings').select('value').eq('key', 'cancellation_policy').maybeSingle()
+  return (data?.value as CancellationPolicy) ?? { refundable_hours_before: 72, reschedule_hours_before: 48, max_reschedules: 1 }
+}
+
+export async function cancelBookingByToken(client: SupabaseClient, token: string): Promise<ServiceResult> {
+  const { data: booking, error } = await client.from('bookings').select('*').eq('manage_token', token).maybeSingle()
+  if (error || !booking) return { success: false, error: 'Agendamento não encontrado' }
+  if (!canTransition(booking.status, 'cancelled')) return { success: false, error: 'Este agendamento não pode ser cancelado' }
+
+  if (booking.gcal_event_id) await deleteCalendarEvent(booking.gcal_event_id)
+  const { error: updateErr } = await client.from('bookings').update({ status: 'cancelled' }).eq('id', booking.id)
+  if (updateErr) return { success: false, error: updateErr.message }
+
+  const policy = await getPolicy(client)
+  const refundable = isRefundable(booking.starts_at, policy)
+  return { success: true, data: undefined, error: refundable ? undefined : 'Fora do prazo de reembolso do sinal — política do estúdio.' }
+}
+
+export async function rescheduleBookingByToken(
+  client: SupabaseClient,
+  token: string,
+  newStartsAt: string,
+  reschedulesUsed: number,
+): Promise<ServiceResult> {
+  const { data: booking, error } = await client
+    .from('bookings')
+    .select('*, service:services(*)')
+    .eq('manage_token', token)
+    .maybeSingle()
+  if (error || !booking) return { success: false, error: 'Agendamento não encontrado' }
+  if (booking.status !== 'confirmed') return { success: false, error: 'Apenas agendamentos confirmados podem ser remarcados' }
+
+  const policy = await getPolicy(client)
+  if (!canReschedule(booking.starts_at, reschedulesUsed, policy)) {
+    return { success: false, error: 'Fora do prazo ou limite de remarcações da política do estúdio' }
+  }
+
+  const durationMin = booking.service?.duration_min ?? 60
+  const newEndsAt = new Date(new Date(newStartsAt).getTime() + durationMin * 60_000).toISOString()
+
+  const { error: updateErr } = await client
+    .from('bookings')
+    .update({ starts_at: newStartsAt, ends_at: newEndsAt })
+    .eq('id', booking.id)
+  if (updateErr) {
+    if (updateErr.code === '23P01') return { success: false, error: 'Novo horário indisponível' }
+    return { success: false, error: updateErr.message }
+  }
+
+  if (booking.gcal_event_id) await updateCalendarEvent(booking.gcal_event_id, { startsAt: newStartsAt, endsAt: newEndsAt })
+  return { success: true }
+}
+
+/** Consulta um pagamento direto na API do MP — usado pelo webhook antes de confiar no payload. */
+export { getPayment }

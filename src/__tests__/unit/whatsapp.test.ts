@@ -1,4 +1,9 @@
-import { buildWhatsAppMessage, buildWhatsAppUrl } from '@/lib/utils/whatsapp'
+import {
+  buildWhatsAppMessage,
+  buildWhatsAppUrl,
+  buildOrderConfirmationMessage,
+  buildOrderConfirmationUrl,
+} from '@/lib/utils/whatsapp'
 import type { WhatsAppOrderPayload, Product, Color } from '@/types'
 
 const mockProduct: Product = {
@@ -14,6 +19,7 @@ const mockProduct: Product = {
   is_featured: false,
   allows_custom_size: false,
   allows_custom_color: true,
+  makerworld_url: null,
   created_at: '',
   updated_at: '',
 }
@@ -29,6 +35,9 @@ const mockPayload: WhatsAppOrderPayload = {
   customer: {
     name: 'Joao Silva',
     phone: '(11) 98765-4321',
+    cep: '06502000',
+    street: 'Rua das Flores',
+    number: '42',
     neighborhood: 'Vila Madalena',
     city: 'SP',
   },
@@ -89,6 +98,66 @@ describe('buildWhatsAppUrl', () => {
 
   it('URL esta encoded corretamente', () => {
     const url = buildWhatsAppUrl(mockPayload)
+    expect(url).toContain('?text=')
+    expect(url).not.toContain(' ')
+  })
+})
+
+// ─── buildOrderConfirmationUrl ────────────────────────────────────────────────
+
+describe('buildOrderConfirmationMessage', () => {
+  it('inclui o código do pedido formatado com #', () => {
+    const msg = buildOrderConfirmationMessage({
+      customerPhone: '11999990000',
+      orderCode: 'A4F9',
+      customerName: 'Felipe',
+    })
+    expect(msg).toContain('#A4F9')
+  })
+
+  it('inclui o nome do cliente no saudação', () => {
+    const msg = buildOrderConfirmationMessage({
+      customerPhone: '11999990000',
+      orderCode: 'B2C3',
+      customerName: 'João',
+    })
+    expect(msg).toContain('João')
+  })
+
+  it('funciona sem nome do cliente', () => {
+    const msg = buildOrderConfirmationMessage({
+      customerPhone: '11999990000',
+      orderCode: 'Z9X1',
+    })
+    expect(msg).toContain('Olá!')
+    expect(msg).toContain('#Z9X1')
+  })
+})
+
+describe('buildOrderConfirmationUrl', () => {
+  it('aponta para o número do cliente (não da loja)', () => {
+    const url = buildOrderConfirmationUrl({
+      customerPhone: '11987654321',
+      orderCode: 'A4F9',
+    })
+    // URL tem o número do cliente, não o da loja (5511989525014)
+    expect(url).toContain('11987654321')
+    expect(url).not.toContain('5511989525014')
+  })
+
+  it('contém o código do pedido na mensagem encoded', () => {
+    const url = buildOrderConfirmationUrl({
+      customerPhone: '11987654321',
+      orderCode: 'A4F9',
+    })
+    expect(url).toContain('A4F9')
+  })
+
+  it('URL está encoded (sem espaços)', () => {
+    const url = buildOrderConfirmationUrl({
+      customerPhone: '11999990000',
+      orderCode: 'X1Y2',
+    })
     expect(url).toContain('?text=')
     expect(url).not.toContain(' ')
   })

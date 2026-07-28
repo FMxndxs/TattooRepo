@@ -1,168 +1,154 @@
 # Imagination 3D — Project Intelligence
 
-## Visão Geral do Projeto
-Plataforma de catálogo e vendas para startup de impressão 3D com Bambu Lab A1.
-Integração com WhatsApp para finalização de pedidos.
+## Visão geral
+Plataforma de catálogo e vendas para startup de impressão 3D com Bambu Lab. Finalização de pedidos via WhatsApp.
 
-**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS · Supabase · Zustand · React Hook Form · Zod · Jest + Testing Library
+**Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Supabase · Zustand · React Hook Form · Zod · Jest + Testing Library · Motion (`motion/react`)
 
-**WhatsApp de pedidos:** (11) 98952-5014  
+**WhatsApp:** (11) 98952-5014 → `5511989525014`  
 **GitHub:** https://github.com/FMxndxs  
-**Conta Git:** FMxndxs / felipemendescampos40@gmail.com
+**Conta Git:** FMxndxs / felipemendescampos40@gmail.com  
+**Supabase project:** oflozudwutxgvwyvygll  
+
+**Memórias relacionadas:** `.cursorrules`, `AGENTS.md` (índice rápido para agentes)
 
 ---
 
-## Arquitetura de Pastas
+## Status das fases
+
+| Fase | Status | Branch | Notas |
+|------|--------|--------|--------|
+| 1–5 | Concluídas | `phase/*` | Foundation → Admin |
+| **6.1 — Design & catálogo** | Avançada | `phase/6-design-refresh` | Tema 3D, filtros corretos, migrations 010, ~104 testes |
+| 6.2 — Deploy & SEO | Próxima | `phase/6-deploy` | — |
+
+---
+
+## Sistema de design
+
+### Paleta — brand `#431370`
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `brand-300` | `#b683ff` | Preços, destaques |
+| `brand-500` | `#6a2ba8` | Hover de botões |
+| `brand-700` | `#431370` | **Primária** |
+| `brand-glow` | `rgba(67,19,112,0.45)` | Sombras CTA |
+
+Definidos em `src/app/globals.css` via `@theme inline`. **Nunca usar `orange-*`.**
+
+### Logo
+`public/logo.png` · `<Image src="/logo.png" alt="Imagination 3D" width={36} height={36} />`
+
+### Animações — tema “impressão 3D”
+- **`src/components/ui/MotionPrimitives.tsx`**  
+  - `LayerReveal`, `StaggerGroup` — respeitam **`useReducedMotion()`**  
+  - `PrintLineHover` — hover com **duas linhas** estilo camada (CSS + `group/printlh`)
+- **`src/components/ui/PrintCtaLink.tsx`** — CTAs com lift/tap (Motion) + sheen `print-cta-filament` no hover
+- **`src/components/ui/PrintLayerSkeleton.tsx`** — skeleton de grid (camadas + “hotline”)
+- **`src/components/ui/FilamentBackdrop.tsx`** — hero decorativo (grade + pulso de luz; reduzido sem loop)
+
+**CSS em `globals.css`:** `filament-grid`, `filament-rise`, `extrusion-scan`, `print-buildplate-bg`, `print-cta-sheen`, `print-extrusion-shimmer`, `.print-header-glow`, etc. + `@media (prefers-reduced-motion: reduce)`.
+
+**`next/image`:** com **`fill`**, sempre definir **`sizes`** (ProductCard, ProductDetail, CartItem, ImageUpload).
+
+---
+
+## Catálogo Supabase — comportamento correto
+
+### Filtro por categoria
+`.eq('category.slug', slug)` no cliente PostgREST **não filtra** a relação embutida da forma esperada; a listagem acaba trazendo todos os produtos.
+
+**Padrão correto:** obter o `id` em `categories` pelo `slug` e filtrar **`products.category_id`**.  
+Implementação: `src/app/catalog/page.tsx` e `getProducts()` em `src/lib/supabase/queries.ts`.
+
+### Categorias (8)
+decoração · utilitários · escritório · games · bonecos · maquiagem · brindes · personalizados (slugs ASCII em `categories.slug`).
+
+---
+
+## Banco de dados
+
+**Schema:** `docs/database/schema.sql`  
+**Seed produtos:** `docs/database/seed/001_products.sql` (22 produtos; slugs **curtos**, ex. `suporte-plantas-hexagonal`).
+
+**Migrations em `docs/database/migrations/`**  
+- **006** — categorias extras  
+- **007–009** — URLs de imagens (atenção: slugs SQL às vezes divergiam do seed)  
+- **010 — `010_fix_image_urls_seed_slugs.sql`** — alinha `UPDATE` aos slugs do seed + `INSERT` de `product_images` para produtos sem imagem  
+
+Rodar **010** no SQL Editor do Supabase se ainda houver placeholders ou updates que não bateram linhas.
+
+---
+
+## O que já existe (não recriar)
+
+### Tipos — `src/types/index.ts`
+`Product`, `Category`, `Color`, `ProductSize`, `ProductImage`, `CartItem`, `CustomerInfo`, `CustomOrder`, etc.
+
+### Utilitários — `src/lib/utils/`
+`formatBRL`, `formatPhone`, `slugify` · `whatsapp.ts` (`buildWhatsAppUrl`, …)
+
+### Supabase — `src/lib/supabase/`
+- `browser.ts` / `server.ts` — `createClient()`  
+- `queries.ts` — `getCategories`, `getProducts` (filtro por slug via `category_id`), `getFeaturedProducts`, `getProductBySlug`
+
+### Componentes (resumo)
+- **Layout:** `Header` (PrintCtaLink, micro-motion no logo), `Footer`, `CartIcon`, `AdminSidebar`  
+- **Catálogo:** `ProductCard` (client, tilt + PrintLineHover), `ProductGrid`, `CategoryFilter` (motion pills), `AddToCartButton` (motion + sheen)  
+- **Carrinho / custom-order / admin:** como antes  
+
+### Páginas
+- `app/page.tsx` — FilamentBackdrop, PrintCtaLink, NozzleWarmBadge  
+- `app/catalog/page.tsx` — loading `PrintLayerSkeletonGrid`  
+- `app/layout.tsx` — body com `print-buildplate-bg`  
+- `app/product/[slug]/` — `ProductDetail` + PrintLineHover na foto  
+
+---
+
+## Arquitetura de pastas (resumida)
 
 ```
 src/
-├── app/                        # Next.js App Router
-│   ├── page.tsx                # Home / catálogo em destaque
-│   ├── catalog/                # Listagem completa + filtros
-│   ├── product/[slug]/         # Página de produto
-│   ├── cart/                   # Carrinho + checkout WhatsApp
-│   ├── custom-order/           # Formulário de pedido personalizado
-│   └── admin/                  # Dashboard administrativo
-│       ├── (auth)/login/       # Login Supabase Auth
-│       └── (dashboard)/        # CRUD de produtos
+├── app/                 # App Router, globals.css
 ├── components/
-│   ├── ui/                     # Primitivos: Button, Input, Card, Badge
-│   ├── catalog/                # ProductCard, CategoryFilter, ProductGrid
-│   ├── cart/                   # CartItem, CartSummary, WhatsAppCheckout
-│   ├── admin/                  # ProductForm, ProductTable, StockToggle
-│   └── layout/                 # Header, Footer, AdminSidebar
-├── lib/
-│   ├── supabase/               # cliente browser + server (SSR)
-│   ├── store/                  # Zustand: cartStore, adminStore
-│   ├── utils/                  # formatters, whatsapp.ts
-│   └── validations/            # Zod schemas
-├── hooks/                      # useCart, useProducts, useAdmin
-├── types/                      # Product, Order, Category, CartItem
-└── __tests__/
-    ├── unit/                   # funções puras, hooks
-    ├── integration/            # componentes com mocks Supabase
-    └── e2e/                    # fluxos completos (Playwright)
+│   ├── ui/              # MotionPrimitives, PrintCtaLink, PrintLayerSkeleton, FilamentBackdrop
+│   ├── catalog/, cart/, custom-order/, admin/, layout/
+├── lib/supabase/, lib/store/, lib/utils/, lib/validations/
+├── types/index.ts
+└── __tests__/unit/
 ```
 
 ---
 
-## Metodologia TDD — Red → Green → Blue
+## TDD — Red → Green → Blue
 
-Cada fase segue obrigatoriamente 3 etapas:
-
-| Etapa | Cor | Ação |
-|-------|-----|------|
-| **Red** | Vermelho | Escrever testes que falham (definir contrato) |
-| **Green** | Verde | Implementar o mínimo para os testes passarem |
-| **Blue** | Azul | Refatorar mantendo todos os testes verdes |
+Red: teste falha · Green: mínimo para passar · Blue: refatorar mantendo `npm test` e `npm run build` verdes.
 
 ---
 
-## Plano de Fases
+## WhatsApp
 
-### Fase 1 — Foundation & Setup *(atual)*
-- Configuração Jest + Testing Library
-- Schema do banco Supabase (SQL)
-- Tipos TypeScript globais
-- Cliente Supabase (browser + SSR)
-- Layout base (Header, Footer)
-- Variáveis de ambiente (.env.local)
-
-### Fase 2 — Catálogo de Produtos
-- Tabelas: `products`, `categories`, `product_images`, `colors`
-- ProductCard, ProductGrid, CategoryFilter
-- Página de produto com galeria e seleção de cor/tamanho
-- Server Components com cache
-
-### Fase 3 — Carrinho & WhatsApp
-- Zustand store persistente (localStorage)
-- CartItem, CartSummary
-- Gerador de link `wa.me` com mensagem formatada
-- Formulário de dados do cliente (Nome, Bairro)
-
-### Fase 4 — Pedido Personalizado
-- Formulário de projeto sob encomenda
-- Upload de referência (Supabase Storage)
-- Validação Zod + React Hook Form
-- Notificação WhatsApp automática
-
-### Fase 5 — Dashboard Administrativo
-- Supabase Auth (login protegido)
-- CRUD de produtos + imagens
-- Toggle disponibilidade de cores
-- Calculadora de preço (filamento g x tempo)
-
-### Fase 6 — Polimento & Deploy
-- SEO (metadata, sitemap, OG tags)
-- Otimização de imagens (next/image)
-- Testes E2E com Playwright
-- Deploy Vercel + domínio
+`5511989525014` · `src/lib/utils/whatsapp.ts`
 
 ---
 
-## Banco de Dados (Supabase)
+## Convenções
 
-### Variáveis de ambiente necessárias
+- `'use client'` só quando necessário  
+- Sem `any`  
+- Commits: `feat:`, `fix:`, `test:`, `refactor:`, `docs:`  
+- **brand-***, não orange-*
+
+---
+
+## Variáveis de ambiente
+
 ```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_SUPABASE_URL=https://oflozudwutxgvwyvygll.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[.env.local]
+SUPABASE_SERVICE_ROLE_KEY=[.env.local — só servidor]
 NEXT_PUBLIC_WHATSAPP_NUMBER=5511989525014
+NEXT_PUBLIC_SITE_URL=[produção]
+REPORTS_API_KEY=[.env.local e Vercel — chave de 64 chars hex para GET /api/reports]
 ```
-
-### Schema principal
-Ver: `docs/database/schema.sql`
-
----
-
-## Convenções de Código
-
-- **Componentes:** PascalCase, um arquivo por componente
-- **Funções/hooks:** camelCase
-- **Testes:** `ComponentName.test.tsx` junto ao componente OU em `__tests__/`
-- **Commits:** `feat:`, `fix:`, `test:`, `refactor:`, `docs:`
-- **Branches:** `phase/1-foundation`, `phase/2-catalog`, etc.
-
----
-
-## Integração WhatsApp
-
-Numero: `5511989525014` (formato internacional sem +)  
-Gerador: `src/lib/utils/whatsapp.ts`
-
-Formato da mensagem gerada:
-```
-Novo Pedido — Imagination 3D
-
-Cliente: Joao Silva
-Bairro: Vila Madalena / SP
-
-Itens:
-- Suporte de Fone (Preto, P) x 2 — R$ 30,00
-- Porta-Treco Modular (Branco) x 1 — R$ 45,00
-
-Total: R$ 75,00
-
-Pedido gerado pelo site imagination3d.com.br
-```
-
----
-
-## Compartilhamento com Cursor
-
-Este arquivo CLAUDE.md e lido automaticamente pelo Claude Code e pelo Cursor.
-Regras adicionais para o Cursor em: `.cursorrules`
-Documentacao detalhada em: `docs/`
-
----
-
-## Status das Fases
-
-| Fase | Status | Branch |
-|------|--------|--------|
-| 1 — Foundation | Em andamento | `phase/1-foundation` |
-| 2 — Catalogo | Aguardando | `phase/2-catalog` |
-| 3 — Carrinho & WhatsApp | Aguardando | `phase/3-cart` |
-| 4 — Pedido Personalizado | Aguardando | `phase/4-custom-order` |
-| 5 — Dashboard Admin | Aguardando | `phase/5-admin` |
-| 6 — Deploy | Aguardando | `phase/6-deploy` |
