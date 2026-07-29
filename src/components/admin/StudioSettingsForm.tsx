@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useToast } from '@/lib/context/ToastContext'
+import { updateAppSetting } from '@/app/actions/settings'
 
 type StudioSettings = {
   whatsapp_number?: string | null
@@ -14,7 +15,7 @@ type StudioSettings = {
 
 export function StudioSettingsForm({ initialData = {} }: { initialData?: StudioSettings }) {
   const { showToast } = useToast()
-  const [loading, setLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const [data, setData] = useState<StudioSettings>({
     whatsapp_number: initialData.whatsapp_number ?? '',
     cancellation_policy: initialData.cancellation_policy ?? {
@@ -26,20 +27,29 @@ export function StudioSettingsForm({ initialData = {} }: { initialData?: StudioS
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
-    try {
-      const response = await fetch('/api/admin/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      if (!response.ok) throw new Error('Erro ao salvar configurações')
-      showToast('Configurações salvas com sucesso!', 'success')
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : 'Erro ao salvar', 'error')
-    } finally {
-      setLoading(false)
-    }
+    startTransition(async () => {
+      try {
+        // Atualizar política de cancelamento
+        if (data.cancellation_policy) {
+          const result = await updateAppSetting('cancellation_policy', data.cancellation_policy)
+          if (!result.success) {
+            throw new Error(result.error || 'Erro ao salvar configurações')
+          }
+        }
+
+        // Atualizar número de WhatsApp (se houver implementação de persistência)
+        if (data.whatsapp_number) {
+          const result = await updateAppSetting('whatsapp_number', data.whatsapp_number)
+          if (!result.success) {
+            throw new Error(result.error || 'Erro ao salvar número WhatsApp')
+          }
+        }
+
+        showToast('Configurações salvas com sucesso!', 'success')
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : 'Erro ao salvar', 'error')
+      }
+    })
   }
 
   return (
@@ -117,10 +127,10 @@ export function StudioSettingsForm({ initialData = {} }: { initialData?: StudioS
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={isPending}
         className="w-full bg-brand-700 hover:bg-brand-600 disabled:bg-zinc-700 text-white font-semibold py-2 rounded-lg transition-colors"
       >
-        {loading ? 'Salvando...' : 'Salvar Configurações'}
+        {isPending ? 'Salvando...' : 'Salvar Configurações'}
       </button>
     </form>
   )

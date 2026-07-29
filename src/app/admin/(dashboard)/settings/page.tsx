@@ -1,15 +1,26 @@
 import { StudioSettingsForm } from '@/components/admin/StudioSettingsForm'
+import { getAppSettings } from '@/app/actions/settings'
 
 export default async function AdminSettingsPage() {
-  // ponytail: placeholder settings, add database query when settings schema is ready
-  const initialData = {
-    whatsapp_number: null,
-    cancellation_policy: {
-      refundable_hours_before: 24,
-      reschedule_hours_before: 12,
-      max_reschedules: 3,
-    },
-  }
+  const result = await getAppSettings()
+
+  const initialData = result.success && result.data
+    ? {
+        whatsapp_number: result.data.whatsapp_number ?? null,
+        cancellation_policy: result.data.cancellation_policy ?? {
+          refundable_hours_before: 24,
+          reschedule_hours_before: 12,
+          max_reschedules: 3,
+        },
+      }
+    : {
+        whatsapp_number: null,
+        cancellation_policy: {
+          refundable_hours_before: 24,
+          reschedule_hours_before: 12,
+          max_reschedules: 3,
+        },
+      }
 
   return (
     <div className="p-8">

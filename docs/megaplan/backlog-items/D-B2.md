@@ -3,21 +3,21 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
+| Status | done |
 | Workflow step | — |
 | Owner | — |
 | Verification | automated |
 | Depends on | D-B1 |
 | Target | Cycle D |
-| Last updated | 2026-07-28 |
+| Last updated | 2026-07-29 |
 
 ## Outcome
 A política de cancelamento e outros ajustes vêm de `app_settings` editável, não
 hardcoded.
 
 ## Scope
-- [ ] Ligar `StudioSettingsForm` ao `app_settings` via action
-- [ ] Remover valores hardcoded (ver `ponytail:` na L4 do form)
+- [x] Ligar `StudioSettingsForm` ao `app_settings` via action
+- [x] Remover valores hardcoded (ver `ponytail:` na L4 do form)
 
 ## Non-goals
 - Nova UI além do form existente
@@ -28,10 +28,10 @@ hardcoded.
 ## Test plan
 | Level | File | Intent |
 |-------|------|--------|
-| Unit | — | action lê/grava `app_settings` |
+| Unit | `src/__tests__/unit/appSettings.test.ts` | action lê/grava `app_settings` |
 
 ## Acceptance criteria
-- [ ] Settings persistem; testes verdes; status synced
+- [x] Settings persistem; testes verdes; status synced
 
 ## Traceability
 - Glossary: [[Sinal / Deposit]]

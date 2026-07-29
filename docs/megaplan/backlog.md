@@ -27,5 +27,5 @@ Rules:
 | B-B7 | `next.config.ts`: remover host makerworld; renomear chave sessionId | B | done | [B-B7.md](backlog-items/B-B7.md) |
 | C-B1 | Página `/cuidados` (aftercare) + nav + sitemap + FAQPage JSON-LD | C | done | [C-B1.md](backlog-items/C-B1.md) |
 | D-B1 | `docs/setup-pagamento-calendario.md`: guia Mercado Pago + Google Calendar | D | done | [D-B1.md](backlog-items/D-B1.md) |
-| D-B2 | Ligar `StudioSettingsForm` ao `app_settings` via action | D | pending | [D-B2.md](backlog-items/D-B2.md) |
+| D-B2 | Ligar `StudioSettingsForm` ao `app_settings` via action | D | done | [D-B2.md](backlog-items/D-B2.md) |
 | D-B3 | Verificação end-to-end: Pix sandbox → webhook → confirmed + evento GCal | D | pending | [D-B3.md](backlog-items/D-B3.md) |
