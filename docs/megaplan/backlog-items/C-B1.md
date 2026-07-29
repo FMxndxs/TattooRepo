@@ -3,22 +3,22 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
+| Status | done |
 | Workflow step | — |
 | Owner | — |
 | Verification | automated |
 | Depends on | Cycle B |
 | Target | Cycle C |
-| Last updated | 2026-07-28 |
+| Last updated | 2026-07-29 |
 
 ## Outcome
 Visitantes têm um guia de cuidados pós-tattoo; a página também rende SEO orgânico.
 
 ## Scope
-- [ ] `app/cuidados/page.tsx` (guia estático de aftercare)
-- [ ] Link no Header/Footer
-- [ ] Entrada no `sitemap.ts`
-- [ ] `FAQPage` JSON-LD em `lib/seo/schema.ts`
+- [x] `app/cuidados/page.tsx` (guia estático de aftercare)
+- [x] Link no Header/Footer
+- [x] Entrada no `sitemap.ts`
+- [x] `FAQPage` JSON-LD em `lib/seo/schema.ts`
 
 ## Non-goals
 - CMS/edição dinâmica
@@ -32,7 +32,7 @@ Visitantes têm um guia de cuidados pós-tattoo; a página também rende SEO org
 | Unit | — | FAQPage JSON-LD válido |
 
 ## Acceptance criteria
-- [ ] `/cuidados` no nav e sitemap; testes verdes; status synced
+- [x] `/cuidados` no nav e sitemap; testes verdes; status synced
 
 ## Traceability
 - Glossary: —

@@ -68,11 +68,11 @@ tatuagem, compilando e com testes verdes.
 ### Cycle C — Conteúdo & SEO (cuidados pós-tattoo)
 **Objetivo:** página de valor que também rende SEO orgânico.
 **Exit criteria:**
-- [ ] `/cuidados` no ar, no nav e no `sitemap.ts`, com FAQ JSON-LD
+- [x] `/cuidados` no ar, no nav e no `sitemap.ts`, com FAQ JSON-LD
 
 | ID | Título | Status |
 |----|--------|--------|
-| C-B1 | Página estática `app/cuidados/page.tsx` (guia de aftercare) + link no Header/Footer + `sitemap.ts` + `FAQPage` JSON-LD em `lib/seo/schema.ts` | pending |
+| C-B1 | Página estática `app/cuidados/page.tsx` (guia de aftercare) + link no Header/Footer + `sitemap.ts` + `FAQPage` JSON-LD em `lib/seo/schema.ts` | done |
 
 ### Cycle D — Ativar pagamento (Pix) e calendário
 **Objetivo:** deixar o fluxo de sinal e o espelho no Google Calendar operáveis + guia.
