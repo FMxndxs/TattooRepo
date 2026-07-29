@@ -88,7 +88,9 @@ describe('getAppSettings', () => {
 
     const result = await getAppSettings()
     expect(result.success).toBe(true)
-    expect(result.data?.cancellation_policy).toEqual({ refundable_hours_before: 24, reschedule_hours_before: 12, max_reschedules: 3 })
+    // Default alinhado a DEFAULT_CANCELLATION_POLICY (src/lib/booking/stateMachine.ts),
+    // mesmo valor semeado em 100_tattoo_domain.sql.
+    expect(result.data?.cancellation_policy).toEqual({ refundable_hours_before: 72, reschedule_hours_before: 48, max_reschedules: 1 })
   })
 
   it('retorna erro quando usuario nao autenticado', async () => {

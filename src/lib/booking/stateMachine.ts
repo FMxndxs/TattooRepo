@@ -1,6 +1,18 @@
 import type { BookingStatus, CancellationPolicy } from '@/types/booking'
 
 /**
+ * Fallback único usado sempre que `app_settings.cancellation_policy` não pode
+ * ser lida (linha ausente, erro de query). Espelha o valor semeado em
+ * `100_tattoo_domain.sql` para que o comportamento "sem config" seja idêntico
+ * ao "config default recém-instalada".
+ */
+export const DEFAULT_CANCELLATION_POLICY: CancellationPolicy = {
+  refundable_hours_before: 72,
+  reschedule_hours_before: 48,
+  max_reschedules: 1,
+}
+
+/**
  * Ciclo de vida do agendamento:
  *   pending_payment → confirmed (sinal pago) → done
  *   pending_payment | confirmed → cancelled

@@ -49,6 +49,8 @@ export interface Booking {
   mp_payment_id: string | null
   gcal_event_id: string | null
   manage_token: string
+  reschedules_used: number
+  cancel_reason: 'hold_expired' | 'customer' | null
   created_at: string
   updated_at: string
   service?: Service

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { DEFAULT_CANCELLATION_POLICY } from '@/lib/booking/stateMachine'
 
 type CancellationPolicy = {
   refundable_hours_before?: number
@@ -15,12 +16,10 @@ type AppSettingsData = {
   [key: string]: unknown
 }
 
+// Mesmo default usado por getPolicy() (src/lib/booking/service.ts) e semeado
+// em 100_tattoo_domain.sql — uma única fonte de verdade para o fallback.
 const DEFAULT_SETTINGS: AppSettingsData = {
-  cancellation_policy: {
-    refundable_hours_before: 24,
-    reschedule_hours_before: 12,
-    max_reschedules: 3,
-  },
+  cancellation_policy: { ...DEFAULT_CANCELLATION_POLICY },
   whatsapp_number: null,
 }
 

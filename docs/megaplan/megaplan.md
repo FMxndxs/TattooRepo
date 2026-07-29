@@ -84,7 +84,30 @@ tatuagem, compilando e com testes verdes.
 |----|--------|--------|
 | D-B1 | `docs/setup-pagamento-calendario.md`: passo-a-passo Mercado Pago (sandbox, token, webhook via túnel) + Google Calendar (Service Account, compartilhar agenda) | done |
 | D-B2 | Ligar `StudioSettingsForm` ao `app_settings` (hoje hardcoded — ver `ponytail:` na L4) via action | done |
-| D-B3 | Verificação end-to-end: criar serviço com sinal, agendar, pagar Pix sandbox, confirmar webhook → `confirmed` + evento no GCal | pending |
+| D-B3 | Verificação end-to-end: criar serviço com sinal, agendar, pagar Pix sandbox, confirmar webhook → `confirmed` + evento no GCal | pending — runbook pronto (ver `D-B3-runbook.md`), falta execução manual |
+
+### Cycle E — Blindagem RLS (auditoria de segurança Supabase)
+**Objetivo:** eliminar as falhas de autorização encontradas numa auditoria de segurança do
+banco — RLS ativo em toda tabela não é suficiente se as *policies* são fracas. Também
+corrigir um bug de código descoberto na mesma auditoria que anulava o D-B2.
+**Exit criteria:**
+- [x] Nenhuma policy usa `USING (true)`/`auth.role() = 'authenticated'` como proxy de admin
+      fora das exceções documentadas em `verify_rls.sql`
+- [x] `bookings` sem policy alguma para anon/authenticated comum (só `is_admin()`)
+- [x] `profiles.is_admin` não pode ser alterado por `authenticated` via update comum
+- [x] `getPolicy` lê `app_settings` (não `settings`); `max_reschedules` aplicado com o
+      contador vindo do banco, não do cliente
+- [x] `npm test`, `npx tsc --noEmit`, `npm run build` verdes
+- [x] Migrations `104`/`105` rodadas no Supabase real e `verify_rls.sql` executado sem
+      exceção
+
+| ID | Título | Status |
+|----|--------|--------|
+| E-B1 | Migration `104_harden_rls.sql`: escalada de privilégio, 7 policies `admin all *` → `is_admin()`, `bookings` fechada, `time_off`/`settings` sem leitura pública, `app_settings` seletivo, `profiles` INSERT, `custom_orders` update/delete próprio, storage escopado por dono, limpeza de órfãos, `verify_rls.sql` | done |
+| E-B2 | Migration `105_booking_reschedules.sql` + correções de código: `getPolicy` → `app_settings`, contador de remarcações persistido, rate limit nas Server Actions de booking, link de gestão exibido em `/agendar` | done |
+| E-B3 | Testes de regressão: `getPolicy`, `bookingReschedule`, `bookingRateLimit`, `mercadopagoWebhook` (rota sem cobertura antes) | done |
+| E-B4 | Runbook `D-B3-runbook.md` (estende o checklist do D-B3 com os casos de borda achados na auditoria) + fechamento de documentação do Cycle D | done |
+| E-B5 | Migration `106_booking_cancel_reason.sql` + `confirmBookingFromPayment`: reativação segura de pagamento atrasado (só se `cancel_reason='hold_expired'`, nunca se cancelado pelo cliente), espelho no GCal best-effort (banco confirma antes, Google nunca bloqueia) | done — **pendente rodar a migration 106 no Supabase** |
 
 ## Errata
 | Data | Decisão | Motivo |
@@ -92,3 +115,6 @@ tatuagem, compilando e com testes verdes.
 | 2026-07-28 | Remover e-commerce inteiro em vez de adaptar `products`→flash | Usuário escolheu "só portfólio"; deletar é mais simples que reaproveitar |
 | 2026-07-28 | Dropar tabelas e-commerce via migration (irreversível) | Banco recém-semeado, pivô definitivo; dados de produto não têm valor no domínio tattoo |
 | 2026-07-28 | Apertar `custom_orders_status_check` ao ciclo puro de orçamento (dentro de 101) | Sem produção física, `accepted` já é o estado final; status de produção (in_production, shipped, etc.) ficaram órfãos |
+| 2026-07-29 | `100_tattoo_domain.sql` reintroduziu `auth.role() = 'authenticated'` como proxy de admin em 7 tabelas, o mesmo anti-pattern que `035_harden_baseline_policies.sql` foi escrita para eliminar na fase e-commerce | A migration 100 foi escrita depois da 035 mas não reaproveitou o padrão `is_admin()`; corrigido em `104_harden_rls.sql` (Cycle E) |
+| 2026-07-29 | `bookings` ficou sem policy alguma para anon/authenticated comum, em vez de ganhar `user_id` + policy de dono | Decisão do usuário: o fluxo `/agendar` é 100% anônimo hoje (identidade é nome/telefone/email + `manage_token`); fechar é mais simples e mais seguro do que introduzir ownership numa tabela que nunca teve dono |
+| 2026-07-29 | Bucket de storage `custom-orders` mantido público (com escrita/apagar escopados por `auth.uid()/...`) em vez de virar privado com signed URL | O código já assume `getPublicUrl` e o admin exibe a foto de referência num `<a href>` direto em `OrdersPanel`; migrar para signed URL é um refactor maior, fora do escopo da blindagem de RLS |

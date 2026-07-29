@@ -2,7 +2,7 @@ import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent } from '@/lib/calendar/google'
 import { createPixPayment, getPayment } from '@/lib/payments/mercadopago'
-import { canTransition, canReschedule, isRefundable } from '@/lib/booking/stateMachine'
+import { canTransition, canReschedule, isRefundable, DEFAULT_CANCELLATION_POLICY } from '@/lib/booking/stateMachine'
 import type { Booking, CancellationPolicy } from '@/types/booking'
 
 export interface ServiceResult<T = undefined> {
@@ -21,9 +21,24 @@ const HOLD_MINUTES = 20
 async function expireStaleHolds(client: SupabaseClient): Promise<void> {
   await client
     .from('bookings')
-    .update({ status: 'cancelled' })
+    .update({ status: 'cancelled', cancel_reason: 'hold_expired' })
     .eq('status', 'pending_payment')
     .lt('hold_expires_at', new Date().toISOString())
+}
+
+/** Cria o evento no Google Calendar sem derrubar a confirmação se o Google falhar —
+ *  o banco é a fonte da verdade (ver CLAUDE.md); o espelho pode ficar defasado. */
+async function mirrorToCalendar(
+  client: SupabaseClient,
+  bookingId: string,
+  params: { summary: string; description: string; startsAt: string; endsAt: string },
+): Promise<void> {
+  try {
+    const eventId = await createCalendarEvent(params)
+    await client.from('bookings').update({ gcal_event_id: eventId }).eq('id', bookingId)
+  } catch (err) {
+    console.error('[booking] falha ao espelhar no Google Calendar:', err)
+  }
 }
 
 /**
@@ -122,29 +137,49 @@ export async function confirmBookingFromPayment(
   if (error || !booking) return { success: false, error: 'Agendamento não encontrado para este pagamento' }
   if (booking.status === 'confirmed') return { success: true } // idempotente
 
-  if (!canTransition(booking.status, 'confirmed')) {
+  // Pagamento aprovado depois do hold de 20min expirar: expireStaleHolds já cancelou o
+  // booking. Só tentamos reativar se o cancelamento foi automático (hold_expired) — nunca
+  // se o próprio cliente cancelou de propósito (cancel_reason 'customer').
+  const isLatePaymentRevival = booking.status === 'cancelled' && booking.cancel_reason === 'hold_expired'
+  if (!canTransition(booking.status, 'confirmed') && !isLatePaymentRevival) {
     return { success: false, error: `Transição inválida: ${booking.status} → confirmed` }
   }
 
-  const eventId = await createCalendarEvent({
+  // Confirma no banco ANTES de tentar o espelho — o banco é a fonte da verdade
+  // (ver CLAUDE.md); uma falha do Google Calendar não pode deixar um sinal pago
+  // preso em pending_payment.
+  const { error: updateErr } = await client
+    .from('bookings')
+    .update({ status: 'confirmed', hold_expires_at: null, cancel_reason: null })
+    .eq('id', booking.id)
+
+  if (updateErr) {
+    // exclusion_violation: o horário foi ocupado por outra reserva enquanto este
+    // estava cancelado por hold expirado — a constraint bookings_no_overlap impede
+    // o double-booking. Não há como confirmar automaticamente; precisa de humano.
+    if (updateErr.code === '23P01') {
+      return {
+        success: false,
+        error: 'Pagamento aprovado, mas este horário foi ocupado por outra reserva enquanto o hold estava expirado. Contate o cliente para reagendar ou estornar o sinal.',
+      }
+    }
+    return { success: false, error: updateErr.message }
+  }
+
+  await mirrorToCalendar(client, booking.id, {
     summary: `${booking.service?.name ?? 'Sessão'} — ${booking.customer_name}`,
     description: `Tel: ${booking.customer_phone}${booking.notes ? `\nObs: ${booking.notes}` : ''}`,
     startsAt: booking.starts_at,
     endsAt: booking.ends_at,
   })
 
-  const { error: updateErr } = await client
-    .from('bookings')
-    .update({ status: 'confirmed', hold_expires_at: null, gcal_event_id: eventId })
-    .eq('id', booking.id)
-  if (updateErr) return { success: false, error: updateErr.message }
-
   return { success: true }
 }
 
-async function getPolicy(client: SupabaseClient): Promise<CancellationPolicy> {
-  const { data } = await client.from('settings').select('value').eq('key', 'cancellation_policy').maybeSingle()
-  return (data?.value as CancellationPolicy) ?? { refundable_hours_before: 72, reschedule_hours_before: 48, max_reschedules: 1 }
+export async function getPolicy(client: SupabaseClient): Promise<CancellationPolicy> {
+  // `app_settings` (key/value), não `settings` (config de frete legada, colunas fixas).
+  const { data } = await client.from('app_settings').select('value').eq('key', 'cancellation_policy').maybeSingle()
+  return (data?.value as CancellationPolicy) ?? DEFAULT_CANCELLATION_POLICY
 }
 
 export async function cancelBookingByToken(client: SupabaseClient, token: string): Promise<ServiceResult> {
@@ -153,7 +188,10 @@ export async function cancelBookingByToken(client: SupabaseClient, token: string
   if (!canTransition(booking.status, 'cancelled')) return { success: false, error: 'Este agendamento não pode ser cancelado' }
 
   if (booking.gcal_event_id) await deleteCalendarEvent(booking.gcal_event_id)
-  const { error: updateErr } = await client.from('bookings').update({ status: 'cancelled' }).eq('id', booking.id)
+  const { error: updateErr } = await client
+    .from('bookings')
+    .update({ status: 'cancelled', cancel_reason: 'customer' })
+    .eq('id', booking.id)
   if (updateErr) return { success: false, error: updateErr.message }
 
   const policy = await getPolicy(client)
@@ -165,7 +203,6 @@ export async function rescheduleBookingByToken(
   client: SupabaseClient,
   token: string,
   newStartsAt: string,
-  reschedulesUsed: number,
 ): Promise<ServiceResult> {
   const { data: booking, error } = await client
     .from('bookings')
@@ -175,6 +212,8 @@ export async function rescheduleBookingByToken(
   if (error || !booking) return { success: false, error: 'Agendamento não encontrado' }
   if (booking.status !== 'confirmed') return { success: false, error: 'Apenas agendamentos confirmados podem ser remarcados' }
 
+  // reschedules_used vem do banco, não do cliente — evita burlar max_reschedules.
+  const reschedulesUsed = booking.reschedules_used ?? 0
   const policy = await getPolicy(client)
   if (!canReschedule(booking.starts_at, reschedulesUsed, policy)) {
     return { success: false, error: 'Fora do prazo ou limite de remarcações da política do estúdio' }
@@ -187,7 +226,7 @@ export async function rescheduleBookingByToken(
 
   const { error: updateErr } = await client
     .from('bookings')
-    .update({ starts_at: newStartsAt, ends_at: newEndsAt })
+    .update({ starts_at: newStartsAt, ends_at: newEndsAt, reschedules_used: reschedulesUsed + 1 })
     .eq('id', booking.id)
   if (updateErr) {
     if (updateErr.code === '23P01') return { success: false, error: 'Novo horário indisponível' }

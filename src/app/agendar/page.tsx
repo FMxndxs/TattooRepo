@@ -28,6 +28,7 @@ export default function AgendarPage() {
     qrCode: string | null
     qrCodeBase64: string | null
     copyText: string | null
+    manageToken: string
   } | null>(null)
   const [loadingServices, setLoadingServices] = useState(true)
 
@@ -161,6 +162,7 @@ export default function AgendarPage() {
         qrCode: qr_code,
         qrCodeBase64: qr_code_base64,
         copyText: qr_code,
+        manageToken: result.data!.booking.manage_token,
       })
       setStep('success')
     } catch (err) {
@@ -498,6 +500,18 @@ export default function AgendarPage() {
               </p>
             </>
           )}
+
+          <div className="mt-6 pt-6 border-t border-zinc-800">
+            <p className="text-sm text-zinc-400 mb-2">
+              Guarde o link abaixo para cancelar ou remarcar seu horário quando quiser:
+            </p>
+            <a
+              href={`/agendamento/${successData.manageToken}`}
+              className="text-brand-300 hover:text-brand-200 text-sm font-medium underline break-all"
+            >
+              {`${typeof window !== 'undefined' ? window.location.origin : ''}/agendamento/${successData.manageToken}`}
+            </a>
+          </div>
         </div>
       </div>
     )

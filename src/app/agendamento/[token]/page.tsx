@@ -117,7 +117,7 @@ export default function AgendamentoPage() {
     setRescheduleError(null)
 
     try {
-      const result = await rescheduleBookingAction(token, newDateTime, 0)
+      const result = await rescheduleBookingAction(token, newDateTime)
 
       if (!result.success) {
         setRescheduleError(result.error || 'Erro ao remarcar agendamento')
