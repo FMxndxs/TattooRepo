@@ -3,20 +3,20 @@
 
 | Field | Value |
 |-------|-------|
-| Status | pending |
+| Status | done |
 | Workflow step | — |
 | Owner | — |
 | Verification | manual |
 | Depends on | Cycle C |
 | Target | Cycle D |
-| Last updated | 2026-07-28 |
+| Last updated | 2026-07-29 |
 
 ## Outcome
 O Kadu tem um passo-a-passo para ativar Pix (Mercado Pago) e o espelho no Google Calendar.
 
 ## Scope
-- [ ] Mercado Pago: sandbox, token, webhook via túnel
-- [ ] Google Calendar: Service Account, compartilhar agenda
+- [x] Mercado Pago: sandbox, token, webhook via túnel
+- [x] Google Calendar: Service Account, compartilhar agenda
 
 ## Non-goals
 - Código de integração (já existe; só documentar ativação)
@@ -30,7 +30,7 @@ O Kadu tem um passo-a-passo para ativar Pix (Mercado Pago) e o espelho no Google
 | Manual | — | seguir o guia ativa o fluxo |
 
 ## Acceptance criteria
-- [ ] Guia escrito e validado; status synced
+- [x] Guia escrito e validado; status synced
 
 ## Traceability
 - Glossary: [[Sinal / Deposit]], [[Agendamento / Booking]]

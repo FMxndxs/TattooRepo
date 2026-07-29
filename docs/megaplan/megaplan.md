@@ -82,7 +82,7 @@ tatuagem, compilando e com testes verdes.
 
 | ID | Título | Status |
 |----|--------|--------|
-| D-B1 | `docs/setup-pagamento-calendario.md`: passo-a-passo Mercado Pago (sandbox, token, webhook via túnel) + Google Calendar (Service Account, compartilhar agenda) | pending |
+| D-B1 | `docs/setup-pagamento-calendario.md`: passo-a-passo Mercado Pago (sandbox, token, webhook via túnel) + Google Calendar (Service Account, compartilhar agenda) | done |
 | D-B2 | Ligar `StudioSettingsForm` ao `app_settings` (hoje hardcoded — ver `ponytail:` na L4) via action | pending |
 | D-B3 | Verificação end-to-end: criar serviço com sinal, agendar, pagar Pix sandbox, confirmar webhook → `confirmed` + evento no GCal | pending |
 
