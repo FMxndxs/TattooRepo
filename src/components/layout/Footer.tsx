@@ -30,6 +30,7 @@ export function Footer() {
             <ul className="space-y-2">
               {[
                 { href: '/portfolio', label: 'Portfólio' },
+                { href: '/cuidados', label: 'Cuidados' },
                 { href: '/custom-order', label: 'Personalizado' },
                 { href: '/agendar', label: 'Agendar' },
               ].map(({ href, label }) => (

@@ -15,6 +15,7 @@ const navLinks = [
   { href: '/agendar?service=flash', label: 'Flashes' },
   { href: '/portfolio', label: 'Portfólio' },
   { href: '/promocoes', label: 'Promoções' },
+  { href: '/cuidados', label: 'Cuidados' },
   { href: '/custom-order', label: 'Personalizado' },
   { href: '/agendar', label: 'Agendar' },
 ]

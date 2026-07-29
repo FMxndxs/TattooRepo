@@ -69,3 +69,55 @@ describe('breadcrumbSchema', () => {
     expect(schema.itemListElement[2].name).toBe('Blackwork')
   })
 })
+
+describe('faqPageSchema', () => {
+  interface FAQItem {
+    question: string
+    answer: string
+  }
+
+  const mockFAQItems: FAQItem[] = [
+    {
+      question: 'Quanto tempo leva para uma tatuagem cicatrizar?',
+      answer: 'A cicatrização varia de 2 a 4 semanas, dependendo do tamanho e complexidade. Siga os cuidados pós-tatuagem durante todo este período.',
+    },
+    {
+      question: 'Posso tomar banho após fazer uma tatuagem?',
+      answer: 'Sim, mas com cuidado. Evite água muito quente nos primeiros 2-3 dias e não deixe a tatuagem submersa em piscinas ou mar.',
+    },
+  ]
+
+  it('tem @context e @type corretos', () => {
+    const { faqPageSchema } = require('@/lib/seo/schema')
+    const schema = faqPageSchema(mockFAQItems)
+    expect(schema['@context']).toBe('https://schema.org')
+    expect(schema['@type']).toBe('FAQPage')
+  })
+
+  it('tem mainEntity como array com as perguntas', () => {
+    const { faqPageSchema } = require('@/lib/seo/schema')
+    const schema = faqPageSchema(mockFAQItems)
+    expect(Array.isArray(schema.mainEntity)).toBe(true)
+    expect(schema.mainEntity).toHaveLength(2)
+  })
+
+  it('cada mainEntity é uma Question com acceptedAnswer corretos', () => {
+    const { faqPageSchema } = require('@/lib/seo/schema')
+    const schema = faqPageSchema(mockFAQItems)
+
+    const firstQuestion = schema.mainEntity[0]
+    expect(firstQuestion['@type']).toBe('Question')
+    expect(firstQuestion.name).toBe('Quanto tempo leva para uma tatuagem cicatrizar?')
+    expect(firstQuestion.acceptedAnswer['@type']).toBe('Answer')
+    expect(firstQuestion.acceptedAnswer.text).toBe(
+      'A cicatrização varia de 2 a 4 semanas, dependendo do tamanho e complexidade. Siga os cuidados pós-tatuagem durante todo este período.'
+    )
+  })
+
+  it('preserva a ordem das perguntas', () => {
+    const { faqPageSchema } = require('@/lib/seo/schema')
+    const schema = faqPageSchema(mockFAQItems)
+    expect(schema.mainEntity[0].name).toBe('Quanto tempo leva para uma tatuagem cicatrizar?')
+    expect(schema.mainEntity[1].name).toBe('Posso tomar banho após fazer uma tatuagem?')
+  })
+})
